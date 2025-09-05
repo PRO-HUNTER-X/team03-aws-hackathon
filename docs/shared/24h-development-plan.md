@@ -116,21 +116,33 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 - [ ] 토큰 사용량 추적 및 최적화
 - [ ] AI 응답 품질 점수 계산
 
-#### Task C4: 이메일 알림 & DynamoDB 연동 (2시간)
-- [ ] services/email_service.py - AWS SES 실제 연동 (기본 구조 완성)
+#### Task C4: 비동기 이메일 시스템 & DynamoDB 연동 (2시간) - **아키텍처 개선**
+- [ ] **services/queue_service.py** - SQS 메시지 발송 서비스
+  ```python
+  def send_email_message(message_type: str, data: dict):
+      sqs.send_message(
+          QueueUrl=os.environ['EMAIL_QUEUE_URL'],
+          MessageBody=json.dumps({
+              'type': message_type,
+              'data': data,
+              'timestamp': datetime.utcnow().isoformat()
+          })
+      )
+  ```
+- [ ] **handlers/email_processor.py** - SQS 트리거 Lambda (이메일 전용)
 - [x] services/dynamodb_service.py - DB 연동 완성
-- [ ] 이메일 템플릿 (에스컬레이션, 답변 완료)
-- [ ] 회사 정보 관리 로직
+- [ ] 이메일 템플릿 (에스컬레이션, 답변 완룄)
+- [ ] **응답 속도 최적화** - 이메일 발송을 비동기로 처리하여 200ms 이내 응답
 
-#### Task C5: 추가 필수 API 구현 (3시간) - **신규 추가**
+#### Task C5: 추가 필수 API 구현 (3시간) - **비동기 처리 적용**
 - [ ] **에스컬레이션 API** (POST /api/inquiries/{id}/escalate)
-  - 문의 상태를 'escalated'로 변경
-  - 관리자에게 이메일 알림 발송
-  - 고객에게 확인 응답 반환
+  - 문의 상태를 'escalated'로 변경 (즉시)
+  - **SQS로 이메일 메시지 발송** (비동기)
+  - 고객에게 즉시 확인 응답 반환 (200ms 이내)
 - [ ] **상태 업데이트 API** (PUT /api/inquiries/{id}/status)
   - 관리자가 문의 상태 변경 (pending → in_progress → resolved)
   - 상태 변경 시 타임스탬프 업데이트
-  - 고객에게 상태 변경 알림 (선택적)
+  - **SQS로 알림 메시지 발송** (선택적, 비동기)
 
 **완료 기준:**
 - 모든 Lambda 함수 개별 테스트 통과 (7/7 함수)
@@ -157,21 +169,68 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 - [ ] Lambda 프록시 통합
 - [ ] CORS 및 기본 보안 설정
 
-### Phase 2 (4-10시간): 배포 & 데이터
-#### Task D3: CI/CD 파이프라인 구축 (3시간)
+### Phase 2 (4-10시간): AI 인프라 & 배포
+#### Task D3: AWS Bedrock 설정 및 모델 관리 (2시간) - **신규 추가**
+- [ ] **Bedrock 모델 액세스 권한 설정**
+  - Claude 4.1 Opus 모델 활성화 (기본 모델)
+  - Claude 4 Opus 모델 활성화 (백업 모델)
+  - Claude 4 Sonnet 모델 활성화 (빠른 응답용)
+  - IAM 역할에 Bedrock 권한 추가
+- [ ] **설정 파일 기반 모델 스위칭 구현**
+  ```python
+  # config/ai_models.py
+  AI_MODEL_CONFIG = {
+      "default_model": "claude-4-1-opus",
+      "fallback_model": "claude-4-opus", 
+      "fast_model": "claude-4-sonnet",
+      "max_tokens": 4096,
+      "temperature": 0.7,
+      "model_selection_strategy": "adaptive"  # 요청 복잡도에 따라 자동 선택
+  }
+  ```
+- [ ] **Lambda 환경변수로 모델 설정 주입**
+  - CDK에서 환경변수 설정: `BEDROCK_DEFAULT_MODEL`, `BEDROCK_FALLBACK_MODEL`, `BEDROCK_FAST_MODEL`
+  - **적응형 모델 선택 로직**:
+    - 간단한 문의 → Claude 4 Sonnet (빠른 응답)
+    - 복잡한 문의 → Claude 4.1 Opus (최고 품질)
+    - 오류 발생 시 → Claude 4 Opus (백업)
+  - 런타임 모델 변경 가능하도록 구성
+
+#### Task D4: CI/CD 파이프라인 구축 (2시간)
 - [ ] GitHub Actions 워크플로우 작성
 - [ ] 환경별 배포 스크립트 (dev/prod)
 - [ ] 자동 배포 설정
 - [ ] 롤백 전략 수립
 
-#### Task D4: 샘플 데이터 & 모니터링 (3시간)
+#### Task D5: 이메일 인프라 & 비동기 처리 (2시간) - **아키텍처 개선**
+- [ ] **SQS 큐 생성** (이메일 처리용)
+  ```typescript
+  // CDK 구성
+  const emailQueue = new sqs.Queue(this, 'EmailQueue', {
+    visibilityTimeout: Duration.minutes(5),
+    retentionPeriod: Duration.days(14)
+  });
+  ```
+- [ ] **이메일 처리 Lambda 함수** (SQS 트리거)
+  - 에스컬레이션 이메일 템플릿
+  - 상태 변경 알림 템플릿
+  - SES 발송 로직
+- [ ] **비동기 이메일 발송 아키텍처**
+  - API → SQS → Lambda → SES
+  - 사용자 응답 지연 최소화 (200ms 이내)
+- [ ] **SES 도메인 설정** (개발용 샌드박스 모드)
+
+#### Task D6: 샘플 데이터 & 모니터링 (1시간)
 - [ ] 가상 회사 3개 프로필 생성
 - [ ] 각 회사별 샘플 문의 데이터 30개
 - [ ] CloudWatch 기본 모니터링 설정
-- [ ] 간단한 백엔드 헬스체크 API
 
 **완료 기준:**
 - 모든 AWS 리소스 CDK로 배포 완료
+- **AWS Bedrock Claude 모델 액세스 권한 설정 완료**
+- **환경변수 기반 AI 모델 스위칭 시스템 구축**
+- **SQS 기반 비동기 이메일 처리 시스템 구축**
+- **SES 샌드박스 모드 이메일 발송 테스트 완료**
 - CI/CD 파이프라인으로 자동 배포 성공
 - 모니터링 대시보드에서 메트릭 확인 가능
 
@@ -185,13 +244,13 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 | 0-2h | Next.js 설정 | 로그인 페이지 | Python Lambda 설정 | CDK 초기화 |
 | 2-4h | 문의 폼 UI | 대시보드 레이아웃 | 핵심 Lambda 함수 | DynamoDB 설정 |
 | 4-6h | 문의 폼 완성 | 문의 관리 화면 | Lambda 함수 완성 | Lambda 배포 |
-| 6-8h | AI 응답 UI 시작 | API 연동 시작 | AI 서비스 연동 | CI/CD 설정 |
+| 6-8h | AI 응답 UI 시작 | API 연동 시작 | AI 서비스 연동 | Bedrock 설정 |
 
 ### 8-16시간 (핵심 기능)
 | 시간 | 정민 | 다나 | 규원 | 다혜 |
 |---|---|---|---|---|
-| 8-10h | AI 응답 UI | React Query 설정 | Bedrock 연동 | 샘플 데이터 |
-| 10-12h | 상태 추적 페이지 | JWT 인증 백엔드 | 프롬프트 엔지니어링 | 모니터링 설정 |
+| 8-10h | AI 응답 UI | React Query 설정 | Bedrock 연동 | 모델 스위칭 구현 |
+| 10-12h | 상태 추적 페이지 | JWT 인증 백엔드 | 프롬프트 엔지니어링 | CI/CD 설정 |
 | 12-14h | 반응형 최적화 | 인증 프론트 연동 | AI 품질 개선 | 배포 테스트 |
 | 14-16h | 접근성 개선 | 에러 처리 | 이메일 알림 | 성능 최적화 |
 
@@ -227,7 +286,7 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 - **Frontend**: Next.js 14 (Static) + Tailwind + shadcn/ui
 - **Backend**: Python 순수 Lambda 함수 + boto3
 - **Database**: DynamoDB (서버리스)
-- **AI**: AWS Bedrock Claude 3.5 Sonnet
+- **AI**: AWS Bedrock (Claude 4.1 Opus + Claude 4 Opus + Claude 4 Sonnet) - 설정파일 기반 모델 스위칭
 - **Infrastructure**: AWS CDK + API Gateway + CloudFront
 
 ---
@@ -277,11 +336,13 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
   - [ ] **PUT /api/inquiries/{id}/status** (상태 업데이트) - 우선순위 1
   - [ ] **POST /api/inquiries/{id}/escalate** (에스컬레이션) - 우선순위 2
 - [x] AI 응답 생성 완성 (Bedrock Claude 연동)
-- [ ] 이메일 알림 완성 (SES 실제 연동 필요)
+- [ ] **비동기 이메일 시스템 완성** (SQS + Lambda + SES)
 - [x] 에러 핸들링 완성 (Decimal 직렬화 등)
 
 ### 다혜 - Infrastructure
 - [ ] AWS 인프라 배포 완성
+- [ ] **AWS Bedrock 모델 설정 완성** (Claude 4.1 Opus/4 Opus/4 Sonnet 스위칭 가능)
+- [ ] **설정 파일 기반 AI 모델 관리 시스템 구축**
 - [ ] CI/CD 파이프라인 완성
 - [ ] 모니터링 설정 완성
 - [ ] 샘플 데이터 투입 완성
@@ -293,9 +354,10 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 - [ ] 상태 추적 → 실시간 업데이트 동작
 
 ### 우선순위 개발 작업 (다음 단계)
-1. **에스컬레이션 API** - 고객이 "사람과 연결" 버튼 클릭 시 필요
-2. **상태 업데이트 API** - 관리자가 문의 상태 변경 시 필요
-3. **JWT 인증 API** - 관리자 로그인/인증 시스템
-4. **이메일 서비스 완성** - AWS SES 실제 연동
+1. **AWS Bedrock 모델 설정** - 설정파일 기반 Claude 4.1 Opus/4 Opus/4 Sonnet 스위칭
+2. **SQS 기반 비동기 이메일 시스템** - 응답 속도 최적화 (200ms 이내)
+3. **에스컬레이션 API** - 고객이 "사람과 연결" 버튼 클릭 시 필요
+4. **상태 업데이트 API** - 관리자가 문의 상태 변경 시 필요
+5. **JWT 인증 API** - 관리자 로그인/인증 시스템
 
 **목표**: 24시간 후 완전히 동작하는 MVP 데모 가능
