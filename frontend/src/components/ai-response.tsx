@@ -1,51 +1,51 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Loader2, Star, User, Bot } from 'lucide-react'
+import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, Star, User, Bot } from "lucide-react";
 
 interface AIResponseProps {
-  response?: string
-  isLoading?: boolean
-  onEscalate?: () => void
-  onRating?: (rating: number) => void
+  response?: string;
+  isLoading?: boolean;
+  onEscalate?: () => void;
+  onRating?: (rating: number) => void;
 }
 
 export function AIResponse({ response, isLoading = false, onEscalate, onRating }: AIResponseProps) {
-  const [displayedText, setDisplayedText] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
-  const [rating, setRating] = useState<number | null>(null)
-  const [showRating, setShowRating] = useState(false)
+  const [displayedText, setDisplayedText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [rating, setRating] = useState<number | null>(null);
+  const [showRating, setShowRating] = useState(false);
 
   // 타이핑 애니메이션 효과
   useEffect(() => {
     if (response && !isLoading) {
-      setIsTyping(true)
-      setDisplayedText('')
-      
-      let index = 0
+      setIsTyping(true);
+      setDisplayedText("");
+
+      let index = 0;
       const timer = setInterval(() => {
         if (index < response.length) {
-          setDisplayedText(response.slice(0, index + 1))
-          index++
+          setDisplayedText(response.slice(0, index + 1));
+          index++;
         } else {
-          setIsTyping(false)
-          setShowRating(true)
-          clearInterval(timer)
+          setIsTyping(false);
+          setShowRating(true);
+          clearInterval(timer);
         }
-      }, 30) // 30ms마다 한 글자씩
+      }, 30); // 30ms마다 한 글자씩
 
-      return () => clearInterval(timer)
+      return () => clearInterval(timer);
     }
-  }, [response, isLoading])
+  }, [response, isLoading]);
 
   const handleRating = (selectedRating: number) => {
-    setRating(selectedRating)
-    onRating?.(selectedRating)
-  }
+    setRating(selectedRating);
+    onRating?.(selectedRating);
+  };
 
   if (isLoading) {
     return (
@@ -61,19 +61,28 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div
+                  className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                ></div>
               </div>
               <p className="text-sm text-muted-foreground">AI가 답변을 생성하고 있습니다...</p>
             </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  if (!response) return null
+  if (!response) return null;
 
   return (
     <Card className="mt-6">
@@ -87,7 +96,7 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
       <CardContent className="space-y-6">
         {/* AI 응답 텍스트 (마크다운 지원) */}
         <div className="prose prose-sm max-w-none">
-          <ReactMarkdown 
+          <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
               h1: ({ children }) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
@@ -98,8 +107,12 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
               ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
               li: ({ children }) => <li className="ml-2">{children}</li>,
               code: ({ children }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-sm">{children}</code>,
-              pre: ({ children }) => <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">{children}</pre>,
-              blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic">{children}</blockquote>
+              pre: ({ children }) => (
+                <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">{children}</pre>
+              ),
+              blockquote: ({ children }) => (
+                <blockquote className="border-l-4 border-gray-300 pl-4 italic">{children}</blockquote>
+              ),
             }}
           >
             {displayedText}
@@ -122,17 +135,13 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
                     <Star
                       className={`w-6 h-6 ${
                         rating && star <= rating
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300 hover:text-yellow-400'
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300 hover:text-yellow-400"
                       }`}
                     />
                   </button>
                 ))}
-                {rating && (
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    {rating}점 / 5점
-                  </span>
-                )}
+                {rating && <span className="ml-2 text-sm text-muted-foreground">{rating}점 / 5점</span>}
               </div>
               {rating && rating <= 3 && (
                 <p className="text-sm text-muted-foreground">
@@ -146,11 +155,7 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
         {/* "사람과 연결" 에스컬레이션 버튼 */}
         {showRating && !isTyping && (
           <div className="border-t pt-4">
-            <Button
-              variant="outline"
-              onClick={onEscalate}
-              className="w-full flex items-center gap-2"
-            >
+            <Button variant="outline" onClick={onEscalate} className="w-full flex items-center gap-2">
               <User className="w-4 h-4" />
               사람과 연결하기
             </Button>
@@ -161,5 +166,5 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
