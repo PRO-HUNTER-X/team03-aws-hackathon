@@ -41,6 +41,7 @@ jobs:
     needs: detect-changes
     if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true' || needs.detect-changes.outputs.workflows == 'true')
     runs-on: ubuntu-latest
+    environment: main
     
     steps:
       - name: 📥 Checkout
