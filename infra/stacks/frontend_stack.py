@@ -62,13 +62,11 @@ class FrontendStack(Stack):
             ]
         )
         
-        # Deploy Next.js standalone build
+        # Deploy Next.js static export build
         s3deploy.BucketDeployment(
             self, "DeployWebsite",
             sources=[
-                s3deploy.Source.asset("../frontend/.next/standalone"),
-                s3deploy.Source.asset("../frontend/.next/static"),
-                s3deploy.Source.asset("../frontend/public")
+                s3deploy.Source.asset("../frontend/out")
             ],
             destination_bucket=website_bucket,
             distribution=distribution,
