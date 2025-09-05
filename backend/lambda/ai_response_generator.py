@@ -56,16 +56,26 @@ def options_response():
     }
 
 def generate_ai_response(inquiry_data):
-    """AI 응답 생성 (AWS Bedrock Claude 연동)"""
+    """AI 응답 생성 (Bedrock 직접 연동)"""
     try:
         import boto3
+        import json
+        from config.ai_models import ai_model_config, analyze_request_complexity, get_request_priority
         
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
-        model_id = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
+        
+        # AI 모델 설정에서 최적 모델 선택
+        complexity = analyze_request_complexity(inquiry_data.get('content', ''), inquiry_data.get('category', 'general'))
+        priority = get_request_priority(inquiry_data.get('urgency', 'normal'))
+        model_id = ai_model_config.get_model_for_request(complexity, priority)
+        
+        logger.info(f"Selected model: {model_id} (complexity: {complexity}, priority: {priority})")
+        
+        max_tokens = ai_model_config.config['max_tokens']
+        temperature = ai_model_config.config['temperature']
         
         # 프롬프트 생성
-        company_context = inquiry_data.get('companyContext', '일반적인 고객 서비스')
-        prompt = f"""당신은 {company_context}의 전문 고객 서비스 담당자입니다.
+        prompt = f"""당신은 전문 고객 서비스 담당자입니다.
 
 고객 문의:
 제목: {inquiry_data.get('title', '')}
@@ -82,7 +92,8 @@ def generate_ai_response(inquiry_data):
         
         body = {
             "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 1000,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
             "messages": [
                 {
                     "role": "user",
@@ -91,20 +102,43 @@ def generate_ai_response(inquiry_data):
             ]
         }
         
-        response = bedrock.invoke_model(
-            modelId=model_id,
-            body=json.dumps(body)
-        )
-        
-        response_body = json.loads(response['body'].read())
-        ai_response = response_body['content'][0]['text']
-        
-        logger.info(f"AI response generated for inquiry: {inquiry_data.get('title', 'Unknown')}")
-        return ai_response
+        try:
+            # Primary 모델로 시도
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body)
+            )
+            
+            response_body = json.loads(response['body'].read())
+            ai_response = response_body['content'][0]['text']
+            
+            logger.info(f"AI response generated using {model_id} for inquiry: {inquiry_data.get('title', 'Unknown')}")
+            return ai_response
+            
+        except Exception as primary_error:
+            logger.warning(f"Primary model {model_id} failed: {str(primary_error)}. Trying fallback model.")
+            
+            # Fallback 모델로 재시도
+            fallback_model = ai_model_config.get_fallback_model()
+            try:
+                response = bedrock.invoke_model(
+                    modelId=fallback_model,
+                    body=json.dumps(body)
+                )
+                
+                response_body = json.loads(response['body'].read())
+                ai_response = response_body['content'][0]['text']
+                
+                logger.info(f"AI response generated using fallback model {fallback_model}")
+                return ai_response
+                
+            except Exception as fallback_error:
+                logger.error(f"Fallback model {fallback_model} also failed: {str(fallback_error)}")
+                raise fallback_error
         
     except Exception as e:
         logger.error(f"Error generating AI response: {str(e)}")
-        # Fallback 응답
+        # 최종 Fallback 응답
         return f"""안녕하세요, {inquiry_data.get('title', '문의')}에 대해 문의해주셔서 감사합니다.
 
 죄송합니다. 현재 시스템에 일시적인 문제가 발생하여 즉시 답변을 드리기 어려운 상황입니다.

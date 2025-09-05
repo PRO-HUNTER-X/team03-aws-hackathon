@@ -5,130 +5,146 @@ import { Bot, MessageCircle, Clock } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="container mx-auto p-4">
-      {/* Hero Section */}
-      <div className="text-center py-16">
-        <h1 className="text-4xl font-bold mb-4">
-          AI 기반 CS 챗봇 플랫폼
-        </h1>
-        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          소규모 회사를 위한 스마트한 고객 서비스 자동화 솔루션
-        </p>
-        <div className="flex gap-4 justify-center">
+    <div className="">
+      {/* Hero Section - Full Screen */}
+      <section className="min-h-screen flex items-center justify-center bg-white relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100"></div>
+        <div className="relative z-10 text-center px-6 max-w-6xl mx-auto">
+          <div className="mb-12">
+            <div className="inline-block p-6 bg-white rounded-3xl shadow-2xl mb-8">
+              <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto">
+                <span className="text-white font-bold text-3xl">CS</span>
+              </div>
+            </div>
+          </div>
+          <h1 className="text-7xl md:text-8xl font-bold mb-8 text-gray-900 leading-tight">AI 기반 CS 챗봇 플랫폼</h1>
+          <p className="text-2xl text-gray-600 mb-16 max-w-4xl mx-auto leading-relaxed">
+            소규모 회사를 위한 스마트한 고객 서비스 자동화 솔루션
+          </p>
+          <div className="flex gap-6 justify-center">
+            <Link href="/inquiry">
+              <Button
+                size="lg"
+                className="flex items-center gap-3 bg-black hover:bg-gray-800 text-white px-12 py-6 text-xl rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <MessageCircle className="w-6 h-6" />
+                문의하기
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section - Full Screen */}
+      <section className="min-h-screen flex items-center bg-gray-50 py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-bold mb-6 text-gray-900">주요 기능</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">고객 서비스를 자동화하는 핵심 기능들을 소개합니다</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <Card className="border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white p-8 rounded-3xl hover:scale-105">
+              <CardHeader className="pb-6">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
+                  <Bot className="w-8 h-8 text-black" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-4">즉시 AI 응답</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 leading-relaxed text-lg">
+                  24시간 언제든지 AI가 고객 문의에 즉시 답변을 제공합니다.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white p-8 rounded-3xl hover:scale-105">
+              <CardHeader className="pb-6">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
+                  <MessageCircle className="w-8 h-8 text-black" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-4">사람과 연결</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 leading-relaxed text-lg">
+                  AI 답변이 부족할 때 원클릭으로 담당자와 연결됩니다.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white p-8 rounded-3xl hover:scale-105">
+              <CardHeader className="pb-6">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
+                  <Clock className="w-8 h-8 text-black" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-4">실시간 추적</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 leading-relaxed text-lg">문의 처리 상황을 실시간으로 확인할 수 있습니다.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works Section - Full Screen */}
+      <section className="min-h-screen flex items-center bg-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-bold mb-6 text-gray-900">어떻게 작동하나요?</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              간단한 4단계로 완성되는 스마트한 CS 자동화 프로세스
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div className="text-center group">
+              <div className="w-24 h-24 bg-black rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                <span className="text-white font-bold text-2xl">1</span>
+              </div>
+              <h3 className="font-bold mb-4 text-2xl text-gray-900">문의 작성</h3>
+              <p className="text-gray-600 leading-relaxed text-lg">간단한 폼으로 문의사항을 작성합니다</p>
+            </div>
+            <div className="text-center group">
+              <div className="w-24 h-24 bg-black rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                <span className="text-white font-bold text-2xl">2</span>
+              </div>
+              <h3 className="font-bold mb-4 text-2xl text-gray-900">AI 분석</h3>
+              <p className="text-gray-600 leading-relaxed text-lg">AI가 문의 내용을 분석하고 답변을 생성합니다</p>
+            </div>
+            <div className="text-center group">
+              <div className="w-24 h-24 bg-black rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                <span className="text-white font-bold text-2xl">3</span>
+              </div>
+              <h3 className="font-bold mb-4 text-2xl text-gray-900">즉시 응답</h3>
+              <p className="text-gray-600 leading-relaxed text-lg">3초 이내에 맞춤형 답변을 받아보세요</p>
+            </div>
+            <div className="text-center group">
+              <div className="w-24 h-24 bg-black rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                <span className="text-white font-bold text-2xl">4</span>
+              </div>
+              <h3 className="font-bold mb-4 text-2xl text-gray-900">만족도 평가</h3>
+              <p className="text-gray-600 leading-relaxed text-lg">답변에 만족하지 않으면 담당자와 연결됩니다</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Full Screen */}
+      <section className="min-h-screen flex items-center bg-gray-900 text-white">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-6xl font-bold mb-8">지금 바로 시작해보세요</h2>
+          <p className="text-2xl text-gray-300 mb-16 max-w-4xl mx-auto leading-relaxed">
+            무료로 문의 시스템을 체험해보실 수 있습니다
+          </p>
           <Link href="/inquiry">
-            <Button size="lg" className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              문의하기
-            </Button>
-          </Link>
-          <Link href="/demo">
-            <Button variant="outline" size="lg">
-              데모 보기
+            <Button
+              size="lg"
+              className="bg-white hover:bg-gray-100 text-black px-16 py-8 text-2xl rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300"
+            >
+              무료 체험하기
             </Button>
           </Link>
         </div>
-      </div>
-
-      {/* Features */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-blue-600" />
-              즉시 AI 응답
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              24시간 언제든지 AI가 고객 문의에 즉시 답변을 제공합니다.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-green-600" />
-              사람과 연결
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              AI 답변이 부족할 때 원클릭으로 담당자와 연결됩니다.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-orange-600" />
-              실시간 추적
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              문의 처리 상황을 실시간으로 확인할 수 있습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* How it works */}
-      <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold mb-8">어떻게 작동하나요?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-blue-600 font-bold">1</span>
-            </div>
-            <h3 className="font-semibold mb-2">문의 작성</h3>
-            <p className="text-sm text-muted-foreground">
-              간단한 폼으로 문의사항을 작성합니다
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-green-600 font-bold">2</span>
-            </div>
-            <h3 className="font-semibold mb-2">AI 분석</h3>
-            <p className="text-sm text-muted-foreground">
-              AI가 문의 내용을 분석하고 답변을 생성합니다
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-orange-600 font-bold">3</span>
-            </div>
-            <h3 className="font-semibold mb-2">즉시 응답</h3>
-            <p className="text-sm text-muted-foreground">
-              3초 이내에 맞춤형 답변을 받아보세요
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-purple-600 font-bold">4</span>
-            </div>
-            <h3 className="font-semibold mb-2">만족도 평가</h3>
-            <p className="text-sm text-muted-foreground">
-              답변에 만족하지 않으면 담당자와 연결됩니다
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="text-center py-16 bg-blue-50 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">지금 바로 시작해보세요</h2>
-        <p className="text-muted-foreground mb-6">
-          무료로 문의 시스템을 체험해보실 수 있습니다
-        </p>
-        <Link href="/inquiry">
-          <Button size="lg">
-            무료 체험하기
-          </Button>
-        </Link>
-      </div>
+      </section>
     </div>
   );
 }

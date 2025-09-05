@@ -269,10 +269,10 @@ export default function DevPage() {
                 <strong>API Base URL:</strong> {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}
               </div>
               <div>
-                <strong>User Agent:</strong> {typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A'}
+                <strong>User Agent:</strong> <span className="break-all">{typeof window !== 'undefined' && navigator ? navigator.userAgent : 'N/A'}</span>
               </div>
               <div>
-                <strong>Online Status:</strong> {typeof navigator !== 'undefined' ? (navigator.onLine ? '온라인' : '오프라인') : 'N/A'}
+                <strong>Online Status:</strong> {typeof window !== 'undefined' && navigator ? (navigator.onLine ? '온라인' : '오프라인') : 'N/A'}
               </div>
             </div>
           </CardContent>
@@ -295,7 +295,7 @@ export default function DevPage() {
                 <strong>Build Time:</strong> {new Date().toISOString()}
               </div>
               <div>
-                <strong>Local Storage Available:</strong> {typeof Storage !== 'undefined' ? '예' : '아니오'}
+                <strong>Local Storage Available:</strong> {typeof window !== 'undefined' && window.localStorage ? '예' : '아니오'}
               </div>
             </div>
           </CardContent>

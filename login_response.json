@@ -1,0 +1,1 @@
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJcdWFkMDBcdWI5YWNcdWM3OTAiLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NTcwNjMxNzl9.9Uz9-yWH2dqdVfPc7xgPfpvBB4zdXfTZ8OYi7PUdVZQ","token_type":"bearer","user":{"email":"admin@example.com","name":"관리자","role":"admin"}}

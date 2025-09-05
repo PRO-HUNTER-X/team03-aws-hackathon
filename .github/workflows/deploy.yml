@@ -1,0 +1,118 @@
+name: 🚀 Auto Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+      infra: ${{ steps.changes.outputs.infra }}
+      workflows: ${{ steps.changes.outputs.workflows }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+            infra:
+              - 'infra/**'
+            workflows:
+              - '.github/workflows/**'
+
+  deploy:
+    needs: detect-changes
+    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true' || needs.detect-changes.outputs.workflows == 'true')
+    runs-on: ubuntu-latest
+    environment: main
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔑 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActions-Deploy
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
+
+      - name: 🐍 Setup Python & venv
+        uses: getsentry/action-setup-venv@v2.2.0
+        id: venv
+        with:
+          python-version: '3.11'
+          cache-dependency-path: infra/requirements.txt
+          install-cmd: pip install -r infra/requirements.txt
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 🔧 Install CDK
+        run: npm install -g aws-cdk
+
+      - name: 🚀 Deploy Infrastructure
+        working-directory: infra
+        run: |
+          chmod +x deploy.sh
+          if [[ "${{ needs.detect-changes.outputs.backend }}" == "true" || "${{ needs.detect-changes.outputs.infra }}" == "true" ]]; then
+            echo "📊 데이터 + API 스택 배포 중..."
+            ./deploy.sh data
+            ./deploy.sh api
+          fi
+          
+          if [[ "${{ needs.detect-changes.outputs.frontend }}" == "true" || "${{ needs.detect-changes.outputs.infra }}" == "true" ]]; then
+            echo "🌐 프론트엔드 스택 배포 중..."
+            ./deploy.sh frontend
+          fi
+
+      - name: ✨ Invalidate CloudFront Cache
+        if: needs.detect-changes.outputs.frontend == 'true'
+        run: |
+          echo "✨ CloudFront 캐시 무효화 중..."
+          DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`DistributionId`].OutputValue' --output text 2>/dev/null || echo "")
+          
+          if [ -n "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
+            echo "🔄 Distribution ID: $DISTRIBUTION_ID"
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+            echo "✅ 캐시 무효화 완료"
+          else
+            echo "⚠️ Distribution ID를 찾을 수 없습니다"
+          fi
+
+      - name: 📋 Show Deployment Results
+        run: |
+          echo "🎉 배포 완료!"
+          echo "="*50
+          
+          # 프론트엔드 URL
+          CF_URL=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+          echo "📱 프론트엔드: $CF_URL"
+          
+          # API URL
+          API_URL=$(aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+          echo "🔗 API: $API_URL"
+          
+          echo "="*50
