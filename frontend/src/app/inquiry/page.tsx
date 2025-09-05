@@ -1,4 +1,4 @@
-import { InquiryForm } from '@/components/inquiry-form'
+import { InquiryForm } from "@/components/inquiry-form";
 
 export default function InquiryPage() {
   return (
@@ -11,5 +11,5 @@ export default function InquiryPage() {
       </div>
       <InquiryForm />
     </div>
-  )
+  );
 }
