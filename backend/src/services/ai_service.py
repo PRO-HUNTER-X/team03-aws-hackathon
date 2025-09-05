@@ -2,6 +2,12 @@ import boto3
 import json
 from typing import Dict, Any
 import logging
+import sys
+import os
+
+# config 모듈 import를 위한 경로 추가
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
+from config.ai_models import ai_model_config, analyze_request_complexity, get_request_priority
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -9,38 +15,75 @@ logger.setLevel(logging.INFO)
 class AIService:
     def __init__(self):
         self.bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
-        self.model_id = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
+        self.config = ai_model_config
     
     def generate_response(self, inquiry_data: Dict[str, Any], company_context: str = None) -> str:
-        """AI 응답 생성"""
+        """AI 응답 생성 - 적응형 모델 선택"""
         try:
-            prompt = self._build_prompt(inquiry_data, company_context)
-            
-            body = {
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 1000,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            }
-            
-            response = self.bedrock.invoke_model(
-                modelId=self.model_id,
-                body=json.dumps(body)
+            # 요청 복잡도 및 우선순위 분석
+            complexity = analyze_request_complexity(
+                inquiry_data.get('content', ''), 
+                inquiry_data.get('category', 'general')
             )
+            priority = get_request_priority(inquiry_data.get('urgency', 'normal'))
             
-            response_body = json.loads(response['body'].read())
-            ai_response = response_body['content'][0]['text']
+            # 최적 모델 선택
+            selected_model = self.config.get_model_for_request(complexity, priority)
             
-            logger.info(f"AI response generated for inquiry: {inquiry_data.get('title', 'Unknown')}")
-            return ai_response
+            logger.info(f"Selected model: {selected_model} (complexity: {complexity}, priority: {priority})")
+            
+            # AI 응답 생성 시도
+            return self._invoke_model_with_fallback(inquiry_data, company_context, selected_model)
             
         except Exception as e:
             logger.error(f"Error generating AI response: {str(e)}")
             return self._get_fallback_response(inquiry_data)
+    
+    def _invoke_model_with_fallback(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
+        """모델 호출 및 폴백 처리"""
+        try:
+            return self._invoke_bedrock_model(inquiry_data, company_context, model_id)
+        except Exception as e:
+            logger.warning(f"Primary model {model_id} failed: {str(e)}. Trying fallback model.")
+            
+            # 폴백 모델로 재시도
+            fallback_model = self.config.get_fallback_model()
+            try:
+                return self._invoke_bedrock_model(inquiry_data, company_context, fallback_model)
+            except Exception as fallback_error:
+                logger.error(f"Fallback model {fallback_model} also failed: {str(fallback_error)}")
+                raise fallback_error
+    
+    def _invoke_bedrock_model(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
+        """Bedrock 모델 호출"""
+        prompt = self._build_prompt(inquiry_data, company_context)
+        
+        # 모델 파라미터 가져오기
+        model_params = self.config.get_model_parameters(model_id)
+        
+        body = {
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": model_params["body"]["max_tokens"],
+            "temperature": model_params["body"]["temperature"],
+            "top_p": model_params["body"]["top_p"],
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        }
+        
+        response = self.bedrock.invoke_model(
+            modelId=model_id,
+            body=json.dumps(body)
+        )
+        
+        response_body = json.loads(response['body'].read())
+        ai_response = response_body['content'][0]['text']
+        
+        logger.info(f"AI response generated using {model_id} for inquiry: {inquiry_data.get('title', 'Unknown')}")
+        return ai_response
     
     def _build_prompt(self, inquiry_data: Dict[str, Any], company_context: str = None) -> str:
         """프롬프트 생성"""

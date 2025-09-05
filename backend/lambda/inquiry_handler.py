@@ -18,7 +18,9 @@ def success_response(data):
         'statusCode': 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
         },
         'body': json.dumps({
             'success': True,
@@ -32,12 +34,27 @@ def error_response(message, status_code=400):
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
         },
         'body': json.dumps({
             'success': False,
             'error': message
         }, ensure_ascii=False)
+    }
+
+def options_response():
+    """OPTIONS 요청 응답 (CORS preflight)"""
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+            'Access-Control-Max-Age': '86400'
+        },
+        'body': ''
     }
 
 def validate_inquiry_data(data):
@@ -116,6 +133,10 @@ def lambda_handler(event, context):
     try:
         http_method = event.get('httpMethod', 'GET')
         path_parameters = event.get('pathParameters') or {}
+        
+        # OPTIONS 요청 처리 (CORS preflight)
+        if http_method == 'OPTIONS':
+            return options_response()
         
         if http_method == 'POST':
             # 문의 생성

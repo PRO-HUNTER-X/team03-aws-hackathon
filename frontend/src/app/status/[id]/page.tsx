@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, AlertCircle, MessageCircle, User, Bot } from "lucide-react";
 import Link from "next/link";
+import { getInquiry, InquiryDetail } from "@/lib/api";
 
 type InquiryStatus = "pending" | "processing" | "completed";
 
@@ -39,53 +40,94 @@ export default function StatusPage() {
 
   useEffect(() => {
     const fetchInquiryData = async () => {
-      const mockData: InquiryData = {
-        id: inquiryId,
-        title: "로그인 문제 해결 요청",
-        category: "technical",
-        status: "processing",
-        createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        estimatedResponseTime: 120,
-        timeline: [
-          {
-            id: "1",
-            type: "created",
-            title: "문의 접수",
-            description: "고객님의 문의가 접수되었습니다.",
-            timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-            icon: "message",
-          },
-          {
-            id: "2",
-            type: "ai_response",
-            title: "AI 자동 응답",
-            description: "AI가 초기 답변을 제공했습니다.",
-            timestamp: new Date(Date.now() - 29 * 60 * 1000).toISOString(),
-            icon: "bot",
-          },
-          {
-            id: "3",
-            type: "escalated",
-            title: "담당자 연결",
-            description: "전문 상담사에게 문의가 전달되었습니다.",
-            timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-            icon: "user",
-          },
-        ],
-      };
+      try {
+        const inquiryDetail = await getInquiry(inquiryId);
+        
+        // API 응답을 UI 형식으로 변환
+        const inquiryData: InquiryData = {
+          id: inquiryDetail.inquiry_id,
+          title: inquiryDetail.title,
+          category: inquiryDetail.category,
+          status: mapApiStatusToUIStatus(inquiryDetail.status),
+          createdAt: inquiryDetail.created_at,
+          estimatedResponseTime: inquiryDetail.estimatedResponseTime || 120,
+          timeline: generateTimelineFromStatus(inquiryDetail)
+        };
 
-      setInquiry(mockData);
+        setInquiry(inquiryData);
 
-      const createdTime = new Date(mockData.createdAt).getTime();
-      const estimatedEndTime = createdTime + mockData.estimatedResponseTime * 60 * 1000;
-      const remaining = Math.max(0, estimatedEndTime - Date.now());
-      setTimeRemaining(Math.floor(remaining / 1000 / 60));
+        const createdTime = new Date(inquiryData.createdAt).getTime();
+        const estimatedEndTime = createdTime + inquiryData.estimatedResponseTime * 60 * 1000;
+        const remaining = Math.max(0, estimatedEndTime - Date.now());
+        setTimeRemaining(Math.floor(remaining / 1000 / 60));
 
-      setLoading(false);
+      } catch (error) {
+        console.error('문의 조회 실패:', error);
+        setInquiry(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchInquiryData();
   }, [inquiryId]);
+
+  const mapApiStatusToUIStatus = (apiStatus: string): InquiryStatus => {
+    switch (apiStatus) {
+      case 'pending': return 'pending';
+      case 'in_progress': 
+      case 'escalated': return 'processing';
+      case 'resolved': return 'completed';
+      default: return 'pending';
+    }
+  };
+
+  const generateTimelineFromStatus = (inquiry: InquiryDetail): TimelineEvent[] => {
+    const timeline: TimelineEvent[] = [
+      {
+        id: '1',
+        type: 'created',
+        title: '문의 접수',
+        description: '고객님의 문의가 접수되었습니다.',
+        timestamp: inquiry.created_at,
+        icon: 'message'
+      }
+    ];
+
+    // AI 응답은 항상 있다고 가정
+    timeline.push({
+      id: '2',
+      type: 'ai_response',
+      title: 'AI 자동 응답',
+      description: 'AI가 초기 답변을 제공했습니다.',
+      timestamp: inquiry.created_at, // 실제로는 AI 응답 시간
+      icon: 'bot'
+    });
+
+    if (inquiry.status === 'escalated') {
+      timeline.push({
+        id: '3',
+        type: 'escalated',
+        title: '담당자 연결',
+        description: '전문 상담사에게 문의가 전달되었습니다.',
+        timestamp: inquiry.updatedAt || inquiry.created_at,
+        icon: 'user'
+      });
+    }
+
+    if (inquiry.status === 'resolved') {
+      timeline.push({
+        id: '4',
+        type: 'completed',
+        title: '답변 완료',
+        description: '담당자가 상세한 답변을 제공했습니다.',
+        timestamp: inquiry.updatedAt || inquiry.created_at,
+        icon: 'check'
+      });
+    }
+
+    return timeline;
+  };
 
   useEffect(() => {
     if (timeRemaining <= 0) return;
@@ -314,3 +356,4 @@ export default function StatusPage() {
     </div>
   );
 }
+
