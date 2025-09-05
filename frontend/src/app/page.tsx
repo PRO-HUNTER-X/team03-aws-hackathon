@@ -31,6 +31,16 @@ export default function Home() {
                 문의하기
               </Button>
             </Link>
+            <Link href="/login">
+              <Button
+                size="lg"
+                variant="outline"
+                className="flex items-center gap-3 border-slate-600 text-slate-600 hover:bg-slate-600 hover:text-white px-12 py-6 text-xl rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <Clock className="w-6 h-6" />
+                내 문의 확인
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
