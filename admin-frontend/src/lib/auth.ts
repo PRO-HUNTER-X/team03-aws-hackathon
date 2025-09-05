@@ -8,6 +8,11 @@ export interface LoginRequest {
 export interface LoginResponse {
   access_token: string
   expires_in: number
+  redirect: {
+    hasQnASetup: boolean
+    nextRoute: string
+    message: string
+  }
 }
 
 export interface VerifyResponse {
