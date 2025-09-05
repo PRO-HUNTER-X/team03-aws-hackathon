@@ -1,18 +1,26 @@
 from aws_cdk import (
     Stack,
     aws_dynamodb as dynamodb,
-    RemovalPolicy
+    RemovalPolicy,
+    CfnOutput
 )
 from constructs import Construct
 
 class DataStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, 
+                 developer: str = "", **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
+        # dev 환경일 때만 개발자 이름 추가
+        if developer:
+            table_name = f"cs-inquiries-dev-{developer}"
+        else:
+            table_name = "cs-inquiries"  # 기존 prod 환경
         
         # DynamoDB Table for CS inquiries
         self.table = dynamodb.Table(
             self, "CSInquiryTable",
-            table_name="cs-inquiries",
+            table_name=table_name,
             partition_key=dynamodb.Attribute(
                 name="inquiry_id",
                 type=dynamodb.AttributeType.STRING
@@ -47,3 +55,8 @@ class DataStack(Stack):
                 type=dynamodb.AttributeType.STRING
             )
         )
+        
+        # Output table name
+        CfnOutput(self, "TableName",
+                 value=self.table.table_name,
+                 description="DynamoDB Table Name")

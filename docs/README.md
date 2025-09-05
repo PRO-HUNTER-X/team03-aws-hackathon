@@ -72,17 +72,25 @@ git checkout -b feat/backend-inquiry-api      # 백엔드
 git checkout -b feat/frontend-inquiry-form    # 프론트엔드  
 git checkout -b feat/infra-lambda-setup       # 인프라
 
-# 3. 코드 개발
+# 3. 개인 dev 환경에 배포 및 테스트
+cd infra
+./deploy-dev.sh [내이름] api --fast    # API 변경사항 배포
+./deploy-dev.sh [내이름] frontend     # 프론트엔드 변경사항 배포
+
+# 4. 코드 개발
 # Q Agent 활용하여 개발
 q chat "현재 API 명세에 맞춰 문의 접수 엔드포인트 구현해줘"
 
-# 4. 개발 완료 후 커밋
+# 5. 개발 완료 후 커밋
 git add .
 git commit -m "feat: 구현한 기능 설명"
 git push origin feat/your-branch-name
 
-# 5. PR 생성 및 머지
+# 6. PR 생성 및 머지
 # GitHub에서 PR 생성 → 팀원 리뷰 → 머지 → 브랜치 삭제
+
+# 7. dev 환경 정리 (선택사항)
+./destroy-dev.sh [내이름]  # 개발 완료 후 리소스 정리
 ```
 
 #### 다른 팀원 작업 반영
@@ -173,6 +181,7 @@ q chat "현재 데이터베이스 스키마와 API 명세가 일치하는지 검
 - **코드**: feat/ 브랜치에서 개발 후 PR
 - **문서**: docs/ 브랜치에서 수정 후 PR  
 - **역할별 영역**: 본인 담당 폴더/파일만 수정
+- **개발 환경 분리**: 각자 독립적인 dev 환경에서 개발/테스트
 - **실시간 소통**: 중요 변경사항은 팀 채팅에 즉시 공지
 - **빠른 리뷰**: PR은 2시간 내 리뷰 및 머지
 
