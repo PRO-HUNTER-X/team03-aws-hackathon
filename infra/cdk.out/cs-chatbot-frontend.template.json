@@ -207,6 +207,20 @@
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
     "DistributionConfig": {
+     "CustomErrorResponses": [
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
@@ -280,10 +294,28 @@
     "SourceBucketNames": [
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      }
     ],
     "SourceObjectKeys": [
-     "9d5b3797c3d9b6f3f5c1e57223127dbdd331f1d7143dc31b41ea800a574aad60.zip"
+     "d74b91c398b164f158b6bd94996f8ab7cd5d4885f2fa09f0621a4606cd8326b7.zip",
+     "1018fd007061f2d43e1fd8aa5fe53b6c3c6c42a7995b8e761822a33252ae9f24.zip",
+     "97cb1d0b3361bd872855e800faa1868b94a0acd5198060124d90d133f80dee1b.zip"
+    ],
+    "SourceMarkers": [
+     {},
+     {},
+     {}
+    ],
+    "SourceMarkersConfig": [
+     {},
+     {},
+     {}
     ],
     "DestinationBucketName": {
      "Ref": "WebsiteBucket75C24D94"

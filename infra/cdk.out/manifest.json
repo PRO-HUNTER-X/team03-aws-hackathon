@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/79f73ea987b02a14ba9c63b4249b1c74798b33363950aa25adad59fd26f4055e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/9fb72bf24173b40c6b1abb738f3e54c75a963deaee98852d21ceb370ade5e91d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,6 +46,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CSInquiryTableFB9F4D47"
+          }
+        ],
+        "/cs-chatbot-data/TableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableName"
           }
         ],
         "/cs-chatbot-data/CDKMetadata/Default": [
@@ -98,7 +104,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fcb590937558cd5cf7cd1328bef932ea2ad25c2fde346cec21945b7ecd48dc5c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/716bd5985d7463919b24129f77dfa317470d310bb56d313c5afde6e689b479cb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -160,7 +166,7 @@
         "/cs-chatbot-api/CSChatbotAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b"
+            "data": "CSChatbotAPIDeployment42D3E63C07ce1a94e12a9ab12f7769fa3b9773db"
           }
         ],
         "/cs-chatbot-api/CSChatbotAPI/DeploymentStage.prod/Resource": [
@@ -289,6 +295,36 @@
             "data": "CSChatbotAPIapiinquiriesidGET9B2425EC"
           }
         ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalate0D5235E7"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalateOPTIONS72CD2B81"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries.{id}.escalate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalatePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiinquiriesidescalate63D4F8C4"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries.{id}.escalate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalatePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiinquiriesidescalateEDC8D014"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalatePOST651CE598"
+          }
+        ],
         "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -363,7 +399,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/84394f60e62974f190e2c980176b1e812ee73f5fbac8ac9df2d9765e8c7d4666.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/7bd9de5ca16a13fa4f3e241e7d3fbf215d150963d46a97400d7a963064c98edd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -499,6 +535,379 @@
         ]
       },
       "displayName": "cs-chatbot-frontend"
+    },
+    "cs-chatbot-admin-api.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cs-chatbot-admin-api.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cs-chatbot-admin-api": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "cs-chatbot-admin-api.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/9a53ffd896d50d7bba6311178d3db6ce565c7a5a11e3b16bf6f9933b13194044.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cs-chatbot-admin-api.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cs-chatbot-data",
+        "cs-chatbot-admin-api.assets"
+      ],
+      "metadata": {
+        "/cs-chatbot-admin-api/AdminLambdaExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminLambdaExecutionRoleE095CE54"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminLambdaExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminLambdaExecutionRoleDefaultPolicy3DF7C206"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "AdminTable76B0C542"
+            }
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminTable76B0C542"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminLogin/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminLoginB9309FA3"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminVerify/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminVerify4025289B"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPI1D12D1E7"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIDeployment381366CAc89158cc0fe27de16cfb82959da10330"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIDeploymentStageprodAAB01EAC"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIEndpoint4A7201F0"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIOPTIONS5B589BFA"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadmin0FB00256"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminOPTIONSF16E0E02"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthC26766CF"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthOPTIONSDB6035B7"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/login/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthlogin4CB0B50D"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/login/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthloginOPTIONS2A606BB6"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/login/POST/ApiPermission.cschatbotadminapiAdminAPI856156F2.POST..admin.auth.login": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthloginPOSTApiPermissioncschatbotadminapiAdminAPI856156F2POSTadminauthloginE0AEF58F"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/login/POST/ApiPermission.Test.cschatbotadminapiAdminAPI856156F2.POST..admin.auth.login": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthloginPOSTApiPermissionTestcschatbotadminapiAdminAPI856156F2POSTadminauthlogin59A5FC34"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/login/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthloginPOSTD5E366FF"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/verify/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthverify3592F407"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/verify/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthverifyOPTIONSDE20B1B9"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/verify/POST/ApiPermission.cschatbotadminapiAdminAPI856156F2.POST..admin.auth.verify": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthverifyPOSTApiPermissioncschatbotadminapiAdminAPI856156F2POSTadminauthverifyEE104DC3"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/verify/POST/ApiPermission.Test.cschatbotadminapiAdminAPI856156F2.POST..admin.auth.verify": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthverifyPOSTApiPermissionTestcschatbotadminapiAdminAPI856156F2POSTadminauthverify4B56EE93"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminAPI/Default/admin/auth/verify/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminAPIadminauthverifyPOST85A5D4B5"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminApiUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminApiUrl"
+          }
+        ],
+        "/cs-chatbot-admin-api/AdminTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminTableName"
+          }
+        ],
+        "/cs-chatbot-admin-api/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/cs-chatbot-admin-api/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cs-chatbot-admin-api/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cs-chatbot-admin-api"
+    },
+    "cs-chatbot-admin-frontend.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cs-chatbot-admin-frontend.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cs-chatbot-admin-frontend": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "cs-chatbot-admin-frontend.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/89e6bf8dbf6ce5f05effd9a22a1363d6277601b6dce3ed5cf5c89ede70572024.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cs-chatbot-admin-frontend.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cs-chatbot-admin-frontend.assets"
+      ],
+      "metadata": {
+        "/cs-chatbot-admin-frontend/AdminWebsiteBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminWebsiteBucketA8A89493"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/AdminWebsiteBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminWebsiteBucketPolicy3BD7966C"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/AdminWebsiteBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminWebsiteBucketAutoDeleteObjectsCustomResource076C1DC5"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/AdminWebsiteDistribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminWebsiteDistributionC70DDAEF"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/DeployAdminWebsite/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployAdminWebsiteAwsCliLayerE4AA6C80"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/DeployAdminWebsite/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployAdminWebsiteCustomResourceDA38C796"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/AdminCloudFrontUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminCloudFrontUrl"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/AdminDistributionId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminDistributionId"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/AdminS3BucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminS3BucketName"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cs-chatbot-admin-frontend/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cs-chatbot-admin-frontend"
     },
     "Tree": {
       "type": "cdk:tree",

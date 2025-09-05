@@ -11,6 +11,7 @@ show_usage() {
     echo "  data           DynamoDB 테이블 (~10초)"
     echo "  api            Lambda API (~15초)"
     echo "  frontend       CloudFront + S3 (~20초)"
+    echo "  admin          Admin API + Frontend (~30초)"
     echo "  all            전체 배포 (기본값)"
     echo ""
     echo "옵션:"
@@ -23,6 +24,7 @@ show_usage() {
     echo "예시:"
     echo "  ./deploy.sh frontend      # 프론트엔드 기본 배포"
     echo "  ./deploy.sh api --fast    # API 빠른 배포"
+    echo "  ./deploy.sh admin         # Admin 배포"
     echo "  ./deploy.sh               # 전체 기본 배포"
 }
 
@@ -76,6 +78,35 @@ check_deployment_status() {
     return 0
 }
 
+# Admin 빌드 함수
+build_admin() {
+    echo "🔨 Admin 빌드 중..."
+    
+    # Admin Backend 빌드
+    echo "  📦 Admin Backend 빌드..."
+    cd ../admin-backend
+    if [ "$FAST_MODE" != "true" ]; then
+        npm install
+    fi
+    npm run build:lambda
+    
+    # Admin Frontend 빌드
+    echo "  📦 Admin Frontend 빌드..."
+    cd ../admin-frontend
+    if [ "$FAST_MODE" != "true" ]; then
+        npm install
+    fi
+    npm run build
+    
+    # 빌드 결과 확인
+    if [ ! -d "out" ]; then
+        echo "❌ Admin Frontend 빌드 실패 - out 폴더가 생성되지 않았습니다"
+        exit 1
+    fi
+    
+    cd ../infra
+}
+
 # 엔드포인트 출력
 show_endpoints() {
     local stack_name=$1
@@ -98,13 +129,28 @@ show_endpoints() {
             local table_name=$(aws cloudformation describe-stacks --stack-name cs-chatbot-data --query 'Stacks[0].Outputs[?OutputKey==`TableName`].OutputValue' --output text 2>/dev/null || echo "없음")
             echo "💾 DynamoDB 테이블: $table_name"
             ;;
+        "admin")
+            local admin_cf_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-frontend --query 'Stacks[0].Outputs[?OutputKey==`AdminCloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local admin_api_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-api --query 'Stacks[0].Outputs[?OutputKey==`AdminApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local admin_table_name=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-api --query 'Stacks[0].Outputs[?OutputKey==`AdminTableName`].OutputValue' --output text 2>/dev/null || echo "없음")
+            echo "👑 Admin 프론트엔드: $admin_cf_url"
+            echo "🔗 Admin API 엔드포인트: $admin_api_url"
+            echo "💾 Admin DynamoDB 테이블: $admin_table_name"
+            echo "✨ Admin CloudFront 캐시 무효화: 완료"
+            ;;
         "all")
             local cf_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
             local api_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
             local table_name=$(aws cloudformation describe-stacks --stack-name cs-chatbot-data --query 'Stacks[0].Outputs[?OutputKey==`TableName`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local admin_cf_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-frontend --query 'Stacks[0].Outputs[?OutputKey==`AdminCloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local admin_api_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-api --query 'Stacks[0].Outputs[?OutputKey==`AdminApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local admin_table_name=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-api --query 'Stacks[0].Outputs[?OutputKey==`AdminTableName`].OutputValue' --output text 2>/dev/null || echo "없음")
             echo "📱 프론트엔드: $cf_url"
             echo "🔗 API 엔드포인트: $api_url"
             echo "💾 DynamoDB 테이블: $table_name"
+            echo "👑 Admin 프론트엔드: $admin_cf_url"
+            echo "🔗 Admin API 엔드포인트: $admin_api_url"
+            echo "💾 Admin DynamoDB 테이블: $admin_table_name"
             echo "✨ CloudFront 캐시 무효화: 완료"
             echo "🔄 새로고침 후 최신 콘텐츠 확인 가능"
             ;;
@@ -172,12 +218,38 @@ deploy_stack() {
             
             sleep 2
             ;;
+        "admin")
+            echo "👑 Admin 스택 배포 중..."
+            check_deployment_status "cs-chatbot-admin-api" || exit 1
+            check_deployment_status "cs-chatbot-admin-frontend" || exit 1
+            
+            # Admin 빌드
+            build_admin
+            
+            # Admin 스택 배포 (API 먼저, 그 다음 Frontend)
+            cdk deploy cs-chatbot-admin-api --require-approval never --concurrency 10
+            cdk deploy cs-chatbot-admin-frontend --require-approval never --concurrency 10
+            
+            # Admin CloudFront invalidation
+            echo "✨ Admin CloudFront 캐시 무효화 진행 중..."
+            ADMIN_DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-frontend --query 'Stacks[0].Outputs[?OutputKey==`AdminDistributionId`].OutputValue' --output text 2>/dev/null || echo "")
+            
+            if [ -n "$ADMIN_DISTRIBUTION_ID" ] && [ "$ADMIN_DISTRIBUTION_ID" != "None" ]; then
+                echo "  🔄 Admin Distribution ID: $ADMIN_DISTRIBUTION_ID"
+                aws cloudfront create-invalidation --distribution-id $ADMIN_DISTRIBUTION_ID --paths "/*" > /dev/null 2>&1
+                echo "  ✅ Admin 캐시 무효화 요청 완료"
+            fi
+            
+            sleep 2
+            ;;
         "all")
             echo "🚀 전체 스택 배포 중..."
             # 각 스택 상태 확인
             check_deployment_status "cs-chatbot-data" || exit 1
             check_deployment_status "cs-chatbot-api" || exit 1
             check_deployment_status "cs-chatbot-frontend" || exit 1
+            check_deployment_status "cs-chatbot-admin-api" || exit 1
+            check_deployment_status "cs-chatbot-admin-frontend" || exit 1
             
             # Next.js 빌드
             echo "🔨 Next.js 빌드 중..."
@@ -200,15 +272,20 @@ deploy_stack() {
             
             cd ../infra
             
+            # Admin 빌드 (빠른 모드 지원)
+            build_admin
+            
             # 의존성 순서대로 배포
             cdk deploy cs-chatbot-data --require-approval never --concurrency 10
             cdk deploy cs-chatbot-api --require-approval never --concurrency 10  
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
+            cdk deploy cs-chatbot-admin-api --require-approval never --concurrency 10
+            cdk deploy cs-chatbot-admin-frontend --require-approval never --concurrency 10
             
             # CloudFront invalidation 수동 실행
             echo "✨ CloudFront 캐시 무효화 진행 중..."
             
-            # CloudFront Distribution ID 가져오기
+            # Main CloudFront Distribution ID 가져오기
             DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`DistributionId`].OutputValue' --output text 2>/dev/null || echo "")
             
             if [ -n "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
@@ -217,6 +294,15 @@ deploy_stack() {
                 echo "  ✅ 캐시 무효화 요청 완료"
             else
                 echo "  ⚠️  Distribution ID를 찾을 수 없습니다"
+            fi
+            
+            # Admin CloudFront Distribution ID 가져오기
+            ADMIN_DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-admin-frontend --query 'Stacks[0].Outputs[?OutputKey==`AdminDistributionId`].OutputValue' --output text 2>/dev/null || echo "")
+            
+            if [ -n "$ADMIN_DISTRIBUTION_ID" ] && [ "$ADMIN_DISTRIBUTION_ID" != "None" ]; then
+                echo "  🔄 Admin Distribution ID: $ADMIN_DISTRIBUTION_ID"
+                aws cloudfront create-invalidation --distribution-id $ADMIN_DISTRIBUTION_ID --paths "/*" > /dev/null 2>&1
+                echo "  ✅ Admin 캐시 무효화 요청 완료"
             fi
             
             sleep 2
@@ -242,7 +328,7 @@ main() {
     local STACK_NAME="all"
     
     # 첫 번째 인자가 스택명인지 확인
-    if [[ $1 =~ ^(data|api|frontend|all)$ ]]; then
+    if [[ $1 =~ ^(data|api|frontend|admin|all)$ ]]; then
         STACK_NAME=$1
         shift
     fi
@@ -258,7 +344,7 @@ main() {
                 show_usage
                 exit 0
                 ;;
-            data|api|frontend|all)
+            data|api|frontend|admin|all)
                 STACK_NAME=$1
                 shift
                 ;;
