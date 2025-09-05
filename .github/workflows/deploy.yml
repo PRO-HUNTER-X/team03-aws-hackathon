@@ -47,8 +47,9 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
           role-session-name: GitHubActions-Deploy
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
