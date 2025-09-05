@@ -4,7 +4,6 @@
 
 ```
 docs/
-├── AGENT.md                    # 전체 프로젝트 컨텍스트 (모든 팀원 필수)
 ├── shared/                     # 공통 참조 문서
 │   ├── api-contracts.md        # API 명세서
 │   ├── database-schema.md      # DB 스키마
@@ -20,6 +19,8 @@ docs/
     └── tasks/sprint-1.md      # 인프라 태스크
 ```
 
+**참고**: 프로젝트 컨텍스트는 `.amazonq/rules/project-context.md`에서 확인하세요.
+
 ## 🚀 해커톤 워크플로우 (27시간 몰입)
 
 ### 1. 팀원 시작 가이드 (최초 1회)
@@ -30,7 +31,7 @@ cd team03-aws-hackathon
 
 # 2. Q Agent 컨텍스트 설정 (모든 팀원 동일)
 mkdir -p .q
-echo "docs/AGENT.md,docs/shared/,docs/backend/context.md,docs/frontend/context.md,docs/infra/context.md" > .q/context
+echo "docs/shared/,docs/backend/context.md,docs/frontend/context.md,docs/infra/context.md" > .q/context
 
 # 3. 본인 역할 확인 및 태스크 파악
 cat docs/README.md  # 전체 가이드 확인
@@ -122,7 +123,7 @@ git push origin docs/your-branch-name
 
 공통:
 ✅ 본인 역할의 context.md 체크리스트 업데이트
-❌ docs/AGENT.md (프로젝트 리더만 수정)
+❌ 프로젝트 컨텍스트 파일 (프로젝트 리더만 수정)
 ```
 
 ### 문서 업데이트 우선순위
