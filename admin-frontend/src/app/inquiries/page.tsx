@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 interface Inquiry {
@@ -26,7 +26,7 @@ interface Pagination {
   hasPrev: boolean
 }
 
-export default function InquiriesPage() {
+function InquiriesPageContent() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
   const [pagination, setPagination] = useState<Pagination | null>(null)
   const [loading, setLoading] = useState(true)
@@ -374,5 +374,17 @@ export default function InquiriesPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function InquiriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">페이지 로딩 중...</div>
+      </div>
+    }>
+      <InquiriesPageContent />
+    </Suspense>
   )
 }
