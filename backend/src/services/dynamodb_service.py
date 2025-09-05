@@ -91,3 +91,19 @@ class DynamoDBService:
         except Exception as e:
             logger.error(f"Error listing inquiries: {str(e)}")
             return []
+    
+    def get_inquiries_by_email(self, customer_email: str, limit: int = 50) -> list:
+        """고객 이메일별 문의 목록 조회"""
+        try:
+            filter_expression = Attr('customerEmail').eq(customer_email)
+            
+            response = self.inquiries_table.scan(
+                FilterExpression=filter_expression,
+                Limit=limit
+            )
+            
+            return response.get('Items', [])
+            
+        except Exception as e:
+            logger.error(f"Error getting inquiries by email: {str(e)}")
+            return []

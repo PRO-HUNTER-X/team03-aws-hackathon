@@ -140,6 +140,44 @@ class ApiStack(Stack):
         ai_response = api_v1.add_resource("ai-response")
         ai_response.add_method("POST", apigateway.LambdaIntegration(ai_response_generator))
         
+        # Customer auth Lambda
+        customer_auth = _lambda.Function(
+            self, "CustomerAuth",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="lambda_functions/customer_auth.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
+            timeout=Duration.seconds(15),
+            memory_size=256,
+            role=lambda_role,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name
+            }
+        )
+        
+        # Customer inquiries Lambda
+        customer_inquiries = _lambda.Function(
+            self, "CustomerInquiries",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="lambda_functions/customer_inquiries.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
+            timeout=Duration.seconds(15),
+            memory_size=256,
+            role=lambda_role,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name
+            }
+        )
+        
+        # Customer auth endpoints
+        auth = api_v1.add_resource("auth")
+        customer = auth.add_resource("customer")
+        customer_login = customer.add_resource("login")
+        customer_login.add_method("POST", apigateway.LambdaIntegration(customer_auth))
+        
+        # Customer inquiries endpoint
+        my_inquiries = api_v1.add_resource("my-inquiries")
+        my_inquiries.add_method("GET", apigateway.LambdaIntegration(customer_inquiries))
+        
         self.api_url = api.url
         self.api = api
         
