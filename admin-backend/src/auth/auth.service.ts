@@ -22,7 +22,7 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload);
 
     // QnA 설정 여부 확인
-    const hasQnAData = this.setupService.hasQnAData();
+    const hasQnAData = await this.setupService.hasQnAData();
     const nextRoute = hasQnAData ? '/dashboard' : '/qna-setup';
 
     return {
