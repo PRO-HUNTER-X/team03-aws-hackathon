@@ -18,6 +18,7 @@ jobs:
       backend: ${{ steps.changes.outputs.backend }}
       frontend: ${{ steps.changes.outputs.frontend }}
       infra: ${{ steps.changes.outputs.infra }}
+      workflows: ${{ steps.changes.outputs.workflows }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,10 +34,12 @@ jobs:
               - 'frontend/**'
             infra:
               - 'infra/**'
+            workflows:
+              - '.github/workflows/**'
 
   deploy:
     needs: detect-changes
-    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true')
+    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true' || needs.detect-changes.outputs.workflows == 'true')
     runs-on: ubuntu-latest
     
     steps:
