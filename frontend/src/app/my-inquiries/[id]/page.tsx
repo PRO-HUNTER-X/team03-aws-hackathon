@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, MessageSquare, Bot, User, Clock } from "lucide-react";
-import { mockApi, Inquiry, getStatusLabel, getStatusColor } from "@/lib/mock-data";
+import { mockApi, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/mock-data";
 
 export default function InquiryDetailPage() {
   const params = useParams();
-  const router = useRouter();
+
   const [inquiry, setInquiry] = useState<Inquiry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -26,7 +26,7 @@ export default function InquiryDetailPage() {
   const loadInquiry = async (id: string) => {
     try {
       setIsLoading(true);
-      const data = await mockApi.getInquiryById(id);
+      const data = await mockApi.getInquiry(id);
       if (data) {
         setInquiry(data);
       } else {
@@ -235,7 +235,7 @@ export default function InquiryDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {timelineItems.map((item, index) => {
+                  {timelineItems.map((item) => {
                     const Icon = item.icon;
                     return (
                       <div key={item.type} className="flex items-start gap-3">

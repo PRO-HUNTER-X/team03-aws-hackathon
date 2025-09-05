@@ -4,6 +4,7 @@ import sys
 import uuid
 from datetime import datetime
 import logging
+from decimal import Decimal
 
 # 기존 소스 코드 경로 추가
 sys.path.append('/opt/python')
@@ -11,6 +12,12 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+def decimal_default(obj):
+    """Decimal 타입을 JSON 직렬화 가능한 형태로 변환"""
+    if isinstance(obj, Decimal):
+        return int(obj) if obj % 1 == 0 else float(obj)
+    raise TypeError
 
 def success_response(data):
     """성공 응답 생성"""
@@ -25,7 +32,7 @@ def success_response(data):
         'body': json.dumps({
             'success': True,
             'data': data
-        }, ensure_ascii=False)
+        }, ensure_ascii=False, default=decimal_default)
     }
 
 def error_response(message, status_code=400):
@@ -41,7 +48,7 @@ def error_response(message, status_code=400):
         'body': json.dumps({
             'success': False,
             'error': message
-        }, ensure_ascii=False)
+        }, ensure_ascii=False, default=decimal_default)
     }
 
 def options_response():
@@ -88,6 +95,7 @@ def create_inquiry(data):
             'created_at': created_at,
             'companyId': data['companyId'],
             'customerEmail': data['customerEmail'],
+            'customerPassword': data.get('customerPassword'),  # 고객 인증용 비밀번호 저장
             'title': data['title'],
             'content': data['content'],
             'category': data.get('category', 'general'),

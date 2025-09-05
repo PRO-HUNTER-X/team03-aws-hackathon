@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Plus, Filter } from "lucide-react";
-import { mockApi, Inquiry, getStatusLabel, getStatusColor } from "@/lib/mock-data";
+import { mockApi, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/mock-data";
 
 export default function MyInquiriesPage() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
