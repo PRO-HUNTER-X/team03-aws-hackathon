@@ -30,7 +30,10 @@ export default function MyInquiriesPage() {
   const loadInquiries = async () => {
     try {
       setIsLoading(true);
-      const data = await getMyInquiries();
+      // URL 파라미터나 로컬스토리지에서 이메일 가져오기
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email') || localStorage.getItem('customerEmail') || 'qa@sample.com';
+      const data = await getMyInquiries(email);
       setInquiries(data);
     } catch (error) {
       console.error("문의 목록 로드 실패:", error);

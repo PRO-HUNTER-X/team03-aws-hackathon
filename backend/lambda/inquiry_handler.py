@@ -136,6 +136,34 @@ def get_inquiry(inquiry_id):
         logger.error(f"Error getting inquiry: {str(e)}")
         return None
 
+def get_inquiries_by_email(customer_email):
+    """이메일로 문의 목록 조회"""
+    try:
+        import boto3
+        from boto3.dynamodb.conditions import Attr
+        
+        dynamodb = boto3.resource('dynamodb')
+        table_name = os.environ.get('DYNAMODB_TABLE', 'cs-inquiries')
+        table = dynamodb.Table(table_name)
+        
+        response = table.scan(
+            FilterExpression=Attr('customerEmail').eq(customer_email)
+        )
+        
+        items = response.get('Items', [])
+        
+        # 비밀번호 필드 제거 (보안)
+        for item in items:
+            if 'customerPassword' in item:
+                del item['customerPassword']
+        
+        logger.info(f"Found {len(items)} inquiries for email: {customer_email}")
+        return items
+        
+    except Exception as e:
+        logger.error(f"Error getting inquiries by email: {str(e)}")
+        return []
+
 def escalate_inquiry(inquiry_id, reason=None):
     """문의 에스케이션"""
     try:
@@ -213,14 +241,27 @@ def lambda_handler(event, context):
         elif http_method == 'GET':
             # 문의 조회
             inquiry_id = path_parameters.get('id')
-            if not inquiry_id:
-                return error_response("Inquiry ID is required")
             
-            inquiry = get_inquiry(inquiry_id)
-            if not inquiry:
-                return error_response("Inquiry not found", 404)
-            
-            return success_response(inquiry)
+            if inquiry_id:
+                # 개별 문의 조회
+                inquiry = get_inquiry(inquiry_id)
+                if not inquiry:
+                    return error_response("Inquiry not found", 404)
+                return success_response(inquiry)
+            else:
+                # 문의 목록 조회
+                query_params = event.get('queryStringParameters') or {}
+                customer_email = query_params.get('email')
+                
+                if customer_email:
+                    # 이메일로 문의 목록 조회
+                    inquiries = get_inquiries_by_email(customer_email)
+                    return success_response({
+                        'inquiries': inquiries,
+                        'count': len(inquiries)
+                    })
+                else:
+                    return error_response("Email parameter is required for inquiry list")
         
         else:
             return error_response(f"Method {http_method} not allowed", 405)

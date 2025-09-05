@@ -178,6 +178,11 @@ class ApiStack(Stack):
         my_inquiries = api_v1.add_resource("my-inquiries")
         my_inquiries.add_method("GET", apigateway.LambdaIntegration(customer_inquiries))
         
+        # Customer inquiries endpoint (alternative path)
+        customer_root = api.root.add_resource("customer")
+        customer_inquiries_endpoint = customer_root.add_resource("inquiries")
+        customer_inquiries_endpoint.add_method("GET", apigateway.LambdaIntegration(customer_inquiries))
+        
         self.api_url = api.url
         self.api = api
         

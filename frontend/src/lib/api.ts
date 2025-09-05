@@ -189,8 +189,8 @@ export const getStatusColor = (status: string): string => {
   }
 };
 
-export async function getMyInquiries(): Promise<Inquiry[]> {
-  const url = `${API_BASE_URL}/api/inquiries`;
+export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
+  const url = `${API_BASE_URL}/api/inquiries${email ? `?email=${email}` : ''}`;
   
   logger.info('내 문의 목록 조회 API 호출 시작', { url }, 'api');
   
@@ -218,7 +218,7 @@ export async function getMyInquiries(): Promise<Inquiry[]> {
     }
 
     logger.info('내 문의 목록 조회 성공', { count: result.data?.length || 0 }, 'api');
-    return result.data || [];
+    return result.data?.inquiries || [];
   } catch (error) {
     logger.error('내 문의 목록 조회 네트워크 에러', error as Error, { url }, 'api');
     throw error;
