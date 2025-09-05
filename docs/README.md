@@ -208,6 +208,35 @@ git rebase main
 - **컨텍스트 공유**: 모든 팀원이 동일한 프로젝트 이해도 유지
 - **코드 리뷰**: Q Agent로 생성한 코드 품질 검토
 - **문제 해결**: 에러 발생 시 Q Agent와 함께 디버깅
+- **채팅 내역 저장**: 유용한 대화는 `/save` 명령어로 저장하여 팀 공유
+
+### 🎯 채팅 내역 저장 및 공유
+```bash
+# Q Agent와의 유용한 대화 저장
+/save chat-history/backend-lambda-setup
+/save chat-history/frontend-component-patterns  
+/save chat-history/infra-deployment-guide
+/save chat-history/debugging-session-20240905
+
+# 저장된 대화 불러오기
+/load chat-history/backend-lambda-setup
+
+# 팀원과 공유할 때
+# 1. 저장된 파일을 git에 커밋
+git add .amazonq/conversations/
+git commit -m "docs: 유용한 Q Agent 대화 내역 추가"
+git push origin main
+
+# 2. 팀원이 대화 불러오기
+git pull origin main
+/load chat-history/backend-lambda-setup
+```
+
+**저장 권장 시점**:
+- 복잡한 구현 문제 해결 완료 시
+- 새로운 패턴이나 베스트 프랙티스 발견 시  
+- 디버깅 과정에서 유용한 인사이트 얻었을 때
+- 팀원이 참고할 만한 코드 생성 과정
 
 ## 👥 팀 역할 & 책임
 
