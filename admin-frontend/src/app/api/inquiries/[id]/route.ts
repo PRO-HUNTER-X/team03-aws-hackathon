@@ -24,7 +24,10 @@ export async function GET(
     if (result.Item) {
       return NextResponse.json({
         success: true,
-        data: result.Item
+        data: {
+          ...result.Item,
+          replies: result.Item.replies || []
+        }
       })
     } else {
       // DynamoDB에 없으면 Mock 데이터에서 찾기
@@ -32,7 +35,10 @@ export async function GET(
       if (mockItem) {
         return NextResponse.json({
           success: true,
-          data: mockItem
+          data: {
+            ...mockItem,
+            replies: []
+          }
         })
       } else {
         return NextResponse.json(
@@ -49,7 +55,10 @@ export async function GET(
     if (mockItem) {
       return NextResponse.json({
         success: true,
-        data: mockItem
+        data: {
+          ...mockItem,
+          replies: []
+        }
       })
     }
     

@@ -203,13 +203,13 @@ export default function InquiryDetailPage() {
           <div className="bg-white rounded-lg shadow mb-6">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-medium text-gray-900">
-                답변 히스토리 ({inquiry.replies.length}개)
+                답변 히스토리 ({inquiry.replies?.length || 0}개)
               </h3>
             </div>
             <div className="px-6 py-4">
-              {inquiry.replies.length > 0 ? (
+              {inquiry.replies && inquiry.replies.length > 0 ? (
                 <div className="space-y-4">
-                  {inquiry.replies.map((reply) => (
+                  {inquiry.replies?.map((reply) => (
                     <div key={reply.id} className={`border rounded-lg p-4 ${
                       reply.author === 'admin' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
                     }`}>
