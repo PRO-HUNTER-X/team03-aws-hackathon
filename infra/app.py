@@ -4,6 +4,7 @@ import os
 from stacks.api_stack import ApiStack
 from stacks.data_stack import DataStack
 from stacks.frontend_stack import FrontendStack
+from stacks.github_stack import GitHubStack
 
 app = cdk.App()
 
@@ -34,5 +35,8 @@ frontend_stack = FrontendStack(app, f"{stack_prefix}-frontend",
                               api_url=api_stack.api_url,
                               developer=developer,
                               env=env)
+
+# GitHub Actions Role
+github_stack = GitHubStack(app, "cs-chatbot-github", env=env)
 
 app.synth()

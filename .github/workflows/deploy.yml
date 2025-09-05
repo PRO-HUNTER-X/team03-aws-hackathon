@@ -1,0 +1,145 @@
+name: 🚀 Auto Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+      infra: ${{ steps.changes.outputs.infra }}
+      workflows: ${{ steps.changes.outputs.workflows }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+            infra:
+              - 'infra/**'
+            workflows:
+              - '.github/workflows/**'
+
+  deploy:
+    needs: detect-changes
+    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true' || needs.detect-changes.outputs.workflows == 'true')
+    runs-on: ubuntu-latest
+    environment: main
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔑 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActions-Deploy
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 🔧 Install CDK
+        run: npm install -g aws-cdk
+
+      - name: 🏗️ Setup Infrastructure
+        working-directory: infra
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          cdk bootstrap
+
+      - name: 🗄️ Deploy Data Stack
+        if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
+        working-directory: infra
+        run: |
+          source venv/bin/activate
+          echo "📊 데이터 스택 배포 중..."
+          cdk deploy cs-chatbot-data --require-approval never --concurrency 10
+
+      - name: 🔗 Deploy API Stack
+        if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
+        working-directory: infra
+        run: |
+          source venv/bin/activate
+          echo "🔗 API 스택 배포 중..."
+          cdk deploy cs-chatbot-api --require-approval never --concurrency 10
+
+      - name: 🌐 Deploy Frontend Stack
+        if: needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true'
+        working-directory: infra
+        run: |
+          # Frontend 빌드
+          echo "🔨 프론트엔드 빌드 중..."
+          cd ../frontend
+          npm ci
+          npm run build
+          
+          # 빌드 결과 확인
+          if [ ! -d "out" ]; then
+            echo "❌ Next.js 빌드 실패 - out 폴더가 생성되지 않았습니다"
+            exit 1
+          fi
+          
+          cd ../infra
+          source venv/bin/activate
+          echo "🌐 프론트엔드 스택 배포 중..."
+          cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
+
+      - name: ✨ Invalidate CloudFront Cache
+        if: needs.detect-changes.outputs.frontend == 'true'
+        run: |
+          echo "✨ CloudFront 캐시 무효화 중..."
+          DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`DistributionId`].OutputValue' --output text 2>/dev/null || echo "")
+          
+          if [ -n "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
+            echo "🔄 Distribution ID: $DISTRIBUTION_ID"
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+            echo "✅ 캐시 무효화 완료"
+          else
+            echo "⚠️ Distribution ID를 찾을 수 없습니다"
+          fi
+
+      - name: 📋 Show Deployment Results
+        run: |
+          echo "🎉 배포 완료!"
+          echo "="*50
+          
+          # 프론트엔드 URL
+          CF_URL=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+          echo "📱 프론트엔드: $CF_URL"
+          
+          # API URL
+          API_URL=$(aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+          echo "🔗 API: $API_URL"
+          
+          echo "="*50
