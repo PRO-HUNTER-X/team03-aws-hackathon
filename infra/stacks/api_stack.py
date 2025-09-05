@@ -55,16 +55,16 @@ class ApiStack(Stack):
         inquiry_handler = _lambda.Function(
             self, "InquiryHandler",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="handlers/inquiry_handler.lambda_handler",
+            handler="lambda/inquiry_handler.lambda_handler",
             code=_lambda.Code.from_asset("../backend"),
             timeout=Duration.seconds(30),
             memory_size=512,
             role=lambda_role,
             environment={
                 "DYNAMODB_TABLE": dynamodb_table.table_name,
-                "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
-                "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
-                "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+                "BEDROCK_DEFAULT_MODEL": "anthropic.claude-opus-4-1-20250805-v1:0",
+                "BEDROCK_FALLBACK_MODEL": "anthropic.claude-opus-4-20250514-v1:0",
+                "BEDROCK_FAST_MODEL": "anthropic.claude-sonnet-4-20250514-v1:0",
                 "BEDROCK_MAX_TOKENS": "4096",
                 "BEDROCK_TEMPERATURE": "0.7",
                 "BEDROCK_SELECTION_STRATEGY": "adaptive"
@@ -74,16 +74,16 @@ class ApiStack(Stack):
         ai_response_generator = _lambda.Function(
             self, "AIResponseGenerator",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="handlers/ai_response_generator.lambda_handler",
+            handler="lambda/ai_response_generator.lambda_handler",
             code=_lambda.Code.from_asset("../backend"),
             timeout=Duration.seconds(30),
             memory_size=512,
             role=lambda_role,
             environment={
                 "DYNAMODB_TABLE": dynamodb_table.table_name,
-                "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
-                "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
-                "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+                "BEDROCK_DEFAULT_MODEL": "anthropic.claude-opus-4-1-20250805-v1:0",
+                "BEDROCK_FALLBACK_MODEL": "anthropic.claude-opus-4-20250514-v1:0",
+                "BEDROCK_FAST_MODEL": "anthropic.claude-sonnet-4-20250514-v1:0",
                 "BEDROCK_MAX_TOKENS": "4096",
                 "BEDROCK_TEMPERATURE": "0.7",
                 "BEDROCK_SELECTION_STRATEGY": "adaptive"
