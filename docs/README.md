@@ -213,13 +213,13 @@ git rebase main
 ### 🎯 채팅 내역 저장 및 공유
 ```bash
 # Q Agent와의 유용한 대화 저장
-/save chat-history/backend-lambda-setup
-/save chat-history/frontend-component-patterns  
-/save chat-history/infra-deployment-guide
-/save chat-history/debugging-session-20240905
+/save backend-lambda-setup
+/save frontend-component-patterns  
+/save infra-deployment-guide
+/save debugging-session-20240905
 
 # 저장된 대화 불러오기
-/load chat-history/backend-lambda-setup
+/load backend-lambda-setup
 
 # 팀원과 공유할 때
 # 1. 저장된 파일을 git에 커밋
@@ -229,7 +229,7 @@ git push origin main
 
 # 2. 팀원이 대화 불러오기
 git pull origin main
-/load chat-history/backend-lambda-setup
+/load .amazonq/conversations/backend-lambda-setup
 ```
 
 **저장 권장 시점**:
@@ -237,6 +237,62 @@ git pull origin main
 - 새로운 패턴이나 베스트 프랙티스 발견 시  
 - 디버깅 과정에서 유용한 인사이트 얻었을 때
 - 팀원이 참고할 만한 코드 생성 과정
+
+### 🔧 배포 트러블슈팅 가이드
+
+#### 자주 발생하는 문제들
+
+**1. DynamoDB BillingMode 에러**
+```
+AttributeError: type object 'BillingMode' has no attribute 'ON_DEMAND'
+```
+해결: `ON_DEMAND` → `PAY_PER_REQUEST`로 변경
+
+**2. S3 Public Access 에러**
+```
+Cannot use 'publicReadAccess' property without 'blockPublicAccess'
+```
+해결: `block_public_access=s3.BlockPublicAccess.BLOCK_ACLS` 추가
+
+**3. CDK 모듈 찾기 에러**
+```
+ModuleNotFoundError: No module named 'aws_cdk'
+```
+해결: `cdk.json`에서 `"app": "venv/bin/python app.py"` 설정
+
+**4. API 인증 에러**
+```
+{"message": "Missing Authentication Token"}
+```
+해결: 헬스체크 엔드포인트 추가 (GET /)
+
+**5. 프론트엔드 404 에러**
+```
+Code: NoSuchKey, Key: index.html
+```
+해결: `frontend/public/index.html` 생성 후 재배포
+
+#### 배포 상태 확인
+```bash
+# 스택 상태 확인
+cdk list
+
+# 배포 로그 확인
+aws logs describe-log-groups --log-group-name-prefix "/aws/lambda/cs-chatbot"
+
+# API 헬스체크
+curl https://your-api-url.execute-api.us-east-1.amazonaws.com/prod/
+
+# 프론트엔드 접속
+open https://your-cloudfront-url.cloudfront.net
+```
+
+#### 완전 재배포
+```bash
+cd infra
+cdk destroy --all  # 모든 리소스 삭제
+./deploy.sh        # 처음부터 재배포
+```
 
 ## 👥 팀 역할 & 책임
 

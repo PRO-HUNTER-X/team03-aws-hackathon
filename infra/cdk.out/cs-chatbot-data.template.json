@@ -1,0 +1,125 @@
+{
+ "Resources": {
+  "CSInquiryTableFB9F4D47": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "inquiry_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "created_at",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "status",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "status-index",
+      "KeySchema": [
+       {
+        "AttributeName": "status",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "created_at",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "inquiry_id",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "created_at",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "cs-inquiries"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-data/CSInquiryTable/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGSQqAIBQA0LO4119ZnaALRLWP7xDZoOBAhHT3oFbvceBVAyXBKzCpdnYYAXmMKHeKV5jVbfF0SkCeUByadov98tBBB5e81A/t77g6W9RQ1dCSLRjDfLLRnBqG3xd8uK14ZQAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-data/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttCSInquiryTableFB9F4D47Arn1628D4EA": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CSInquiryTableFB9F4D47",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cs-chatbot-data:ExportsOutputFnGetAttCSInquiryTableFB9F4D47Arn1628D4EA"
+   }
+  },
+  "ExportsOutputRefCSInquiryTableFB9F4D4704589F40": {
+   "Value": {
+    "Ref": "CSInquiryTableFB9F4D47"
+   },
+   "Export": {
+    "Name": "cs-chatbot-data:ExportsOutputRefCSInquiryTableFB9F4D4704589F40"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
