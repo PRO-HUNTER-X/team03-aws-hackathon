@@ -1,4 +1,4 @@
-# CS 챗봇 자동화 플랫폼 - 문서 가이드
+# CS 챗봇 자동화 플랫폼 - 해커톤 가이드
 
 ## 📁 문서 구조
 
@@ -20,78 +20,7 @@ docs/
     └── tasks/sprint-1.md      # 인프라 태스크
 ```
 
-## 🤖 Q Agent 컨텍스트 설정
-
-각 역할별로 프로젝트 루트에서 실행:
-
-```bash
-# 백엔드 개발자
-echo "docs/AGENT.md,docs/backend/context.md,docs/shared/" > .q/context
-
-# 프론트엔드 개발자  
-echo "docs/AGENT.md,docs/frontend/context.md,docs/shared/" > .q/context
-
-# 인프라 개발자
-echo "docs/AGENT.md,docs/infra/context.md,docs/shared/" > .q/context
-
-# 풀스택 개발자 (필요시)
-echo "docs/AGENT.md,docs/backend/context.md,docs/frontend/context.md,docs/shared/" > .q/context
-```
-
-## 🔄 작업 플로우
-
-### 매일 작업 시작 전
-```bash
-# 1. docs 최신 변경사항 동기화
-git checkout docs
-git pull origin docs
-
-# 2. 피쳐 브랜치로 이동 후 docs 변경사항 반영
-git checkout feature/your-branch-name
-git merge docs
-
-# 3. Q Agent 시작 (컨텍스트 자동 로드됨)
-q chat
-```
-
-### 작업 중 Q Agent 활용
-```bash
-# 새로운 기능 개발 시
-q chat "현재 태스크 목록에서 다음 구현할 기능 추천해줘"
-
-# 코드 리뷰 요청 시  
-q chat "이 코드가 현재 API 명세와 일치하는지 검토해줘" --attach src/api/inquiry.js
-
-# 문제 해결 시
-q chat "현재 DB 스키마에서 이 에러가 왜 발생하는지 분석해줘"
-```
-
-### docs 문서 업데이트 시
-```bash
-git checkout docs
-# 문서 수정
-git add docs/
-git commit -m "docs: 업데이트 내용 설명"
-git push origin docs
-```
-
-### 피쳐 개발 시
-```bash
-git checkout -b feature/your-feature-name
-# 개발 작업
-git add .
-git commit -m "feat: 기능 설명"
-git push origin feature/your-feature-name
-```
-
-## 📋 문서 업데이트 규칙
-
-1. **API 변경**: `shared/api-contracts.md` 즉시 업데이트
-2. **DB 스키마 변경**: `shared/database-schema.md` 업데이트
-3. **진행 상황**: 각 `context.md`의 체크리스트 업데이트
-4. **새 태스크**: `tasks/` 폴더에 스프린트별 파일 추가
-
-## 🚀 작업 시작 가이드
+## 🚀 해커톤 워크플로우 (27시간 몰입)
 
 ### 1. 초기 설정 (최초 1회)
 ```bash
@@ -99,74 +28,89 @@ git push origin feature/your-feature-name
 git clone https://github.com/PRO-HUNTER-X/team03-aws-hackathon.git
 cd team03-aws-hackathon
 
-# 2. docs 브랜치에서 문서 확인
-git checkout docs
-git pull origin docs
-
-# 3. 역할별 Q Agent 컨텍스트 설정
+# 2. Q Agent 컨텍스트 설정 (모든 팀원 동일)
 mkdir -p .q
-# 아래 중 본인 역할에 맞는 명령어 실행
-echo "docs/AGENT.md,docs/backend/context.md,docs/shared/" > .q/context     # 백엔드
-echo "docs/AGENT.md,docs/frontend/context.md,docs/shared/" > .q/context    # 프론트엔드  
-echo "docs/AGENT.md,docs/infra/context.md,docs/shared/" > .q/context       # 인프라
+echo "docs/AGENT.md,docs/shared/,docs/backend/context.md,docs/frontend/context.md,docs/infra/context.md" > .q/context
 
-# 4. 피쳐 브랜치 생성
-git checkout -b feature/본인이름-기능명
-```
-
-### 2. AWS Q Agent와 함께 작업하기
-
-#### Q Agent 컨텍스트 확인
-```bash
-# 현재 설정된 컨텍스트 확인
-cat .q/context
-
-# Q Agent 시작 (프로젝트 루트에서)
+# 3. Q Agent 시작
 q chat
 ```
 
-#### 효과적인 Q Agent 질문 방법
+### 2. 실시간 협업 워크플로우
 
-**✅ 좋은 질문 예시:**
-```
-# 컨텍스트 기반 구체적 질문
-"현재 API 명세서에 맞춰 문의 접수 엔드포인트를 Express로 구현해줘"
-
-# 도메인 특화 질문  
-"현재 데이터베이스 스키마에 맞는 Prisma 모델을 생성해줘"
-
-# 크로스 도메인 질문
-"백엔드 API 응답 형식에 맞춰 React 컴포넌트에서 데이터를 표시해줘"
-
-# 태스크 기반 질문
-"Sprint 1 백엔드 태스크 중 AWS Bedrock 연동 부분을 구현해줘"
-```
-
-**❌ 피해야 할 질문:**
-```
-"웹사이트 만들어줘" (너무 추상적)
-"React 사용법 알려줘" (컨텍스트 무시)
-```
-
-#### 문서 참조가 필요한 경우
+#### 작업 시작 전 (매번)
 ```bash
-# 특정 문서 내용을 Q Agent에게 직접 제공
-q chat --attach docs/shared/api-contracts.md
+# 최신 변경사항 동기화
+git pull origin main
 
-# 또는 질문에서 명시적으로 참조
-"docs/backend/context.md에 있는 보안 요구사항을 반영해서 JWT 미들웨어 구현해줘"
+# Q Agent 시작 (컨텍스트 자동 로드)
+q chat
 ```
 
-## 🎯 Q Agent 활용 팁
+#### 작업 완료 후 (즉시 푸시)
+```bash
+# 변경사항 커밋 & 푸시
+git add .
+git commit -m "feat: 구현한 기능 설명"
+git push origin main
+```
 
-- **컨텍스트 우선**: 항상 현재 프로젝트 문서 기반으로 질문
-- **구체적 요청**: "구현해줘" 보다는 "현재 스키마에 맞춰 구현해줘"
-- **단계별 접근**: 큰 기능을 작은 단위로 나눠서 질문
-- **코드 리뷰**: 생성된 코드가 프로젝트 컨벤션에 맞는지 확인
+#### 충돌 발생 시
+```bash
+# 충돌 해결 후 즉시 푸시
+git pull origin main
+# 충돌 해결
+git add .
+git commit -m "fix: merge conflict resolved"
+git push origin main
+```
 
-## 👥 팀 역할
+## 🤖 Q Agent 협업 최적화
+
+### 효과적인 질문 패턴
+```bash
+# 컨텍스트 기반 구체적 질문
+q chat "현재 API 명세서에 맞춰 문의 접수 엔드포인트를 Express로 구현해줘"
+
+# 팀원 작업과 연동
+q chat "현재 프론트엔드 컴포넌트 구조에 맞춰 백엔드 응답 형식 조정해줘"
+
+# 실시간 스펙 확인
+q chat "현재 데이터베이스 스키마와 API 명세가 일치하는지 검토해줘"
+```
+
+### 실시간 문서 업데이트 규칙
+1. **API 변경**: `shared/api-contracts.md` 즉시 업데이트 후 팀 공지
+2. **DB 스키마 변경**: `shared/database-schema.md` 업데이트 후 팀 공지  
+3. **진행 상황**: 각 `context.md`의 체크리스트 실시간 업데이트
+4. **새 기능**: 구현 완료 시 관련 문서 즉시 업데이트
+
+## ⚡ 해커톤 협업 팁
+
+### 커뮤니케이션
+- **Slack/Discord**: API 변경, 중요 결정사항 즉시 공유
+- **화면 공유**: 복잡한 로직은 페어 프로그래밍으로 해결
+- **30분 체크인**: 전체 팀 진행상황 공유
+
+### 충돌 최소화
+- **작업 영역 분리**: 가능한 다른 파일에서 작업
+- **자주 푸시**: 2-3시간마다 중간 커밋
+- **즉시 동기화**: 다른 팀원 푸시 시 바로 pull
+
+### Q Agent 활용 극대화
+- **컨텍스트 공유**: 모든 팀원이 동일한 프로젝트 이해도 유지
+- **코드 리뷰**: Q Agent로 생성한 코드 품질 검토
+- **문제 해결**: 에러 발생 시 Q Agent와 함께 디버깅
+
+## 👥 팀 역할 & 책임
 
 - **Backend**: Node.js/Express + AWS Lambda + Bedrock
 - **Frontend**: React/Next.js + Tailwind + shadcn/ui  
 - **Infrastructure**: AWS CDK + Lambda + RDS + API Gateway
 - **Full-stack**: 필요시 여러 영역 지원
+
+## 🎯 27시간 목표
+- **6시간**: 기본 인프라 + API 구조
+- **12시간**: 핵심 기능 구현 (AI 응답, 문의 관리)
+- **6시간**: 프론트엔드 UI/UX 완성
+- **3시간**: 통합 테스트 + 배포 + 발표 준비
