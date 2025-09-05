@@ -87,43 +87,43 @@
 ---
 
 ## 👨💻 개발자 C - 백엔드 중심 (Backend Heavy + Frontend)
-**예상 소요: 12-14시간**
+**예상 소요: 10-12시간** (Python 순수 Lambda로 2시간 단축)
 
-### Phase 1 (0-6시간): 핵심 백엔드 API
-#### Task C1: Node.js + Express 프로젝트 설정 (2시간)
-- [ ] Express 서버 기본 구조
-- [ ] 환경변수 설정 (.env.example 포함)
-- [ ] 기본 미들웨어 (CORS, 로깅, 에러 핸들링)
-- [ ] ESLint, Prettier 설정
+### Phase 1 (0-5시간): 핵심 백엔드 Lambda 함수
+#### Task C1: Python Lambda 프로젝트 설정 (1시간)
+- [ ] 프로젝트 구조 생성 (handlers/, services/, utils/)
+- [ ] requirements.txt 작성 (boto3, uuid, datetime)
+- [ ] 공통 유틸리티 함수 (response.py, validation.py)
+- [ ] 환경변수 설정
 
-#### Task C2: 문의 관리 API 구현 (4시간)
-```javascript
-// 구현할 엔드포인트
-POST /api/inquiries           // 문의 접수
-GET /api/inquiries/:id        // 문의 조회
-GET /api/inquiries            // 문의 목록 (관리자용)
-PUT /api/inquiries/:id/status // 상태 업데이트
-POST /api/inquiries/:id/escalate // 에스컬레이션
+#### Task C2: 핵심 Lambda 함수 구현 (4시간)
+```python
+# 구현할 Lambda 함수들
+handlers/create_inquiry.py     # POST /api/inquiries
+handlers/get_inquiry.py        # GET /api/inquiries/{id}
+handlers/list_inquiries.py     # GET /api/inquiries
+handlers/update_status.py      # PUT /api/inquiries/{id}/status
+handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
 ```
 
-### Phase 2 (6-14시간): AI 연동 & 고급 기능
-#### Task C3: AWS Bedrock Claude 연동 (6시간)
-- [ ] AWS SDK 설정 및 자격증명
+### Phase 2 (5-12시간): AI 연동 & 고급 기능
+#### Task C3: AWS Bedrock Claude 연동 (5시간)
+- [ ] services/ai_service.py - Bedrock 클라이언트 설정
 - [ ] Claude 3.5 Sonnet 모델 연동
 - [ ] 프롬프트 엔지니어링 (회사 컨텍스트 + FAQ)
 - [ ] 토큰 사용량 추적 및 최적화
 - [ ] AI 응답 품질 점수 계산
 
-#### Task C4: 이메일 알림 & 회사 설정 (2시간)
-- [ ] AWS SES 이메일 발송 설정
+#### Task C4: 이메일 알림 & DynamoDB 연동 (2시간)
+- [ ] services/email_service.py - AWS SES 연동
+- [ ] services/dynamodb_service.py - DB 연동
 - [ ] 이메일 템플릿 (에스컬레이션, 답변 완료)
-- [ ] 회사 정보 관리 API
-- [ ] FAQ 데이터 CRUD
+- [ ] 회사 정보 관리 로직
 
 **완료 기준:**
-- 모든 API 엔드포인트 Postman 테스트 통과
+- 모든 Lambda 함수 개별 테스트 통과
 - AI 응답 생성 3초 이내 완료
-- 에러 핸들링 및 로깅 구현
+- DynamoDB 연동 및 에러 핸들링 구현
 
 ---
 
@@ -168,10 +168,10 @@ POST /api/inquiries/:id/escalate // 에스컬레이션
 ### 0-8시간 (기반 구축)
 | 시간 | 개발자 A | 개발자 B | 개발자 C | 개발자 D |
 |---|---|---|---|---|
-| 0-2h | Next.js 설정 | 로그인 페이지 | Express 설정 | CDK 초기화 |
-| 2-4h | 문의 폼 UI | 대시보드 레이아웃 | 기본 API 구조 | DynamoDB 설정 |
-| 4-6h | 문의 폼 완성 | 문의 관리 화면 | CRUD API 구현 | Lambda 배포 |
-| 6-8h | AI 응답 UI 시작 | API 연동 시작 | AI 연동 시작 | CI/CD 설정 |
+| 0-2h | Next.js 설정 | 로그인 페이지 | Python Lambda 설정 | CDK 초기화 |
+| 2-4h | 문의 폼 UI | 대시보드 레이아웃 | 핵심 Lambda 함수 | DynamoDB 설정 |
+| 4-6h | 문의 폼 완성 | 문의 관리 화면 | Lambda 함수 완성 | Lambda 배포 |
+| 6-8h | AI 응답 UI 시작 | API 연동 시작 | AI 서비스 연동 | CI/CD 설정 |
 
 ### 8-16시간 (핵심 기능)
 | 시간 | 개발자 A | 개발자 B | 개발자 C | 개발자 D |
@@ -211,7 +211,7 @@ POST /api/inquiries/:id/escalate // 에스컬레이션
 
 ### 기술 스택 확정
 - **Frontend**: Next.js 14 (Static) + Tailwind + shadcn/ui
-- **Backend**: Node.js/Express + AWS Lambda
+- **Backend**: Python 순수 Lambda 함수 + boto3
 - **Database**: DynamoDB (서버리스)
 - **AI**: AWS Bedrock Claude 3.5 Sonnet
 - **Infrastructure**: AWS CDK + API Gateway + CloudFront

@@ -1,52 +1,53 @@
-# 백엔드 Sprint 1 Tasks
+# 백엔드 Sprint 1 Tasks (Python Lambda)
 
-## 우선순위 1: 핵심 API 구현
+## 우선순위 1: 핵심 Lambda 함수 구현
 
-### Task 1.1: 프로젝트 초기 설정
-- [ ] Node.js + Express 프로젝트 생성
-- [ ] Prisma ORM 설정 및 스키마 정의
-- [ ] 환경변수 설정 (.env.example 포함)
-- [ ] ESLint, Prettier 설정
+### Task 1.1: Python Lambda 프로젝트 설정
+- [ ] 프로젝트 구조 생성 (handlers/, services/, utils/)
+- [ ] requirements.txt 작성 (boto3, uuid, datetime)
+- [ ] 공통 유틸리티 함수 (response.py, validation.py)
+- [ ] 환경변수 설정
 
-### Task 1.2: 데이터베이스 연결
-- [ ] PostgreSQL 연결 설정
-- [ ] Prisma 마이그레이션 실행
-- [ ] 시드 데이터 생성 (샘플 회사, FAQ)
+### Task 1.2: DynamoDB 서비스 연동
+- [ ] services/dynamodb_service.py 구현
+- [ ] 테이블 스키마 정의 (Companies, Inquiries, AIResponses)
+- [ ] CRUD 연산 함수 작성
 
-### Task 1.3: 문의 관리 API
-```javascript
-// 구현할 엔드포인트
-POST /api/inquiries - 문의 접수
-GET /api/inquiries/:id - 문의 조회  
-PUT /api/inquiries/:id/status - 상태 업데이트
-POST /api/inquiries/:id/escalate - 에스컬레이션
+### Task 1.3: 핵심 Lambda 함수 구현
+```python
+# 구현할 Lambda 함수들
+handlers/create_inquiry.py     # POST /api/inquiries
+handlers/get_inquiry.py        # GET /api/inquiries/{id}
+handlers/list_inquiries.py     # GET /api/inquiries
+handlers/update_status.py      # PUT /api/inquiries/{id}/status
+handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
 ```
 
 ### Task 1.4: AWS Bedrock 연동
-- [ ] AWS SDK 설정
+- [ ] services/ai_service.py 구현
 - [ ] Claude 3.5 Sonnet 모델 연동
 - [ ] 프롬프트 템플릿 작성
 - [ ] 토큰 사용량 추적
 
-## 우선순위 2: 인증 및 보안
+## 우선순위 2: 이메일 & 보안
 
-### Task 2.1: JWT 인증 구현
-- [ ] JWT 토큰 생성/검증 미들웨어
-- [ ] API Key 기반 회사 인증
-- [ ] Rate limiting 설정
+### Task 2.1: 이메일 서비스 구현
+- [ ] services/email_service.py - AWS SES 연동
+- [ ] 이메일 템플릿 (에스컬레이션, 답변 완료)
+- [ ] 알림 로직 구현
 
-### Task 2.2: 입력 검증
-- [ ] Joi/Zod 스키마 검증
-- [ ] XSS, SQL Injection 방지
-- [ ] 파일 업로드 보안 (향후 확장용)
+### Task 2.2: 입력 검증 및 보안
+- [ ] utils/validation.py - 입력 데이터 검증
+- [ ] 에러 핸들링 및 로깅
+- [ ] 보안 헤더 설정
 
 ## 예상 소요 시간
-- Task 1.1-1.2: 4시간
-- Task 1.3: 6시간  
-- Task 1.4: 8시간
-- Task 2.1-2.2: 4시간
+- Task 1.1-1.2: 2시간
+- Task 1.3: 4시간  
+- Task 1.4: 5시간
+- Task 2.1-2.2: 2시간
 
 ## 완료 기준
-- 모든 API 엔드포인트 Postman 테스트 통과
+- 모든 Lambda 함수 개별 테스트 통과
 - AI 응답 생성 3초 이내 완료
-- 에러 핸들링 및 로깅 구현
+- DynamoDB 연동 및 에러 핸들링 구현
