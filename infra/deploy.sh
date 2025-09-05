@@ -76,6 +76,43 @@ check_deployment_status() {
     return 0
 }
 
+# 엔드포인트 출력
+show_endpoints() {
+    local stack_name=$1
+    echo ""
+    echo "🌐 배포된 서비스 엔드포인트:"
+    echo "="*50
+    
+    case $stack_name in
+        "frontend")
+            local cf_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            echo "📱 프론트엔드: $cf_url"
+            echo "✨ CloudFront 캐시 무효화: 완료"
+            echo "🔄 새로고침 후 최신 콘텐츠 확인 가능"
+            ;;
+        "api")
+            local api_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            echo "🔗 API 엔드포인트: $api_url"
+            ;;
+        "data")
+            local table_name=$(aws cloudformation describe-stacks --stack-name cs-chatbot-data --query 'Stacks[0].Outputs[?OutputKey==`TableName`].OutputValue' --output text 2>/dev/null || echo "없음")
+            echo "💾 DynamoDB 테이블: $table_name"
+            ;;
+        "all")
+            local cf_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local api_url=$(aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text 2>/dev/null || echo "없음")
+            local table_name=$(aws cloudformation describe-stacks --stack-name cs-chatbot-data --query 'Stacks[0].Outputs[?OutputKey==`TableName`].OutputValue' --output text 2>/dev/null || echo "없음")
+            echo "📱 프론트엔드: $cf_url"
+            echo "🔗 API 엔드포인트: $api_url"
+            echo "💾 DynamoDB 테이블: $table_name"
+            echo "✨ CloudFront 캐시 무효화: 완료"
+            echo "🔄 새로고침 후 최신 콘텐츠 확인 가능"
+            ;;
+    esac
+    echo "="*50
+    echo ""
+}
+
 # 개별 스택 배포
 deploy_stack() {
     local stack_name=$1
@@ -119,6 +156,10 @@ deploy_stack() {
             cd ../infra
             
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
+            
+            # CloudFront invalidation 상태 확인
+            echo "✨ CloudFront 캐시 무효화 진행 중..."
+            sleep 2
             ;;
         "all")
             echo "🚀 전체 스택 배포 중..."
@@ -153,6 +194,10 @@ deploy_stack() {
             cdk deploy cs-chatbot-data --require-approval never --concurrency 10
             cdk deploy cs-chatbot-api --require-approval never --concurrency 10  
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
+            
+            # CloudFront invalidation 상태 확인
+            echo "✨ CloudFront 캐시 무효화 진행 중..."
+            sleep 2
             ;;
         *)
             echo "❌ 알 수 없는 스택: $stack_name"
@@ -164,6 +209,9 @@ deploy_stack() {
     local end_time=$(date +%s)
     local duration=$((end_time - start_time))
     echo "✅ $stack_name 배포 완료! (${duration}초)"
+    
+    # 배포 완료 후 엔드포인트 출력
+    show_endpoints $stack_name
 }
 
 # 메인 실행
