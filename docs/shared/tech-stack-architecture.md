@@ -15,10 +15,11 @@
 ### Backend (서버리스)
 ```
 기존: Node.js + Express + Prisma + PostgreSQL
-개선: AWS Lambda + API Gateway + DynamoDB + Step Functions
+개선: Python + AWS Lambda + API Gateway + DynamoDB + Step Functions
 ```
 
 **변경 이유:**
+- **Python**: AI/ML 라이브러리 생태계 우수, AWS SDK 완성도 높음
 - **Lambda**: 서버 관리 불필요, 자동 스케일링
 - **DynamoDB**: 서버리스 NoSQL, 밀리초 응답시간
 - **Step Functions**: 복잡한 워크플로우 관리 (문의 → AI → 에스컬레이션)
@@ -196,50 +197,57 @@ AWS CloudTrail: API 호출 감사
 
 ---
 
-## 🚀 Lambda 함수 구조
+## 🚀 Lambda 함수 구조 (Python)
 
 ### 1. inquiry-handler
-```javascript
-// POST /api/inquiries
-exports.handler = async (event) => {
-  // 1. 입력 검증
-  // 2. DynamoDB에 문의 저장
-  // 3. Step Functions 워크플로우 시작
-  // 4. 응답 반환
-}
+```python
+# POST /api/inquiries
+import json
+import boto3
+from datetime import datetime
+
+def lambda_handler(event, context):
+    # 1. 입력 검증
+    # 2. DynamoDB에 문의 저장
+    # 3. Step Functions 워크플로우 시작
+    # 4. 응답 반환
+    pass
 ```
 
 ### 2. ai-response-generator
-```javascript
-// Step Functions에서 호출
-exports.handler = async (event) => {
-  // 1. 회사 컨텍스트 조회
-  // 2. Comprehend로 감정/우선순위 분석
-  // 3. Bedrock으로 AI 응답 생성
-  // 4. 품질 점수 계산
-  // 5. DynamoDB 업데이트
-}
+```python
+# Step Functions에서 호출
+import boto3
+from boto3.dynamodb.conditions import Key
+
+def lambda_handler(event, context):
+    # 1. 회사 컨텍스트 조회
+    # 2. Comprehend로 감정/우선순위 분석
+    # 3. Bedrock으로 AI 응답 생성
+    # 4. 품질 점수 계산
+    # 5. DynamoDB 업데이트
+    pass
 ```
 
 ### 3. status-tracker
-```javascript
-// GET /api/inquiries/{id}/status
-exports.handler = async (event) => {
-  // 1. 문의 ID로 상태 조회
-  // 2. 예상 응답 시간 계산
-  // 3. 진행 상황 반환
-}
+```python
+# GET /api/inquiries/{id}/status
+def lambda_handler(event, context):
+    # 1. 문의 ID로 상태 조회
+    # 2. 예상 응답 시간 계산
+    # 3. 진행 상황 반환
+    pass
 ```
 
 ### 4. escalation-handler
-```javascript
-// POST /api/inquiries/{id}/escalate
-exports.handler = async (event) => {
-  // 1. 에스컬레이션 요청 처리
-  // 2. SES로 관리자 이메일 발송
-  // 3. SNS로 푸시 알림
-  // 4. 상태 업데이트
-}
+```python
+# POST /api/inquiries/{id}/escalate
+def lambda_handler(event, context):
+    # 1. 에스컬레이션 요청 처리
+    # 2. SES로 관리자 이메일 발송
+    # 3. SNS로 푸시 알림
+    # 4. 상태 업데이트
+    pass
 ```
 
 ---
