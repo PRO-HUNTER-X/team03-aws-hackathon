@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:3001'
+import { API_CONFIG } from './config'
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 export interface LoginRequest {
   username: string
