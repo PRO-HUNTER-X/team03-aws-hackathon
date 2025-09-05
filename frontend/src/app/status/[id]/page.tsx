@@ -1,15 +1,6 @@
-import { useState, useEffect } from "react";
-
-// 정적 생성을 위한 파라미터 생성
-export function generateStaticParams() {
-  return [
-    { id: 'demo' },
-    { id: 'sample' },
-    { id: 'test' }
-  ];
-}
-
 "use client";
+
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

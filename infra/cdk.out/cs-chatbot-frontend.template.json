@@ -283,7 +283,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "97cb1d0b3361bd872855e800faa1868b94a0acd5198060124d90d133f80dee1b.zip"
+     "73e562b6df66236911837acd23e970e25d24b2946ae2a962a27210af53b43b12.zip"
     ],
     "DestinationBucketName": {
      "Ref": "WebsiteBucket75C24D94"
@@ -501,6 +501,12 @@
       }
      ]
     ]
+   }
+  },
+  "DistributionId": {
+   "Description": "CloudFront Distribution ID",
+   "Value": {
+    "Ref": "WebsiteDistribution75DCDA0B"
    }
   },
   "S3BucketName": {

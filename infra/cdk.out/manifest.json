@@ -363,7 +363,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/82784e07ba7ede18b02af02489d25c0872abd6a6133d47c8991a096b823f0d6a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/b7dda49b07c9e02604cf01f5e4ae05870e152a772da23d4655d2e2acd202b113.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -465,6 +465,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CloudFrontUrl"
+          }
+        ],
+        "/cs-chatbot-frontend/DistributionId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionId"
           }
         ],
         "/cs-chatbot-frontend/S3BucketName": [
