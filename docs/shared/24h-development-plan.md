@@ -255,7 +255,7 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
 
 ### 규원 - Backend
 - [x] 모든 API 엔드포인트 완성 (5/5 Lambda 함수)
-- [ ] AI 응답 생성 완성
+- [x] AI 응답 생성 완성 (Bedrock Claude 연동)
 - [x] 이메일 알림 완성 (기본 구조)
 - [x] 에러 핸들링 완성
 
