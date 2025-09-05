@@ -45,12 +45,12 @@ class FrontendStack(Stack):
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED
             ),
             default_root_object="index.html",
-            # SPA 라우팅을 위한 404 에러 처리
+            # SPA 라우팅 및 Dynamic Route 처리
             error_responses=[
                 cloudfront.ErrorResponse(
                     http_status=404,
                     response_http_status=200,
-                    response_page_path="/index.html",
+                    response_page_path="/404.html",
                     ttl=Duration.minutes(5)
                 ),
                 cloudfront.ErrorResponse(
@@ -59,15 +59,27 @@ class FrontendStack(Stack):
                     response_page_path="/index.html",
                     ttl=Duration.minutes(5)
                 )
-            ]
+            ],
+            # Dynamic Route 지원을 위한 추가 비헤이비어
+            additional_behaviors={
+                "/status/*": cloudfront.BehaviorOptions(
+                    origin=origins.S3Origin(website_bucket),
+                    viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    cache_policy=cloudfront.CachePolicy.CACHING_DISABLED
+                ),
+                "/my-inquiries/*": cloudfront.BehaviorOptions(
+                    origin=origins.S3Origin(website_bucket),
+                    viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    cache_policy=cloudfront.CachePolicy.CACHING_DISABLED
+                )
+            }
         )
         
-        # Deploy Next.js standalone build - 필수 파일만
+        # Deploy Next.js static export
         s3deploy.BucketDeployment(
             self, "DeployWebsite",
             sources=[
-                s3deploy.Source.asset("../frontend/.next/standalone", 
-                                     exclude=["node_modules/**"])
+                s3deploy.Source.asset("../frontend/out")
             ],
             destination_bucket=website_bucket,
             distribution=distribution,

@@ -73,8 +73,6 @@ class DynamoDBService:
     def list_inquiries(self, company_id: str, status: str = None, limit: int = 50) -> list:
         """회사별 문의 목록 조회"""
         try:
-            from boto3.dynamodb.conditions import Attr
-            
             # Condition 객체 사용
             filter_expression = Attr('companyId').eq(company_id)
             
@@ -95,6 +93,8 @@ class DynamoDBService:
     def get_inquiries_by_email(self, customer_email: str, limit: int = 50) -> list:
         """고객 이메일별 문의 목록 조회"""
         try:
+            logger.info(f"Searching inquiries for email: {customer_email}")
+            
             filter_expression = Attr('customerEmail').eq(customer_email)
             
             response = self.inquiries_table.scan(
@@ -102,8 +102,13 @@ class DynamoDBService:
                 Limit=limit
             )
             
-            return response.get('Items', [])
+            items = response.get('Items', [])
+            logger.info(f"Found {len(items)} inquiries for email: {customer_email}")
+            
+            return items
             
         except Exception as e:
-            logger.error(f"Error getting inquiries by email: {str(e)}")
+            logger.error(f"Error getting inquiries by email {customer_email}: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
             return []
