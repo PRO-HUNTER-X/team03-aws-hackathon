@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,16 +20,7 @@ export default function DevPage() {
     loadLogs();
   }, []);
 
-  useEffect(() => {
-    filterLogs();
-  }, [logs, selectedLevel, searchTerm, selectedCategory, filterLogs]);
-
-  const loadLogs = () => {
-    const allLogs = logger.getLogs();
-    setLogs(allLogs.reverse()); // 최신 로그가 위에 오도록
-  };
-
-  const filterLogs = () => {
+  const filterLogs = useCallback(() => {
     let filtered = logs;
 
     // 레벨 필터
@@ -51,6 +42,15 @@ export default function DevPage() {
     }
 
     setFilteredLogs(filtered);
+  }, [logs, selectedLevel, searchTerm, selectedCategory]);
+
+  useEffect(() => {
+    filterLogs();
+  }, [filterLogs]);
+
+  const loadLogs = () => {
+    const allLogs = logger.getLogs();
+    setLogs(allLogs.reverse()); // 최신 로그가 위에 오도록
   };
 
   const clearLogs = () => {
