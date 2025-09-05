@@ -20,9 +20,9 @@ class ModelSelectionStrategy(Enum):
 
 # 기본 AI 모델 설정 (실제 Bedrock 모델 ID)
 AI_MODEL_CONFIG = {
-    "default_model": "anthropic.claude-3-5-sonnet-20241022-v2:0",
-    "fallback_model": "anthropic.claude-3-5-sonnet-20240620-v1:0", 
-    "fast_model": "anthropic.claude-3-5-haiku-20241022-v1:0",
+    "default_model": "anthropic.claude-opus-4-1-20250805-v1:0",
+    "fallback_model": "anthropic.claude-opus-4-20250514-v1:0", 
+    "fast_model": "anthropic.claude-sonnet-4-20250514-v1:0",
     "max_tokens": 4096,
     "temperature": 0.7,
     "model_selection_strategy": ModelSelectionStrategy.ADAPTIVE.value
@@ -70,7 +70,7 @@ class AIModelConfig:
         elif complexity == "complex":
             return self.config["default_model"]  # Claude 4.1 Opus (복잡한 문의)
         else:
-            return self.config["fallback_model"] # Claude 4 Opus (일반적인 문의)
+            return self.config["default_model"]  # Claude 4.1 Opus (일반적인 문의)
     
     def _cost_optimized_selection(self, complexity: str) -> str:
         """비용 최적화 모델 선택"""
