@@ -27,6 +27,9 @@ aws configure --profile aws-hackathon
 
 #### 3️⃣ 인프라 배포
 
+## 🔄 배포 환경 선택
+
+### 📦 프로덕션 환경 (공용)
 **전체 배포 (60-90초)**
 ```bash
 ./deploy.sh
@@ -53,9 +56,58 @@ aws configure --profile aws-hackathon
 ./deploy.sh frontend --fast
 ```
 
+### 🧪 개발 환경 (개인별 독립)
+**feat 브랜치에서 개인 dev 환경에 배포**
+
+#### 🔄 개발 환경 배포 순서
+```bash
+# 1. API 먼저 배포 (프론트엔드가 API URL 필요)
+./deploy-dev.sh [개발자명] api
+
+# 2. 프론트엔드 배포 (API URL 자동 연결)
+./deploy-dev.sh [개발자명] frontend
+
+# 또는 전체 배포 (자동으로 순서 처리)
+./deploy-dev.sh [개발자명]
+```
+
+#### 📦 개별 스택 배포
+```bash
+# 데이터베이스만
+./deploy-dev.sh [개발자명] data
+
+# API만 (빠른 배포)
+./deploy-dev.sh [개발자명] api --fast
+
+# 프론트엔드만 (API URL 자동 설정)
+./deploy-dev.sh [개발자명] frontend
+```
+
+**실제 사용 예시**
+```bash
+# 다혜의 개발 워크플로우
+./deploy-dev.sh dahye api          # API 변경사항 배포
+./deploy-dev.sh dahye frontend     # 프론트엔드 배포 (API URL 자동 연결)
+
+# 정민의 빠른 개발
+./deploy-dev.sh jeongmin api --fast      # API 빠른 배포
+./deploy-dev.sh jeongmin frontend --fast # 프론트엔드 빠른 배포
+```
+
+**dev 환경 정리**
+```bash
+# 개인 dev 환경 완전 삭제
+./destroy-dev.sh [개발자명]
+
+# 강제 삭제 (확인 없이)
+./destroy-dev.sh [개발자명] --force
+```
+
 **도움말**
 ```bash
 ./deploy.sh --help
+./deploy-dev.sh --help
+./destroy-dev.sh --help
 ```
 
 ### 🌐 배포된 서비스 접속
@@ -75,9 +127,13 @@ aws configure --profile aws-hackathon
 # 배포된 스택 목록
 cdk list
 
-# 상세 출력 정보 확인
+# 프로덕션 환경 확인
 aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs'
 aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs'
+
+# 개발 환경 확인 (개발자명 대체)
+aws cloudformation describe-stacks --stack-name cs-chatbot-dev-dahye-frontend --query 'Stacks[0].Outputs'
+aws cloudformation describe-stacks --stack-name cs-chatbot-dev-dahye-api --query 'Stacks[0].Outputs'
 ```
 
 ### 🗑️ 리소스 정리
@@ -131,6 +187,8 @@ cd team03-aws-hackathon
 4. **실시간 소통**: 중요 변경사항 팀 채팅 공지
 
 ### ⚡ 개발 중 빠른 배포 팁
+
+#### 프로덕션 환경 (공용)
 ```bash
 # 첫 배포 (전체 설치)
 ./deploy.sh frontend
@@ -143,6 +201,63 @@ cd team03-aws-hackathon
 ./deploy.sh data
 ```
 
+#### 개발 환경 (개인별)
+```bash
+# feat 브랜치에서 개인 dev 환경에 배포
+./deploy-dev.sh dahye api --fast
+./deploy-dev.sh jeongmin frontend --fast
+
+# 개발 완료 후 dev 환경 정리
+./destroy-dev.sh dahye
+```
+
 ### 🔧 배포 모드 차이점
 - **기본 모드**: pip install + CDK bootstrap + npm install 포함
 - **빠른 모드 (--fast)**: 의존성 설치 스킵하여 5-10초 단축
+
+### 🌍 환경별 리소스 분리
+- **프로덕션**: `cs-chatbot-*` (공용, 안정적)
+- **개발**: `cs-chatbot-dev-[개발자명]-*` (개인별, 독립적)
+
+각 개발자는 자신만의 독립적인 AWS 리소스를 가지므로 서로 간섭하지 않습니다.
+
+## 🎯 개발 환경 사용 가이드
+
+### 📋 개발 워크플로우
+```bash
+# 1. feat 브랜치 생성
+git checkout -b feat/backend-api
+
+# 2. 개인 dev 환경에 배포
+cd infra
+./deploy-dev.sh [내이름] api      # API 변경사항 배포
+./deploy-dev.sh [내이름] frontend  # 프론트엔드 배포 (API URL 자동 연결)
+
+# 3. 개인 CloudFront URL에서 테스트
+# 출력된 프론트엔드 URL로 접속하여 테스트
+
+# 4. 개발 완료 후 PR 생성
+git add .
+git commit -m "feat: 새 기능 구현"
+git push origin feat/backend-api
+
+# 5. dev 환경 정리 (선택사항)
+./destroy-dev.sh [내이름]
+```
+
+### ⚡ 빠른 개발 팁
+```bash
+# API 변경 후 빠른 재배포
+./deploy-dev.sh dahye api --fast
+
+# 프론트엔드 변경 후 빠른 재배포 
+./deploy-dev.sh dahye frontend --fast
+
+# 전체 환경 재배포
+./deploy-dev.sh dahye
+```
+
+### 🔗 API URL 자동 연결
+- **dev 환경**: 프론트엔드 배포 시 해당 개발자의 API URL 자동 설정
+- **prod 환경**: 수동으로 `.env.local` 파일에 API URL 설정 필요
+- **로컬 개발**: `npm run dev`로 localhost:3000에서 개발

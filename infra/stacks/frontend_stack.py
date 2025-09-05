@@ -12,13 +12,19 @@ from constructs import Construct
 
 class FrontendStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, 
-                 api_url: str, **kwargs) -> None:
+                 api_url: str, developer: str = "", **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
+        # dev 환경일 때만 개발자 이름 추가
+        if developer:
+            bucket_name = f"cs-chatbot-frontend-dev-{developer}-{self.account}"
+        else:
+            bucket_name = f"cs-chatbot-frontend-{self.account}"  # 기존 prod 환경
         
         # S3 bucket for static website
         website_bucket = s3.Bucket(
             self, "WebsiteBucket",
-            bucket_name=f"cs-chatbot-frontend-{self.account}",
+            bucket_name=bucket_name,
             website_index_document="index.html",
             website_error_document="error.html",
             public_read_access=True,
@@ -26,6 +32,9 @@ class FrontendStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True
         )
+        
+        # API URL을 환경변수로 설정하여 빌드 시 주입
+        self.api_url = api_url
         
         # CloudFront distribution
         distribution = cloudfront.Distribution(

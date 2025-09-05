@@ -11,7 +11,8 @@ from constructs import Construct
 
 class ApiStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, 
-                 dynamodb_table: dynamodb.Table, **kwargs) -> None:
+                 dynamodb_table: dynamodb.Table, 
+                 developer: str = "", **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         
         # Lambda execution role
@@ -89,10 +90,16 @@ class ApiStack(Stack):
             }
         )
         
+        # dev 환경일 때만 개발자 이름 추가
+        if developer:
+            api_name = f"CS Chatbot API (dev-{developer})"
+        else:
+            api_name = "CS Chatbot API"  # 기존 prod 환경
+        
         # API Gateway
         api = apigateway.RestApi(
             self, "CSChatbotAPI",
-            rest_api_name="CS Chatbot API",
+            rest_api_name=api_name,
             default_cors_preflight_options=apigateway.CorsOptions(
                 allow_origins=apigateway.Cors.ALL_ORIGINS,
                 allow_methods=apigateway.Cors.ALL_METHODS,

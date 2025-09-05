@@ -5,17 +5,13 @@
 export function getApiUrl(): string {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   
-  // 개발 환경에서는 기본값 사용
-  if (process.env.NODE_ENV === 'development' && !apiUrl) {
-    return 'http://localhost:3001';
+  // 환경변수가 설정된 경우 사용 (dev CloudFront/prod 모두)
+  if (apiUrl) {
+    return apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
   }
   
-  // 프로덕션 환경에서는 환경변수 필수
-  if (!apiUrl) {
-    throw new Error('NEXT_PUBLIC_API_URL이 설정되지 않았습니다');
-  }
-  
-  return apiUrl;
+  // 환경변수 필수 (dev CloudFront도 API URL 필요)
+  throw new Error('NEXT_PUBLIC_API_URL이 설정되지 않았습니다');
 }
 
 export function validateEnvironment(): boolean {

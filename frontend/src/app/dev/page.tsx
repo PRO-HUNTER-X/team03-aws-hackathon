@@ -269,10 +269,10 @@ export default function DevPage() {
                 <strong>API Base URL:</strong> {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}
               </div>
               <div>
-                <strong>User Agent:</strong> {navigator.userAgent}
+                <strong>User Agent:</strong> {typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A'}
               </div>
               <div>
-                <strong>Online Status:</strong> {navigator.onLine ? '온라인' : '오프라인'}
+                <strong>Online Status:</strong> {typeof navigator !== 'undefined' ? (navigator.onLine ? '온라인' : '오프라인') : 'N/A'}
               </div>
             </div>
           </CardContent>
