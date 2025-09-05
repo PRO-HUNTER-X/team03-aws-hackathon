@@ -32,7 +32,13 @@ export default function MyInquiriesPage() {
       setIsLoading(true);
       // URL 파라미터나 로컬스토리지에서 이메일 가져오기
       const urlParams = new URLSearchParams(window.location.search);
-      const email = urlParams.get('email') || localStorage.getItem('customerEmail') || 'qa@sample.com';
+      const email = urlParams.get('email') || localStorage.getItem('customerEmail');
+      
+      if (!email) {
+        console.error('이메일이 없습니다. 로그인이 필요합니다.');
+        return;
+      }
+      
       const data = await getMyInquiries(email);
       setInquiries(data);
     } catch (error) {
