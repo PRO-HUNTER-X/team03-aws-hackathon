@@ -53,23 +53,23 @@ export default function RootLayout({
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-slate-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-xs">H</span>
                 </div>
-                <h1 className="text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-all duration-300">
+                <h1 className="text-xl font-bold text-gray-900 group-hover:text-slate-600 transition-all duration-300">
                   헌터스 고객지원센터
                 </h1>
               </Link>
               <div className="flex items-center gap-1">
                 <Link
                   href="/"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all duration-200"
                 >
                   홈
                 </Link>
                 <Link
                   href="/inquiry"
-                  className="px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition-all duration-200"
+                  className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-700 rounded-lg transition-all duration-200"
                 >
                   문의하기
                 </Link>

@@ -49,28 +49,28 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
 
   if (isLoading) {
     return (
-      <Card className="mt-6">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Bot className="w-5 h-5 text-blue-600" />
+            <Bot className="w-5 h-5 text-slate-600" />
             AI 답변 생성 중...
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <div className="flex flex-col items-center gap-4">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
               <div className="flex gap-1">
                 <div
-                  className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-slate-600 rounded-full animate-bounce"
                   style={{ animationDelay: "0ms" }}
                 ></div>
                 <div
-                  className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-slate-600 rounded-full animate-bounce"
                   style={{ animationDelay: "150ms" }}
                 ></div>
                 <div
-                  className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-slate-600 rounded-full animate-bounce"
                   style={{ animationDelay: "300ms" }}
                 ></div>
               </div>
@@ -85,10 +85,10 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
   if (!response) return null;
 
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Bot className="w-5 h-5 text-blue-600" />
+          <Bot className="w-5 h-5 text-slate-600" />
           AI 답변
           {isTyping && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
         </CardTitle>
@@ -117,7 +117,7 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
           >
             {displayedText}
           </ReactMarkdown>
-          {isTyping && <span className="inline-block w-2 h-5 bg-blue-600 animate-pulse ml-1"></span>}
+          {isTyping && <span className="inline-block w-2 h-5 bg-slate-600 animate-pulse ml-1"></span>}
         </div>
 
         {/* 만족도 평가 (1-5점 별점) */}
@@ -135,8 +135,8 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
                     <Star
                       className={`w-6 h-6 ${
                         rating && star <= rating
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300 hover:text-yellow-400"
+                          ? "fill-slate-400 text-slate-400"
+                          : "text-gray-300 hover:text-slate-400"
                       }`}
                     />
                   </button>
@@ -155,7 +155,7 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
         {/* "사람과 연결" 에스컬레이션 버튼 */}
         {showRating && !isTyping && (
           <div className="border-t pt-4">
-            <Button variant="outline" onClick={onEscalate} className="w-full flex items-center gap-2">
+            <Button variant="outline" onClick={onEscalate} size="default" className="w-full">
               <User className="w-4 h-4" />
               사람과 연결하기
             </Button>

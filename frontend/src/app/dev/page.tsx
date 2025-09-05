@@ -72,26 +72,26 @@ export default function DevPage() {
   const getLevelIcon = (level: LogLevel) => {
     switch (level) {
       case LogLevel.ERROR:
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
+        return <AlertCircle className="w-4 h-4 text-slate-500" />;
       case LogLevel.WARN:
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+        return <AlertTriangle className="w-4 h-4 text-slate-500" />;
       case LogLevel.DEBUG:
-        return <Bug className="w-4 h-4 text-purple-500" />;
+        return <Bug className="w-4 h-4 text-slate-500" />;
       default:
-        return <Info className="w-4 h-4 text-blue-500" />;
+        return <Info className="w-4 h-4 text-slate-500" />;
     }
   };
 
   const getLevelColor = (level: LogLevel) => {
     switch (level) {
       case LogLevel.ERROR:
-        return 'bg-red-100 text-red-800';
+        return 'bg-slate-100 text-slate-800';
       case LogLevel.WARN:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-slate-100 text-slate-800';
       case LogLevel.DEBUG:
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-slate-100 text-slate-800';
       default:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-slate-100 text-slate-800';
     }
   };
 
@@ -122,25 +122,25 @@ export default function DevPage() {
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-red-600">{logCounts.error}</div>
+                <div className="text-2xl font-bold text-slate-600">{logCounts.error}</div>
                 <div className="text-sm text-muted-foreground">에러</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-yellow-600">{logCounts.warn}</div>
+                <div className="text-2xl font-bold text-slate-600">{logCounts.warn}</div>
                 <div className="text-sm text-muted-foreground">경고</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-blue-600">{logCounts.info}</div>
+                <div className="text-2xl font-bold text-slate-600">{logCounts.info}</div>
                 <div className="text-sm text-muted-foreground">정보</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-purple-600">{logCounts.debug}</div>
+                <div className="text-2xl font-bold text-slate-600">{logCounts.debug}</div>
                 <div className="text-sm text-muted-foreground">디버그</div>
               </CardContent>
             </Card>
@@ -234,10 +234,10 @@ export default function DevPage() {
                       </div>
                       <div className="font-medium">{log.message}</div>
                       {log.error && (
-                        <div className="bg-red-50 border border-red-200 rounded p-3">
-                          <div className="font-medium text-red-800">{log.error.name}: {log.error.message}</div>
+                        <div className="bg-slate-50 border border-slate-200 rounded p-3">
+                          <div className="font-medium text-slate-800">{log.error.name}: {log.error.message}</div>
                           {log.error.stack && (
-                            <pre className="text-xs text-red-600 mt-2 overflow-x-auto">
+                            <pre className="text-xs text-slate-600 mt-2 overflow-x-auto">
                               {log.error.stack}
                             </pre>
                           )}
