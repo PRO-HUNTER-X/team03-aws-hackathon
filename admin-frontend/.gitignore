@@ -31,3 +31,20 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# CDK
+cdk.out/
+*.js
+*.d.ts
+node_modules/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# AWS
+.aws/
