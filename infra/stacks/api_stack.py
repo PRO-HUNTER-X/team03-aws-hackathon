@@ -38,17 +38,20 @@ class ApiStack(Stack):
         health_check = _lambda.Function(
             self, "HealthCheck",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="health_check.lambda_handler",
-            code=_lambda.Code.from_asset("../backend/lambda"),
+            handler="handlers/health_check.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
             timeout=Duration.seconds(10),
-            memory_size=128
+            memory_size=128,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name
+            }
         )
         
         inquiry_handler = _lambda.Function(
             self, "InquiryHandler",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="inquiry_handler.lambda_handler",
-            code=_lambda.Code.from_asset("../backend/lambda"),
+            handler="handlers/inquiry_handler.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
             timeout=Duration.seconds(30),
             memory_size=512,
             role=lambda_role,
@@ -60,8 +63,8 @@ class ApiStack(Stack):
         ai_response_generator = _lambda.Function(
             self, "AIResponseGenerator",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="ai_response_generator.lambda_handler",
-            code=_lambda.Code.from_asset("../backend/lambda"),
+            handler="handlers/ai_response_generator.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
             timeout=Duration.seconds(30),
             memory_size=512,
             role=lambda_role,
@@ -85,13 +88,24 @@ class ApiStack(Stack):
         # Health check at root path
         api.root.add_method("GET", apigateway.LambdaIntegration(health_check))
         
-        inquiries = api.root.add_resource("inquiries")
-        inquiries.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))
+        # API v1 resource
+        api_v1 = api.root.add_resource("api")
         
-        ai_response = api.root.add_resource("ai-response")
+        # Inquiries endpoints
+        inquiries = api_v1.add_resource("inquiries")
+        inquiries.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))  # Create inquiry
+        inquiries.add_method("GET", apigateway.LambdaIntegration(inquiry_handler))   # List inquiries
+        
+        # Individual inquiry endpoints
+        inquiry_by_id = inquiries.add_resource("{id}")
+        inquiry_by_id.add_method("GET", apigateway.LambdaIntegration(inquiry_handler))  # Get inquiry
+        
+        # AI response endpoint
+        ai_response = api_v1.add_resource("ai-response")
         ai_response.add_method("POST", apigateway.LambdaIntegration(ai_response_generator))
         
         self.api_url = api.url
+        self.api = api
         
         # Output API URL
         CfnOutput(self, "ApiUrl", 

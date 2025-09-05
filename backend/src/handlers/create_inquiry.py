@@ -38,7 +38,7 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
         
         # 문의 데이터 준비
         inquiry_data = {
-            'id': inquiry_id,
+            'inquiry_id': inquiry_id,
             'companyId': body['companyId'],
             'customerEmail': body['customerEmail'],
             'category': body.get('category', 'general'),

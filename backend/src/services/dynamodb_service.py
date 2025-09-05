@@ -1,4 +1,5 @@
 import boto3
+import os
 from typing import Dict, Any, Optional
 import logging
 from datetime import datetime
@@ -9,8 +10,9 @@ logger.setLevel(logging.INFO)
 class DynamoDBService:
     def __init__(self):
         self.dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-        self.inquiries_table = self.dynamodb.Table('cs-chatbot-inquiries')
-        self.companies_table = self.dynamodb.Table('cs-chatbot-companies')
+        table_name = os.environ.get('DYNAMODB_TABLE', 'cs-inquiries')
+        self.inquiries_table = self.dynamodb.Table(table_name)
+        # companies_table은 현재 사용하지 않으므로 제거
     
     def create_inquiry(self, inquiry_data: Dict[str, Any]) -> bool:
         """문의 생성"""
@@ -25,7 +27,7 @@ class DynamoDBService:
     def get_inquiry(self, inquiry_id: str) -> Optional[Dict[str, Any]]:
         """문의 조회"""
         try:
-            response = self.inquiries_table.get_item(Key={'id': inquiry_id})
+            response = self.inquiries_table.get_item(Key={'inquiry_id': inquiry_id})
             return response.get('Item')
         except Exception as e:
             logger.error(f"Error getting inquiry: {str(e)}")
@@ -55,7 +57,7 @@ class DynamoDBService:
                 expression_values[':resolved_at'] = datetime.utcnow().isoformat()
             
             response = self.inquiries_table.update_item(
-                Key={'id': inquiry_id},
+                Key={'inquiry_id': inquiry_id},
                 UpdateExpression=update_expression,
                 ExpressionAttributeValues=expression_values,
                 ExpressionAttributeNames=expression_names,
