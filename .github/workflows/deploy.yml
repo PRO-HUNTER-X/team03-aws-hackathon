@@ -75,15 +75,12 @@ jobs:
 
       - name: 🏗️ Bootstrap CDK
         working-directory: infra
-        run: |
-          source ${{ steps.venv.outputs.venv-path }}/bin/activate
-          cdk bootstrap
+        run: cdk bootstrap
 
       - name: 🗄️ Deploy Data Stack
         if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
         working-directory: infra
         run: |
-          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           echo "📊 데이터 스택 배포 중..."
           cdk deploy cs-chatbot-data --require-approval never --concurrency 10
 
@@ -91,7 +88,6 @@ jobs:
         if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
         working-directory: infra
         run: |
-          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           echo "🔗 API 스택 배포 중..."
           cdk deploy cs-chatbot-api --require-approval never --concurrency 10
 
@@ -112,7 +108,6 @@ jobs:
           fi
           
           cd ../infra
-          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           echo "🌐 프론트엔드 스택 배포 중..."
           cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
 
