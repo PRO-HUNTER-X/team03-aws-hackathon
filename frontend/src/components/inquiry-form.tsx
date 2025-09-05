@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { AIResponse } from '@/components/ai-response'
 
 const inquirySchema = z.object({
   category: z.string().min(1, '문의 유형을 선택해주세요'),
@@ -23,6 +24,9 @@ type InquiryFormData = z.infer<typeof inquirySchema>
 
 export function InquiryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [aiResponse, setAiResponse] = useState<string | null>(null)
+  const [showAiResponse, setShowAiResponse] = useState(false)
+  const [inquiryId, setInquiryId] = useState<string | null>(null)
   
   const form = useForm<InquiryFormData>({
     resolver: zodResolver(inquirySchema),
@@ -36,26 +40,69 @@ export function InquiryForm() {
 
   const onSubmit = async (data: InquiryFormData) => {
     setIsSubmitting(true)
+    setShowAiResponse(true)
+    
     try {
-      // TODO: API 호출 구현
+      // TODO: 실제 API 호출로 교체
       console.log('문의 제출:', data)
-      // 임시로 2초 대기
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      alert('문의가 성공적으로 제출되었습니다!')
-      form.reset()
+      
+      // 임시 문의 ID 생성
+      const tempId = `INQ-${Date.now()}`
+      setInquiryId(tempId)
+      
+      // AI 응답 시뮬레이션 (3초 대기)
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      
+      // 임시 AI 응답 생성
+      const mockResponse = generateMockAIResponse(data)
+      setAiResponse(mockResponse)
+      
     } catch (error) {
       console.error('문의 제출 실패:', error)
       alert('문의 제출에 실패했습니다. 다시 시도해주세요.')
+      setShowAiResponse(false)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const generateMockAIResponse = (data: InquiryFormData): string => {
+    const responses = {
+      technical: `## 기술 문의 답변\n\n**${data.title}**에 대한 답변을 드립니다.\n\n### 해결 방법\n1. 먼저 브라우저 캐시를 삭제해보세요\n2. 다른 브라우저에서 시도해보세요\n3. 네트워크 연결을 확인해주세요\n\n### 추가 도움\n위 방법으로 해결되지 않으면 **사람과 연결하기**를 클릭해주세요.`,
+      billing: `## 결제 문의 답변\n\n**${data.title}**에 대해 안내드립니다.\n\n### 결제 정보\n- 월 구독료: 29,000원\n- 결제일: 매월 가입일 기준\n- 결제 방법: 신용카드, 계좌이체\n\n### 환불 정책\n7일 이내 100% 환불 가능합니다.\n\n더 자세한 내용은 담당자와 상담하시기 바랍니다.`,
+      general: `## 일반 문의 답변\n\n**${data.title}**에 대해 답변드립니다.\n\n### 서비스 안내\n저희 CS 챗봇 플랫폼은 다음과 같은 기능을 제공합니다:\n\n- ✅ 24시간 AI 자동 응답\n- ✅ 실시간 상담 연결\n- ✅ 문의 이력 관리\n- ✅ 다양한 채널 지원\n\n추가 궁금한 점이 있으시면 언제든 문의해주세요!`,
+      other: `## 기타 문의 답변\n\n**${data.title}**에 대해 확인해보겠습니다.\n\n현재 제공해드린 정보로는 정확한 답변이 어려울 수 있습니다.\n\n### 권장사항\n더 정확한 답변을 위해 **사람과 연결하기**를 통해\n담당자와 직접 상담받으시기를 권장드립니다.\n\n평균 응답시간은 2-4시간입니다.`
+    }
+    
+    return responses[data.category as keyof typeof responses] || responses.other
+  }
+
+  const handleEscalation = () => {
+    // TODO: 에스컬레이션 API 호출
+    alert(`문의 ID: ${inquiryId}\n담당자에게 연결 요청이 전송되었습니다.\n이메일로 답변을 받으실 수 있습니다.`)
+  }
+
+  const handleRating = (rating: number) => {
+    // TODO: 평점 저장 API 호출
+    console.log('평점:', rating, '문의 ID:', inquiryId)
+  }
+
+  const handleNewInquiry = () => {
+    setShowAiResponse(false)
+    setAiResponse(null)
+    setInquiryId(null)
+    form.reset()
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>새 문의 작성</CardTitle>
-      </CardHeader>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>새 문의 작성</CardTitle>
+          {inquiryId && (
+            <p className="text-sm text-muted-foreground">문의 ID: {inquiryId}</p>
+          )}
+        </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -157,7 +204,7 @@ export function InquiryForm() {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || showAiResponse}
             >
               {isSubmitting ? '제출 중...' : '문의 제출'}
             </Button>
@@ -165,5 +212,25 @@ export function InquiryForm() {
         </Form>
       </CardContent>
     </Card>
+
+    {/* AI 응답 표시 */}
+    {showAiResponse && (
+      <AIResponse
+        response={aiResponse}
+        isLoading={isSubmitting}
+        onEscalate={handleEscalation}
+        onRating={handleRating}
+      />
+    )}
+
+    {/* 새 문의 작성 버튼 */}
+    {aiResponse && !isSubmitting && (
+      <div className="mt-6 text-center">
+        <Button variant="outline" onClick={handleNewInquiry}>
+          새 문의 작성하기
+        </Button>
+      </div>
+    )}
+    </>
   )
 }
