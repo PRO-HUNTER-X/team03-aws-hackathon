@@ -62,16 +62,17 @@ class FrontendStack(Stack):
             ]
         )
         
-        # Deploy Next.js static export build
+        # Deploy Next.js standalone build - 필수 파일만
         s3deploy.BucketDeployment(
             self, "DeployWebsite",
             sources=[
-                s3deploy.Source.asset("../frontend/out")
+                s3deploy.Source.asset("../frontend/.next/standalone", 
+                                     exclude=["node_modules/**"])
             ],
             destination_bucket=website_bucket,
             distribution=distribution,
             distribution_paths=["/*"],
-            prune=True  # Remove old files
+            prune=True
         )
         
         self.bucket = website_bucket
