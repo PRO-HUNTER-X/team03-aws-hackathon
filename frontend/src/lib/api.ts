@@ -72,3 +72,34 @@ export async function escalateInquiry(inquiryId: string, reason?: string): Promi
     throw new Error(result.error || 'Failed to escalate inquiry');
   }
 }
+
+export interface InquiryDetail {
+  inquiry_id: string;
+  companyId: string;
+  customerEmail: string;
+  category: string;
+  title: string;
+  content: string;
+  urgency: string;
+  status: string;
+  created_at: string;
+  updatedAt?: string;
+  estimatedResponseTime: number;
+}
+
+export async function getInquiry(inquiryId: string): Promise<InquiryDetail> {
+  const response = await fetch(`${API_BASE_URL}/api/inquiries/${inquiryId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to get inquiry');
+  }
+
+  return result.data || result;
+}
