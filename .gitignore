@@ -2,3 +2,16 @@ chat-history
 .idea
 infra/cdk.out/
 infra/stacks/__pycache__/
+
+# Admin Frontend
+admin-frontend/node_modules/
+admin-frontend/.next/
+admin-frontend/out/
+admin-frontend/.env*.local
+admin-frontend/*.tsbuildinfo
+
+# Admin Backend
+admin-backend/node_modules/
+admin-backend/dist/
+admin-backend/.env
+admin-backend/*.log
