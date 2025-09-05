@@ -137,11 +137,9 @@ deploy_stack() {
             echo "🔨 Next.js 빌드 중..."
             cd ../frontend
             
-            # Node.js 의존성 설치
-            if [ "$FAST_MODE" != "true" ] || [ ! -d "node_modules" ]; then
-                echo "  📦 npm 의존성 설치..."
-                npm install
-            fi
+            # Node.js 의존성 설치 (항상 실행)
+            echo "  📦 npm 의존성 설치..."
+            npm install
             
             # 빌드 실행
             echo "  🔨 빌드 실행..."
@@ -185,11 +183,9 @@ deploy_stack() {
             echo "🔨 Next.js 빌드 중..."
             cd ../frontend
             
-            # Node.js 의존성 설치
-            if [ "$FAST_MODE" != "true" ] || [ ! -d "node_modules" ]; then
-                echo "  📦 npm 의존성 설치..."
-                npm install
-            fi
+            # Node.js 의존성 설치 (항상 실행)
+            echo "  📦 npm 의존성 설치..."
+            npm install
             
             # 빌드 실행
             echo "  🔨 빌드 실행..."
