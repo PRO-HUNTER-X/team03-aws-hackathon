@@ -55,7 +55,7 @@ export default function QnASetup({ onSetupComplete }: QnASetupProps) {
 
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:3001/setup/qna', {
+      const response = await fetch('/api/setup/qna', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

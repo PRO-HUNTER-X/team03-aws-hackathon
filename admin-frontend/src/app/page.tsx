@@ -13,19 +13,22 @@ export default function Home() {
   const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
-    const savedToken = AuthService.getToken()
-    if (savedToken) {
-      setToken(savedToken)
-      // 토큰이 있으면 설정 상태 확인
-      checkSetupStatus()
-    } else {
-      setAppState('login')
-    }
+    // 개발 중에는 항상 로그인 화면부터 시작
+    AuthService.removeToken()
+    setAppState('login')
+    
+    // const savedToken = AuthService.getToken()
+    // if (savedToken) {
+    //   setToken(savedToken)
+    //   checkSetupStatus()
+    // } else {
+    //   setAppState('login')
+    // }
   }, [])
 
   const checkSetupStatus = async () => {
     try {
-      const response = await fetch('http://localhost:3001/setup/status')
+      const response = await fetch('/api/setup/status')
       const data = await response.json()
       
       if (data.data.hasQnAData) {
