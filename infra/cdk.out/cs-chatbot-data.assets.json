@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "e595f956dc3b63ca75df8163568472470f2e5b817c00b5c0b51aa3e8b4907a27": {
+    "79f73ea987b02a14ba9c63b4249b1c74798b33363950aa25adad59fd26f4055e": {
       "displayName": "cs-chatbot-data Template",
       "source": {
         "path": "cs-chatbot-data.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-c99d9a76": {
+        "current_account-us-east-1-aa066bac": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "e595f956dc3b63ca75df8163568472470f2e5b817c00b5c0b51aa3e8b4907a27.json",
+          "objectKey": "79f73ea987b02a14ba9c63b4249b1c74798b33363950aa25adad59fd26f4055e.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

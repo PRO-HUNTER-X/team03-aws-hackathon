@@ -9,6 +9,10 @@
       "AttributeType": "S"
      },
      {
+      "AttributeName": "companyId",
+      "AttributeType": "S"
+     },
+     {
       "AttributeName": "created_at",
       "AttributeType": "S"
      },
@@ -19,6 +23,22 @@
     ],
     "BillingMode": "PAY_PER_REQUEST",
     "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "company-index",
+      "KeySchema": [
+       {
+        "AttributeName": "companyId",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "created_at",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
      {
       "IndexName": "status-index",
       "KeySchema": [
@@ -40,10 +60,6 @@
      {
       "AttributeName": "inquiry_id",
       "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "created_at",
-      "KeyType": "RANGE"
      }
     ],
     "PointInTimeRecoverySpecification": {

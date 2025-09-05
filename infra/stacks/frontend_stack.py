@@ -40,10 +40,11 @@ class FrontendStack(Stack):
         # Deploy static files to S3
         s3deploy.BucketDeployment(
             self, "DeployWebsite",
-            sources=[s3deploy.Source.asset("../frontend/public")],
+            sources=[s3deploy.Source.asset("../frontend/out")],
             destination_bucket=website_bucket,
             distribution=distribution,
-            distribution_paths=["/*"]
+            distribution_paths=["/*"],
+            prune=True  # Remove old files
         )
         
         self.bucket = website_bucket

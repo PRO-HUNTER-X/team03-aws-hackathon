@@ -132,9 +132,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "146d6864d7d98e4b38aea08a511eb6a29c5fa926d23d198256df12c8f803d829.zip"
+     "S3Key": "722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b.zip"
     },
-    "Handler": "health_check.lambda_handler",
+    "Environment": {
+     "Variables": {
+      "DYNAMODB_TABLE": {
+       "Fn::ImportValue": "cs-chatbot-data:ExportsOutputRefCSInquiryTableFB9F4D4704589F40"
+      }
+     }
+    },
+    "Handler": "handlers/health_check.lambda_handler",
     "MemorySize": 128,
     "Role": {
      "Fn::GetAtt": [
@@ -150,7 +157,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/HealthCheck/Resource",
-    "aws:asset:path": "asset.146d6864d7d98e4b38aea08a511eb6a29c5fa926d23d198256df12c8f803d829",
+    "aws:asset:path": "asset.722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -162,7 +169,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "146d6864d7d98e4b38aea08a511eb6a29c5fa926d23d198256df12c8f803d829.zip"
+     "S3Key": "722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b.zip"
     },
     "Environment": {
      "Variables": {
@@ -171,7 +178,7 @@
       }
      }
     },
-    "Handler": "inquiry_handler.lambda_handler",
+    "Handler": "handlers/inquiry_handler.lambda_handler",
     "MemorySize": 512,
     "Role": {
      "Fn::GetAtt": [
@@ -188,7 +195,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/InquiryHandler/Resource",
-    "aws:asset:path": "asset.146d6864d7d98e4b38aea08a511eb6a29c5fa926d23d198256df12c8f803d829",
+    "aws:asset:path": "asset.722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -200,7 +207,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "146d6864d7d98e4b38aea08a511eb6a29c5fa926d23d198256df12c8f803d829.zip"
+     "S3Key": "722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b.zip"
     },
     "Environment": {
      "Variables": {
@@ -209,7 +216,7 @@
       }
      }
     },
-    "Handler": "ai_response_generator.lambda_handler",
+    "Handler": "handlers/ai_response_generator.lambda_handler",
     "MemorySize": 512,
     "Role": {
      "Fn::GetAtt": [
@@ -226,7 +233,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/AIResponseGenerator/Resource",
-    "aws:asset:path": "asset.146d6864d7d98e4b38aea08a511eb6a29c5fa926d23d198256df12c8f803d829",
+    "aws:asset:path": "asset.722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -240,7 +247,7 @@
     "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Resource"
    }
   },
-  "CSChatbotAPIDeployment42D3E63Cf7457b757387850b6ed7a3f09aacec1a": {
+  "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -249,13 +256,19 @@
     }
    },
    "DependsOn": [
-    "CSChatbotAPIairesponseOPTIONSCE6C2678",
-    "CSChatbotAPIairesponsePOST5BFF32A1",
-    "CSChatbotAPIairesponseA35534FC",
+    "CSChatbotAPIapiairesponseOPTIONS5762B9E0",
+    "CSChatbotAPIapiairesponsePOSTEC434421",
+    "CSChatbotAPIapiairesponseFEDB9FFB",
+    "CSChatbotAPIapiinquiriesidGET9B2425EC",
+    "CSChatbotAPIapiinquiriesidOPTIONS633E2076",
+    "CSChatbotAPIapiinquiriesid659BD9C2",
+    "CSChatbotAPIapiinquiriesGET45CA27C2",
+    "CSChatbotAPIapiinquiriesOPTIONSB0F39E28",
+    "CSChatbotAPIapiinquiriesPOST411349F9",
+    "CSChatbotAPIapiinquiries8E8EFB63",
+    "CSChatbotAPIapiOPTIONS9258F262",
+    "CSChatbotAPIapiD6D49CE3",
     "CSChatbotAPIGET3FC2A948",
-    "CSChatbotAPIinquiriesOPTIONSD065F08B",
-    "CSChatbotAPIinquiriesPOSTFF43EF4C",
-    "CSChatbotAPIinquiries590F097E",
     "CSChatbotAPIOPTIONS7EBA0089"
    ],
    "Metadata": {
@@ -267,7 +280,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "CSChatbotAPIDeployment42D3E63Cf7457b757387850b6ed7a3f09aacec1a"
+     "Ref": "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b"
     },
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
@@ -430,7 +443,7 @@
     "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/GET/Resource"
    }
   },
-  "CSChatbotAPIinquiries590F097E": {
+  "CSChatbotAPIapiD6D49CE3": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
     "ParentId": {
@@ -439,16 +452,16 @@
       "RootResourceId"
      ]
     },
-    "PathPart": "inquiries",
+    "PathPart": "api",
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/inquiries/Resource"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/Resource"
    }
   },
-  "CSChatbotAPIinquiriesOPTIONSD065F08B": {
+  "CSChatbotAPIapiOPTIONS9258F262": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "ApiKeyRequired": false,
@@ -481,17 +494,75 @@
      }
     ],
     "ResourceId": {
-     "Ref": "CSChatbotAPIinquiries590F097E"
+     "Ref": "CSChatbotAPIapiD6D49CE3"
     },
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/inquiries/OPTIONS/Resource"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/OPTIONS/Resource"
    }
   },
-  "CSChatbotAPIinquiriesPOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTinquiriesA273EBF1": {
+  "CSChatbotAPIapiinquiries8E8EFB63": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "CSChatbotAPIapiD6D49CE3"
+    },
+    "PathPart": "inquiries",
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/Resource"
+   }
+  },
+  "CSChatbotAPIapiinquiriesOPTIONSB0F39E28": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "CSChatbotAPIapiinquiries8E8EFB63"
+    },
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/OPTIONS/Resource"
+   }
+  },
+  "CSChatbotAPIapiinquiriesPOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiinquiriesAFDD159D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -518,16 +589,16 @@
        {
         "Ref": "CSChatbotAPIDeploymentStageprodBC09F56E"
        },
-       "/POST/inquiries"
+       "/POST/api/inquiries"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/inquiries/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..inquiries"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries"
    }
   },
-  "CSChatbotAPIinquiriesPOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTinquiriesB0B7A67C": {
+  "CSChatbotAPIapiinquiriesPOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiinquiries464A16BE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -550,16 +621,16 @@
        {
         "Ref": "CSChatbotAPIF9C23C8C"
        },
-       "/test-invoke-stage/POST/inquiries"
+       "/test-invoke-stage/POST/api/inquiries"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/inquiries/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..inquiries"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries"
    }
   },
-  "CSChatbotAPIinquiriesPOSTFF43EF4C": {
+  "CSChatbotAPIapiinquiriesPOST411349F9": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
@@ -584,35 +655,135 @@
      }
     },
     "ResourceId": {
-     "Ref": "CSChatbotAPIinquiries590F097E"
+     "Ref": "CSChatbotAPIapiinquiries8E8EFB63"
     },
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/inquiries/POST/Resource"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/POST/Resource"
    }
   },
-  "CSChatbotAPIairesponseA35534FC": {
+  "CSChatbotAPIapiinquiriesGETApiPermissioncschatbotapiCSChatbotAPI86443238GETapiinquiriesC0319F88": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InquiryHandlerE9AA7F76",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CSChatbotAPIF9C23C8C"
+       },
+       "/",
+       {
+        "Ref": "CSChatbotAPIDeploymentStageprodBC09F56E"
+       },
+       "/GET/api/inquiries"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/GET/ApiPermission.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries"
+   }
+  },
+  "CSChatbotAPIapiinquiriesGETApiPermissionTestcschatbotapiCSChatbotAPI86443238GETapiinquiries417D5281": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InquiryHandlerE9AA7F76",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CSChatbotAPIF9C23C8C"
+       },
+       "/test-invoke-stage/GET/api/inquiries"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/GET/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries"
+   }
+  },
+  "CSChatbotAPIapiinquiriesGET45CA27C2": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "InquiryHandlerE9AA7F76",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "CSChatbotAPIapiinquiries8E8EFB63"
+    },
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/GET/Resource"
+   }
+  },
+  "CSChatbotAPIapiinquiriesid659BD9C2": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
     "ParentId": {
-     "Fn::GetAtt": [
-      "CSChatbotAPIF9C23C8C",
-      "RootResourceId"
-     ]
+     "Ref": "CSChatbotAPIapiinquiries8E8EFB63"
     },
-    "PathPart": "ai-response",
+    "PathPart": "{id}",
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/ai-response/Resource"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/Resource"
    }
   },
-  "CSChatbotAPIairesponseOPTIONSCE6C2678": {
+  "CSChatbotAPIapiinquiriesidOPTIONS633E2076": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "ApiKeyRequired": false,
@@ -645,17 +816,178 @@
      }
     ],
     "ResourceId": {
-     "Ref": "CSChatbotAPIairesponseA35534FC"
+     "Ref": "CSChatbotAPIapiinquiriesid659BD9C2"
     },
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/ai-response/OPTIONS/Resource"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/OPTIONS/Resource"
    }
   },
-  "CSChatbotAPIairesponsePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTairesponse2284731C": {
+  "CSChatbotAPIapiinquiriesidGETApiPermissioncschatbotapiCSChatbotAPI86443238GETapiinquiriesid0FEB17A1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InquiryHandlerE9AA7F76",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CSChatbotAPIF9C23C8C"
+       },
+       "/",
+       {
+        "Ref": "CSChatbotAPIDeploymentStageprodBC09F56E"
+       },
+       "/GET/api/inquiries/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/ApiPermission.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries.{id}"
+   }
+  },
+  "CSChatbotAPIapiinquiriesidGETApiPermissionTestcschatbotapiCSChatbotAPI86443238GETapiinquiriesid22CBADA1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InquiryHandlerE9AA7F76",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CSChatbotAPIF9C23C8C"
+       },
+       "/test-invoke-stage/GET/api/inquiries/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries.{id}"
+   }
+  },
+  "CSChatbotAPIapiinquiriesidGET9B2425EC": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "InquiryHandlerE9AA7F76",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "CSChatbotAPIapiinquiriesid659BD9C2"
+    },
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/Resource"
+   }
+  },
+  "CSChatbotAPIapiairesponseFEDB9FFB": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "CSChatbotAPIapiD6D49CE3"
+    },
+    "PathPart": "ai-response",
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/Resource"
+   }
+  },
+  "CSChatbotAPIapiairesponseOPTIONS5762B9E0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "CSChatbotAPIapiairesponseFEDB9FFB"
+    },
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/OPTIONS/Resource"
+   }
+  },
+  "CSChatbotAPIapiairesponsePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiairesponse20072ECB": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -682,16 +1014,16 @@
        {
         "Ref": "CSChatbotAPIDeploymentStageprodBC09F56E"
        },
-       "/POST/ai-response"
+       "/POST/api/ai-response"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/ai-response/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..ai-response"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.ai-response"
    }
   },
-  "CSChatbotAPIairesponsePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTairesponseED94A0DF": {
+  "CSChatbotAPIapiairesponsePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiairesponse11E36E43": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -714,16 +1046,16 @@
        {
         "Ref": "CSChatbotAPIF9C23C8C"
        },
-       "/test-invoke-stage/POST/ai-response"
+       "/test-invoke-stage/POST/api/ai-response"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/ai-response/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..ai-response"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.ai-response"
    }
   },
-  "CSChatbotAPIairesponsePOST5BFF32A1": {
+  "CSChatbotAPIapiairesponsePOSTEC434421": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
@@ -748,14 +1080,14 @@
      }
     },
     "ResourceId": {
-     "Ref": "CSChatbotAPIairesponseA35534FC"
+     "Ref": "CSChatbotAPIapiairesponseFEDB9FFB"
     },
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/ai-response/POST/Resource"
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/POST/Resource"
    }
   },
   "CDKMetadata": {

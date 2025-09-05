@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/e595f956dc3b63ca75df8163568472470f2e5b817c00b5c0b51aa3e8b4907a27.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/79f73ea987b02a14ba9c63b4249b1c74798b33363950aa25adad59fd26f4055e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -98,7 +98,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1803749b79232e8d26a128d8a9948665870902c97ee3f0c44d6f776428269a81.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fcb590937558cd5cf7cd1328bef932ea2ad25c2fde346cec21945b7ecd48dc5c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -160,7 +160,7 @@
         "/cs-chatbot-api/CSChatbotAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIDeployment42D3E63Cf7457b757387850b6ed7a3f09aacec1a"
+            "data": "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b"
           }
         ],
         "/cs-chatbot-api/CSChatbotAPI/DeploymentStage.prod/Resource": [
@@ -199,64 +199,124 @@
             "data": "CSChatbotAPIGET3FC2A948"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/inquiries/Resource": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIinquiries590F097E"
+            "data": "CSChatbotAPIapiD6D49CE3"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/inquiries/OPTIONS/Resource": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIinquiriesOPTIONSD065F08B"
+            "data": "CSChatbotAPIapiOPTIONS9258F262"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/inquiries/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..inquiries": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIinquiriesPOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTinquiriesA273EBF1"
+            "data": "CSChatbotAPIapiinquiries8E8EFB63"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/inquiries/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..inquiries": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIinquiriesPOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTinquiriesB0B7A67C"
+            "data": "CSChatbotAPIapiinquiriesOPTIONSB0F39E28"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/inquiries/POST/Resource": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIinquiriesPOSTFF43EF4C"
+            "data": "CSChatbotAPIapiinquiriesPOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiinquiriesAFDD159D"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/ai-response/Resource": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIairesponseA35534FC"
+            "data": "CSChatbotAPIapiinquiriesPOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiinquiries464A16BE"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/ai-response/OPTIONS/Resource": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/POST/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIairesponseOPTIONSCE6C2678"
+            "data": "CSChatbotAPIapiinquiriesPOST411349F9"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/ai-response/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..ai-response": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/GET/ApiPermission.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIairesponsePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTairesponse2284731C"
+            "data": "CSChatbotAPIapiinquiriesGETApiPermissioncschatbotapiCSChatbotAPI86443238GETapiinquiriesC0319F88"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/ai-response/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..ai-response": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/GET/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIairesponsePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTairesponseED94A0DF"
+            "data": "CSChatbotAPIapiinquiriesGETApiPermissionTestcschatbotapiCSChatbotAPI86443238GETapiinquiries417D5281"
           }
         ],
-        "/cs-chatbot-api/CSChatbotAPI/Default/ai-response/POST/Resource": [
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIairesponsePOST5BFF32A1"
+            "data": "CSChatbotAPIapiinquiriesGET45CA27C2"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesid659BD9C2"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidOPTIONS633E2076"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/ApiPermission.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidGETApiPermissioncschatbotapiCSChatbotAPI86443238GETapiinquiriesid0FEB17A1"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.GET..api.inquiries.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidGETApiPermissionTestcschatbotapiCSChatbotAPI86443238GETapiinquiriesid22CBADA1"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidGET9B2425EC"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiairesponseFEDB9FFB"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiairesponseOPTIONS5762B9E0"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.ai-response": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiairesponsePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiairesponse20072ECB"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.ai-response": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiairesponsePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiairesponse11E36E43"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiairesponsePOSTEC434421"
           }
         ],
         "/cs-chatbot-api/ApiUrl": [

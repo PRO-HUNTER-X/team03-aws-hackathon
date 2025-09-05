@@ -92,6 +92,14 @@ deploy_stack() {
         "frontend")
             echo "🌐 프론트엔드 스택 배포 중..."
             check_deployment_status "cs-chatbot-frontend" || exit 1
+            
+            # Next.js 빌드
+            echo "🔨 Next.js 빌드 중..."
+            cd ../frontend
+            npm install > /dev/null 2>&1
+            npm run build > /dev/null 2>&1
+            cd ../infra
+            
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
             ;;
         "all")
@@ -100,6 +108,13 @@ deploy_stack() {
             check_deployment_status "cs-chatbot-data" || exit 1
             check_deployment_status "cs-chatbot-api" || exit 1
             check_deployment_status "cs-chatbot-frontend" || exit 1
+            
+            # Next.js 빌드
+            echo "🔨 Next.js 빌드 중..."
+            cd ../frontend
+            npm install > /dev/null 2>&1
+            npm run build > /dev/null 2>&1
+            cd ../infra
             
             # 의존성 순서대로 배포
             cdk deploy cs-chatbot-data --require-approval never --concurrency 10
