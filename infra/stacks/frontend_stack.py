@@ -40,7 +40,7 @@ class FrontendStack(Stack):
         # Deploy static files to S3
         s3deploy.BucketDeployment(
             self, "DeployWebsite",
-            sources=[s3deploy.Source.asset("../frontend/public")],
+            sources=[s3deploy.Source.asset("../frontend/out")],
             destination_bucket=website_bucket,
             distribution=distribution,
             distribution_paths=["/*"],
@@ -54,6 +54,11 @@ class FrontendStack(Stack):
         CfnOutput(self, "CloudFrontUrl",
                  value=f"https://{distribution.distribution_domain_name}",
                  description="CS Chatbot Frontend URL")
+        
+        # Output CloudFront Distribution ID
+        CfnOutput(self, "DistributionId",
+                 value=distribution.distribution_id,
+                 description="CloudFront Distribution ID")
         
         # Output S3 bucket name
         CfnOutput(self, "S3BucketName",

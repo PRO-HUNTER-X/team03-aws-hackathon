@@ -148,8 +148,8 @@ deploy_stack() {
             npm run build
             
             # 빌드 결과 확인
-            if [ ! -d ".next" ] && [ ! -d "public" ]; then
-                echo "❌ Next.js 빌드 실패"
+            if [ ! -d "out" ]; then
+                echo "❌ Next.js 빌드 실패 - out 폴더가 생성되지 않았습니다"
                 exit 1
             fi
             
@@ -157,8 +157,20 @@ deploy_stack() {
             
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
             
-            # CloudFront invalidation 상태 확인
+            # CloudFront invalidation 수동 실행
             echo "✨ CloudFront 캐시 무효화 진행 중..."
+            
+            # CloudFront Distribution ID 가져오기
+            DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`DistributionId`].OutputValue' --output text 2>/dev/null || echo "")
+            
+            if [ -n "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
+                echo "  🔄 Distribution ID: $DISTRIBUTION_ID"
+                aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" > /dev/null 2>&1
+                echo "  ✅ 캐시 무효화 요청 완료"
+            else
+                echo "  ⚠️  Distribution ID를 찾을 수 없습니다"
+            fi
+            
             sleep 2
             ;;
         "all")
@@ -183,8 +195,8 @@ deploy_stack() {
             npm run build
             
             # 빌드 결과 확인
-            if [ ! -d ".next" ] && [ ! -d "public" ]; then
-                echo "❌ Next.js 빌드 실패"
+            if [ ! -d "out" ]; then
+                echo "❌ Next.js 빌드 실패 - out 폴더가 생성되지 않았습니다"
                 exit 1
             fi
             
@@ -195,8 +207,20 @@ deploy_stack() {
             cdk deploy cs-chatbot-api --require-approval never --concurrency 10  
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
             
-            # CloudFront invalidation 상태 확인
+            # CloudFront invalidation 수동 실행
             echo "✨ CloudFront 캐시 무효화 진행 중..."
+            
+            # CloudFront Distribution ID 가져오기
+            DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs[?OutputKey==`DistributionId`].OutputValue' --output text 2>/dev/null || echo "")
+            
+            if [ -n "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
+                echo "  🔄 Distribution ID: $DISTRIBUTION_ID"
+                aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" > /dev/null 2>&1
+                echo "  ✅ 캐시 무효화 요청 완료"
+            else
+                echo "  ⚠️  Distribution ID를 찾을 수 없습니다"
+            fi
+            
             sleep 2
             ;;
         *)
