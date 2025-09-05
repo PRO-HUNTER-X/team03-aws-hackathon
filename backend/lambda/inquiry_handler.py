@@ -95,6 +95,7 @@ def create_inquiry(data):
             'created_at': created_at,
             'companyId': data['companyId'],
             'customerEmail': data['customerEmail'],
+            'customerPassword': data.get('customerPassword'),  # 고객 인증용 비밀번호 저장
             'title': data['title'],
             'content': data['content'],
             'category': data.get('category', 'general'),
