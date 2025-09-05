@@ -144,19 +144,19 @@ export default function StatusPage() {
       case "pending":
         return {
           label: "대기중",
-          color: "bg-yellow-100 text-yellow-800",
+          color: "bg-slate-100 text-slate-800",
           icon: <Clock className="w-4 h-4" />,
         };
       case "processing":
         return {
           label: "처리중",
-          color: "bg-blue-100 text-blue-800",
+          color: "bg-slate-100 text-slate-800",
           icon: <AlertCircle className="w-4 h-4" />,
         };
       case "completed":
         return {
           label: "완료",
-          color: "bg-green-100 text-green-800",
+          color: "bg-slate-100 text-slate-800",
           icon: <CheckCircle className="w-4 h-4" />,
         };
     }
@@ -214,7 +214,7 @@ export default function StatusPage() {
               <h2 className="text-2xl font-bold mb-4 text-foreground">문의를 찾을 수 없습니다</h2>
               <p className="text-muted-foreground mb-8 text-lg">요청하신 문의 ID({inquiryId})를 찾을 수 없습니다.</p>
               <Link href="/inquiry">
-                <Button className="bg-primary hover:bg-secondary text-primary-foreground px-8 py-3 text-lg">새 문의 작성하기</Button>
+                <Button size="lg">새 문의 작성하기</Button>
               </Link>
             </CardContent>
           </Card>
@@ -328,13 +328,13 @@ export default function StatusPage() {
                 <CardTitle className="text-xl text-foreground">빠른 액션</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all" asChild>
+                <Button variant="outline" size="default" className="w-full" asChild>
                   <Link href="/inquiry">새 문의 작성</Link>
                 </Button>
-                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all">
+                <Button variant="outline" size="default" className="w-full">
                   이메일로 알림 받기
                 </Button>
-                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all">
+                <Button variant="outline" size="default" className="w-full">
                   문의 내용 수정
                 </Button>
               </CardContent>

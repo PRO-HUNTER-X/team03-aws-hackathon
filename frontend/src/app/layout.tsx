@@ -37,8 +37,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CS 챗봇 플랫폼",
-  description: "AI 기반 고객 서비스 자동화 플랫폼",
+  title: "헌터스 고객지원센터",
+  description: "헌터스 고객님들을 위한 24시간 AI 고객지원 서비스",
 };
 
 export default function RootLayout({
@@ -53,23 +53,29 @@ export default function RootLayout({
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">CS</span>
+                <div className="w-8 h-8 bg-slate-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">H</span>
                 </div>
-                <h1 className="text-xl font-bold text-gray-900 group-hover:text-gray-600 transition-all duration-300">
-                  CS 챗봇 플랫폼
+                <h1 className="text-xl font-bold text-gray-900 group-hover:text-slate-600 transition-all duration-300">
+                  헌터스 고객지원센터
                 </h1>
               </Link>
               <div className="flex items-center gap-1">
                 <Link
                   href="/"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-all duration-200"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all duration-200"
                 >
                   홈
                 </Link>
                 <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all duration-200"
+                >
+                  내 문의 보기
+                </Link>
+                <Link
                   href="/inquiry"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-all duration-200"
+                  className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-700 rounded-lg transition-all duration-200"
                 >
                   문의하기
                 </Link>

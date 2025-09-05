@@ -6,6 +6,7 @@ const API_BASE_URL = getApiUrl();
 export interface InquiryData {
   companyId: string;
   customerEmail: string;
+  customerPassword?: string;
   category: string;
   title: string;
   content: string;
