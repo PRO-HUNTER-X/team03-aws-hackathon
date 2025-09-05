@@ -42,18 +42,39 @@ cat docs/infra/tasks/sprint-1.md      # 인프라 개발자
 q chat
 ```
 
-### 2. 코드 개발 워크플로우 (main 브랜치)
+### 2. 코드 개발 워크플로우 (피쳐 브랜치)
 
-#### 코드 작업 시
+#### 새 기능 개발 시
 ```bash
-# 최신 변경사항 동기화
+# 1. 최신 main 동기화
+git checkout main
 git pull origin main
 
-# 코드 개발 (src/, components/, infrastructure/ 등)
-# 개발 완료 후 즉시 푸시
+# 2. 피쳐 브랜치 생성 (역할별 명명 규칙)
+git checkout -b feat/backend-inquiry-api      # 백엔드
+git checkout -b feat/frontend-inquiry-form    # 프론트엔드  
+git checkout -b feat/infra-lambda-setup       # 인프라
+
+# 3. 코드 개발
+# Q Agent 활용하여 개발
+q chat "현재 API 명세에 맞춰 문의 접수 엔드포인트 구현해줘"
+
+# 4. 개발 완료 후 커밋
 git add .
 git commit -m "feat: 구현한 기능 설명"
-git push origin main
+git push origin feat/your-branch-name
+
+# 5. PR 생성 및 머지
+# GitHub에서 PR 생성 → 팀원 리뷰 → 머지 → 브랜치 삭제
+```
+
+#### 다른 팀원 작업 반영
+```bash
+# 정기적으로 main 최신 변경사항 반영
+git checkout main
+git pull origin main
+git checkout feat/your-branch
+git rebase main  # 또는 git merge main
 ```
 
 ### 3. 문서 업데이트 워크플로우 (피쳐 브랜치)
@@ -132,10 +153,11 @@ q chat "현재 데이터베이스 스키마와 API 명세가 일치하는지 검
 ## ⚡ 해커톤 협업 팁
 
 ### 충돌 방지 전략
-- **코드 vs 문서 분리**: 코드는 main, 문서는 피쳐 브랜치
-- **역할별 문서 영역**: 본인 담당 docs 폴더만 수정
-- **실시간 소통**: 문서 수정 전 팀 채팅에 공지
-- **빠른 머지**: 문서 PR은 30분 내 머지
+- **코드**: feat/ 브랜치에서 개발 후 PR
+- **문서**: docs/ 브랜치에서 수정 후 PR  
+- **역할별 영역**: 본인 담당 폴더/파일만 수정
+- **실시간 소통**: 중요 변경사항은 팀 채팅에 즉시 공지
+- **빠른 리뷰**: PR은 2시간 내 리뷰 및 머지
 
 ### 커뮤니케이션 규칙
 - **Slack/Discord**: 
@@ -147,19 +169,22 @@ q chat "현재 데이터베이스 스키마와 API 명세가 일치하는지 검
 
 ### 충돌 발생 시 해결법
 ```bash
-# 코드 충돌 (main 브랜치)
+# 코드 충돌 (feat/ 브랜치)
+git checkout main
 git pull origin main
+git checkout feat/your-branch
+git rebase main
 # 충돌 해결 후
 git add .
-git commit -m "fix: resolve merge conflict"
-git push origin main
+git rebase --continue
+git push --force-with-lease origin feat/your-branch
 
-# 문서 충돌 (피쳐 브랜치) - 거의 발생하지 않음
+# 문서 충돌 (docs/ 브랜치) - 거의 발생하지 않음
 git checkout main
 git pull origin main  
 git checkout docs/your-branch
 git rebase main
-# 충돌 해결 후 PR 재생성
+# 충돌 해결 후 PR 업데이트
 ```
 
 ### Q Agent 활용 극대화
