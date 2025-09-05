@@ -29,7 +29,11 @@ class ApiStack(Stack):
         # Bedrock permissions
         lambda_role.add_to_policy(
             iam.PolicyStatement(
-                actions=["bedrock:InvokeModel"],
+                actions=[
+                    "bedrock:InvokeModel",
+                    "bedrock:GetModel",
+                    "bedrock:ListModels"
+                ],
                 resources=["*"]
             )
         )
@@ -56,7 +60,13 @@ class ApiStack(Stack):
             memory_size=512,
             role=lambda_role,
             environment={
-                "DYNAMODB_TABLE": dynamodb_table.table_name
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
+                "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
+                "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
+                "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+                "BEDROCK_MAX_TOKENS": "4096",
+                "BEDROCK_TEMPERATURE": "0.7",
+                "BEDROCK_SELECTION_STRATEGY": "adaptive"
             }
         )
         
@@ -69,7 +79,13 @@ class ApiStack(Stack):
             memory_size=512,
             role=lambda_role,
             environment={
-                "DYNAMODB_TABLE": dynamodb_table.table_name
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
+                "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
+                "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
+                "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+                "BEDROCK_MAX_TOKENS": "4096",
+                "BEDROCK_TEMPERATURE": "0.7",
+                "BEDROCK_SELECTION_STRATEGY": "adaptive"
             }
         )
         
