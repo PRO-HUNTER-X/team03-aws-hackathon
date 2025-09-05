@@ -1,7 +1,7 @@
 import json
 import pytest
 from unittest.mock import patch
-from src.handlers.update_status import lambda_handler
+from lambda_functions.update_status import lambda_handler
 
 
 class TestUpdateStatus:
@@ -23,7 +23,7 @@ class TestUpdateStatus:
             'humanResponse': '문제가 해결되었습니다.'
         }
         
-        with patch('src.handlers.update_status.update_inquiry_status') as mock_update:
+        with patch('lambda_functions.update_status.db_service.update_inquiry_status') as mock_update:
             mock_update.return_value = mock_updated
             
             result = lambda_handler(event, context)
@@ -59,7 +59,7 @@ class TestUpdateStatus:
         }
         context = {}
         
-        with patch('src.handlers.update_status.update_inquiry_status') as mock_update:
+        with patch('lambda_functions.update_status.db_service.update_inquiry_status') as mock_update:
             mock_update.return_value = None
             
             result = lambda_handler(event, context)

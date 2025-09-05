@@ -20,8 +20,9 @@ def require_auth(handler: Callable) -> Callable:
                 'body': ''
             }
         
-        # Authorization 헤더 확인
-        auth_header = event.get('headers', {}).get('Authorization', '')
+        # Authorization 헤더 확인 (대소문자 구분 없이)
+        headers = event.get('headers', {})
+        auth_header = headers.get('Authorization') or headers.get('authorization', '')
         if not auth_header.startswith('Bearer '):
             return {
                 'statusCode': 401,

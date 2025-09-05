@@ -1,7 +1,7 @@
 import json
 import pytest
 from unittest.mock import patch, MagicMock
-from src.handlers.create_inquiry import lambda_handler
+from lambda_functions.create_inquiry import lambda_handler
 
 
 class TestCreateInquiry:
@@ -19,8 +19,8 @@ class TestCreateInquiry:
         }
         context = {}
         
-        with patch('src.handlers.create_inquiry.create_inquiry') as mock_create, \
-             patch('src.handlers.create_inquiry.generate_ai_response') as mock_ai:
+        with patch('lambda_functions.create_inquiry.create_inquiry') as mock_create, \
+             patch('lambda_functions.create_inquiry.generate_ai_response') as mock_ai:
             
             mock_create.return_value = True
             mock_ai.return_value = "AI 응답입니다."
@@ -71,7 +71,7 @@ class TestCreateInquiry:
         }
         context = {}
         
-        with patch('src.handlers.create_inquiry.create_inquiry') as mock_create:
+        with patch('lambda_functions.create_inquiry.create_inquiry') as mock_create:
             mock_create.side_effect = Exception("DB 연결 오류")
             
             result = lambda_handler(event, context)

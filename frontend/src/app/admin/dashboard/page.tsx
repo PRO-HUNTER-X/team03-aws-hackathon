@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { MessageSquare, Clock, CheckCircle, Star } from 'lucide-react'
 import api from '@/lib/api'
 import type { DashboardStats } from '@/lib/types'
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -37,27 +39,39 @@ export default function AdminDashboard() {
       name: '전체 문의',
       value: stats.total_inquiries,
       icon: MessageSquare,
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
+      filter: 'all'
     },
     {
       name: '대기 중',
       value: stats.pending_count,
       icon: Clock,
-      color: 'bg-yellow-500'
+      color: 'bg-yellow-500',
+      filter: 'pending'
     },
     {
       name: '처리 중',
       value: stats.in_progress_count,
       icon: MessageSquare,
-      color: 'bg-orange-500'
+      color: 'bg-orange-500',
+      filter: 'in_progress'
     },
     {
       name: '완료',
       value: stats.completed_count,
       icon: CheckCircle,
-      color: 'bg-green-500'
+      color: 'bg-green-500',
+      filter: 'completed'
     }
   ]
+
+  const handleCardClick = (filter: string) => {
+    if (filter === 'all') {
+      router.push('/admin/inquiries')
+    } else {
+      router.push(`/admin/inquiries?status=${filter}`)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -73,7 +87,11 @@ export default function AdminDashboard() {
         {statCards.map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.name} className="bg-white overflow-hidden shadow rounded-lg">
+            <div 
+              key={item.name} 
+              className="bg-white overflow-hidden shadow rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleCardClick(item.filter)}
+            >
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -99,7 +117,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* 만족도 점수 */}
-      <div className="bg-white shadow rounded-lg">
+      <div 
+        className="bg-white shadow rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+        onClick={() => router.push('/admin/satisfaction')}
+      >
         <div className="px-4 py-5 sm:p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -146,6 +167,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+
     </div>
   )
 }

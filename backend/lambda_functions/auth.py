@@ -1,6 +1,6 @@
 import json
 from typing import Dict, Any
-from ..utils.auth import verify_password, create_access_token, verify_token
+from src.utils.auth import verify_password, create_access_token, verify_token
 
 # 임시 관리자 계정 (실제로는 DynamoDB에서 관리)
 ADMIN_USERS = {
@@ -31,12 +31,15 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     try:
+        path = event.get('path', '')
+        method = event.get('httpMethod')
+        
         # POST /auth/login
-        if event.get('httpMethod') == 'POST' and '/auth/login' in event.get('path', ''):
+        if method == 'POST' and '/login' in path:
             return handle_login(event, headers)
         
         # POST /auth/verify
-        elif event.get('httpMethod') == 'POST' and '/auth/verify' in event.get('path', ''):
+        elif method == 'POST' and '/verify' in path:
             return handle_verify(event, headers)
         
         else:
@@ -64,7 +67,7 @@ def handle_login(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, An
             return {
                 'statusCode': 400,
                 'headers': headers,
-                'body': json.dumps({'error': '이메일과 비밀번호를 입력해주세요'})
+                'body': json.dumps({'error': '이메일과 비밀번호를 입력해주세요'}, ensure_ascii=False)
             }
         
         # 사용자 확인
@@ -73,7 +76,7 @@ def handle_login(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, An
             return {
                 'statusCode': 401,
                 'headers': headers,
-                'body': json.dumps({'error': '이메일 또는 비밀번호가 잘못되었습니다'})
+                'body': json.dumps({'error': '이메일 또는 비밀번호가 잘못되었습니다'}, ensure_ascii=False)
             }
         
         # JWT 토큰 생성
@@ -95,14 +98,14 @@ def handle_login(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, An
                     'name': user['name'],
                     'role': user['role']
                 }
-            })
+            }, ensure_ascii=False)
         }
         
     except json.JSONDecodeError:
         return {
             'statusCode': 400,
             'headers': headers,
-            'body': json.dumps({'error': '잘못된 JSON 형식입니다'})
+            'body': json.dumps({'error': '잘못된 JSON 형식입니다'}, ensure_ascii=False)
         }
 
 def handle_verify(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, Any]:
@@ -114,7 +117,7 @@ def handle_verify(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, A
             return {
                 'statusCode': 401,
                 'headers': headers,
-                'body': json.dumps({'error': '토큰이 필요합니다'})
+                'body': json.dumps({'error': '토큰이 필요합니다'}, ensure_ascii=False)
             }
         
         token = auth_header.split(' ')[1]
@@ -124,7 +127,7 @@ def handle_verify(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, A
             return {
                 'statusCode': 401,
                 'headers': headers,
-                'body': json.dumps({'error': '유효하지 않은 토큰입니다'})
+                'body': json.dumps({'error': '유효하지 않은 토큰입니다'}, ensure_ascii=False)
             }
         
         return {
@@ -137,12 +140,12 @@ def handle_verify(event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, A
                     'name': payload.get('name'),
                     'role': payload.get('role')
                 }
-            })
+            }, ensure_ascii=False)
         }
         
     except Exception as e:
         return {
             'statusCode': 401,
             'headers': headers,
-            'body': json.dumps({'error': '토큰 검증 실패'})
+            'body': json.dumps({'error': '토큰 검증 실패'}, ensure_ascii=False)
         }

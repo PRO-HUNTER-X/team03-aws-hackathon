@@ -3,8 +3,8 @@
 인증 API 테스트 스크립트
 """
 import json
-from src.handlers.auth import lambda_handler as auth_handler
-from src.handlers.admin import lambda_handler as admin_handler
+from lambda_functions.auth import lambda_handler as auth_handler
+from lambda_functions.admin import lambda_handler as admin_handler
 
 def test_login():
     """로그인 테스트"""

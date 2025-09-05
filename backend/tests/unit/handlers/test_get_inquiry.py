@@ -1,7 +1,7 @@
 import json
 import pytest
 from unittest.mock import patch
-from src.handlers.get_inquiry import lambda_handler
+from lambda_functions.get_inquiry import lambda_handler
 
 
 class TestGetInquiry:
@@ -19,7 +19,7 @@ class TestGetInquiry:
             'status': 'pending'
         }
         
-        with patch('src.handlers.get_inquiry.get_inquiry') as mock_get:
+        with patch('lambda_functions.get_inquiry.get_inquiry') as mock_get:
             mock_get.return_value = mock_inquiry
             
             result = lambda_handler(event, context)
@@ -36,7 +36,7 @@ class TestGetInquiry:
         }
         context = {}
         
-        with patch('src.handlers.get_inquiry.get_inquiry') as mock_get:
+        with patch('lambda_functions.get_inquiry.get_inquiry') as mock_get:
             mock_get.return_value = None
             
             result = lambda_handler(event, context)

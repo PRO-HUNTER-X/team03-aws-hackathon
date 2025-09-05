@@ -1,7 +1,7 @@
 import pytest
 import json
 from unittest.mock import patch
-from src.handlers.auth import lambda_handler, handle_login, handle_verify
+from lambda_functions.auth import lambda_handler, handle_login, handle_verify
 
 class TestAuthHandler:
     """인증 핸들러 테스트"""
@@ -73,7 +73,7 @@ class TestAuthHandler:
         body = json.loads(response['body'])
         assert '이메일과 비밀번호를 입력해주세요' in body['error']
     
-    @patch('src.handlers.auth.verify_token')
+    @patch('lambda_functions.auth.verify_token')
     def test_토큰_검증_성공(self, mock_verify_token):
         """유효한 토큰으로 검증 성공"""
         mock_verify_token.return_value = {

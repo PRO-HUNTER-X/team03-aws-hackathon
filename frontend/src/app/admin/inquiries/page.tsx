@@ -1,25 +1,51 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Eye, Filter } from 'lucide-react'
 import api from '@/lib/api'
 import type { Inquiry } from '@/lib/types'
 
 export default function InquiriesPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
+  const [sortBy, setSortBy] = useState<string>('date')
+
+  useEffect(() => {
+    // URL 파라미터에서 status 읽기
+    const urlStatus = searchParams.get('status')
+    if (urlStatus) {
+      setStatusFilter(urlStatus)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     fetchInquiries()
-  }, [statusFilter])
+  }, [statusFilter, sortBy])
 
   const fetchInquiries = async () => {
     try {
       const params = statusFilter !== 'all' ? { status: statusFilter } : {}
       const response = await api.get<{ inquiries: Inquiry[] }>('/admin/inquiries', { params })
-      setInquiries(response.data.inquiries)
+      let sortedInquiries = [...response.data.inquiries]
+      
+      // 정렬 적용
+      if (sortBy === 'satisfaction') {
+        sortedInquiries.sort((a, b) => {
+          const aScore = a.satisfaction_score || 0
+          const bScore = b.satisfaction_score || 0
+          return bScore - aScore // 높은 점수부터
+        })
+      } else if (sortBy === 'date') {
+        sortedInquiries.sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      }
+      
+      setInquiries(sortedInquiries)
     } catch (error) {
       console.error('문의 목록 조회 실패:', error)
     } finally {
@@ -31,9 +57,6 @@ export default function InquiriesPage() {
     try {
       await api.put(`/admin/inquiries/${id}/status`, { status })
       fetchInquiries() // 목록 새로고침
-      if (selectedInquiry?.id === id) {
-        setSelectedInquiry({ ...selectedInquiry, status: status as any })
-      }
     } catch (error) {
       console.error('상태 변경 실패:', error)
     }
@@ -89,19 +112,33 @@ export default function InquiriesPage() {
           </p>
         </div>
 
-        {/* 필터 */}
-        <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-gray-400" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="all">전체</option>
-            <option value="pending">대기중</option>
-            <option value="in_progress">처리중</option>
-            <option value="completed">완료</option>
-          </select>
+        {/* 필터 및 정렬 */}
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="all">전체</option>
+              <option value="pending">대기중</option>
+              <option value="in_progress">처리중</option>
+              <option value="completed">완료</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">정렬:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="date">날짜순</option>
+              <option value="satisfaction">만족도순</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -109,7 +146,10 @@ export default function InquiriesPage() {
         <ul className="divide-y divide-gray-200">
           {inquiries.map((inquiry) => (
             <li key={inquiry.id}>
-              <div className="px-4 py-4 flex items-center justify-between">
+              <div 
+                className="px-4 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => router.push(`/admin/inquiries/${inquiry.id}`)}
+              >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-3">
                     <p className="text-sm font-medium text-gray-900 truncate">
@@ -127,19 +167,17 @@ export default function InquiriesPage() {
                 <div className="flex items-center space-x-2">
                   <select
                     value={inquiry.status}
-                    onChange={(e) => updateStatus(inquiry.id, e.target.value)}
+                    onChange={(e) => {
+                      e.stopPropagation() // 카드 클릭 이벤트 방지
+                      updateStatus(inquiry.id, e.target.value)
+                    }}
                     className="text-sm border border-gray-300 rounded px-2 py-1"
+                    onClick={(e) => e.stopPropagation()} // 카드 클릭 이벤트 방지
                   >
                     <option value="pending">대기중</option>
                     <option value="in_progress">처리중</option>
                     <option value="completed">완료</option>
                   </select>
-                  <button
-                    onClick={() => setSelectedInquiry(inquiry)}
-                    className="p-2 text-gray-400 hover:text-gray-600"
-                  >
-                    <Eye className="h-5 w-5" />
-                  </button>
                 </div>
               </div>
             </li>
@@ -147,53 +185,7 @@ export default function InquiriesPage() {
         </ul>
       </div>
 
-      {/* 문의 상세 모달 */}
-      {selectedInquiry && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="px-6 py-4 border-b">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">{selectedInquiry.title}</h3>
-                <button
-                  onClick={() => setSelectedInquiry(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <div className="px-6 py-4 space-y-4">
-              <div>
-                <h4 className="font-medium text-gray-900">문의 내용</h4>
-                <p className="mt-2 text-gray-700">{selectedInquiry.content}</p>
-              </div>
-              
-              {selectedInquiry.ai_response && (
-                <div>
-                  <h4 className="font-medium text-gray-900">AI 응답</h4>
-                  <div className="mt-2 p-3 bg-blue-50 rounded-md">
-                    <p className="text-gray-700">{selectedInquiry.ai_response}</p>
-                  </div>
-                </div>
-              )}
 
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                <span>카테고리: {selectedInquiry.category}</span>
-                <span>긴급도: {selectedInquiry.urgency}</span>
-                <span>생성일: {new Date(selectedInquiry.created_at).toLocaleString()}</span>
-              </div>
-
-              {selectedInquiry.satisfaction_score && (
-                <div>
-                  <span className="text-sm text-gray-500">
-                    만족도: {selectedInquiry.satisfaction_score}/5
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

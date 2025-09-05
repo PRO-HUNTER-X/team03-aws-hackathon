@@ -23,13 +23,38 @@ def generate_ai_response(inquiry_data: Dict[str, Any]) -> str:
     return f"{inquiry_data['title']}에 대한 AI 응답입니다."
 
 def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
+    """문의 생성 Lambda 핸들러"""
+    
+    # CORS 헤더
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    }
+    
+    # OPTIONS 요청 처리
+    if event.get('httpMethod') == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': ''
+        }
+    
     try:
         body = json.loads(event.get('body', '{}'))
         
         # 입력 검증
         validation_errors = validate_inquiry_data(body)
         if validation_errors:
-            return error_response(f"Validation errors: {', '.join(validation_errors)}", 400)
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({
+                    'success': False,
+                    'error': {'message': f"입력 검증 실패: {', '.join(validation_errors)}"}
+                }, ensure_ascii=False)
+            }
         
         # 문의 ID 생성
         inquiry_id = str(uuid.uuid4())
@@ -61,8 +86,22 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
             'status': 'ai_responded'
         }
         
-        return success_response(result)
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': json.dumps({
+                'success': True,
+                'data': result
+            }, ensure_ascii=False)
+        }
         
     except Exception as e:
-        logger.error(f"Error creating inquiry: {str(e)}")
-        return error_response(str(e), 500)
+        logger.error(f"문의 생성 중 오류: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': headers,
+            'body': json.dumps({
+                'success': False,
+                'error': {'message': '서버 오류가 발생했습니다'}
+            }, ensure_ascii=False)
+        }

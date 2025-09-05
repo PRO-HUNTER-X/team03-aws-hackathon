@@ -1,6 +1,6 @@
 import json
 from typing import Dict, Any
-from ..utils.middleware import admin_required
+from src.utils.middleware import admin_required
 
 # 임시 문의 데이터 (실제로는 DynamoDB에서 관리)
 INQUIRIES = [
@@ -39,18 +39,25 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         "Access-Control-Allow-Headers": "Content-Type, Authorization"
     }
     
+    # OPTIONS 요청 처리
+    if event.get('httpMethod') == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': ''
+        }
+    
     try:
         method = event.get('httpMethod')
         path = event.get('path', '')
         
         # GET /admin/inquiries - 문의 목록 조회
-        if method == 'GET' and '/admin/inquiries' in path:
-            return handle_get_inquiries(event, headers)
-        
-        # GET /admin/inquiries/{id} - 문의 상세 조회
-        elif method == 'GET' and '/admin/inquiries/' in path:
-            inquiry_id = path.split('/')[-1]
-            return handle_get_inquiry(inquiry_id, headers)
+        if method == 'GET' and '/inquiries' in path and not path.endswith('/status'):
+            if path.count('/') == 2:  # /admin/inquiries
+                return handle_get_inquiries(event, headers)
+            else:  # /admin/inquiries/{id}
+                inquiry_id = path.split('/')[-1]
+                return handle_get_inquiry(inquiry_id, headers)
         
         # PUT /admin/inquiries/{id}/status - 문의 상태 변경
         elif method == 'PUT' and '/status' in path:
@@ -58,7 +65,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return handle_update_status(inquiry_id, event, headers)
         
         # GET /admin/dashboard - 대시보드 통계
-        elif method == 'GET' and '/admin/dashboard' in path:
+        elif method == 'GET' and '/dashboard' in path:
             return handle_dashboard(headers)
         
         else:
@@ -91,7 +98,7 @@ def handle_get_inquiries(event: Dict[str, Any], headers: Dict[str, str]) -> Dict
         'body': json.dumps({
             'inquiries': filtered_inquiries,
             'total': len(filtered_inquiries)
-        })
+        }, ensure_ascii=False)
     }
 
 def handle_get_inquiry(inquiry_id: str, headers: Dict[str, str]) -> Dict[str, Any]:
@@ -102,13 +109,13 @@ def handle_get_inquiry(inquiry_id: str, headers: Dict[str, str]) -> Dict[str, An
         return {
             'statusCode': 404,
             'headers': headers,
-            'body': json.dumps({'error': '문의를 찾을 수 없습니다'})
+            'body': json.dumps({'error': '문의를 찾을 수 없습니다'}, ensure_ascii=False)
         }
     
     return {
         'statusCode': 200,
         'headers': headers,
-        'body': json.dumps({'inquiry': inquiry})
+        'body': json.dumps({'inquiry': inquiry}, ensure_ascii=False)
     }
 
 def handle_update_status(inquiry_id: str, event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, Any]:
@@ -121,7 +128,7 @@ def handle_update_status(inquiry_id: str, event: Dict[str, Any], headers: Dict[s
             return {
                 'statusCode': 400,
                 'headers': headers,
-                'body': json.dumps({'error': '상태값이 필요합니다'})
+                'body': json.dumps({'error': '상태값이 필요합니다'}, ensure_ascii=False)
             }
         
         # 문의 찾기 및 상태 업데이트
@@ -131,20 +138,23 @@ def handle_update_status(inquiry_id: str, event: Dict[str, Any], headers: Dict[s
                 return {
                     'statusCode': 200,
                     'headers': headers,
-                    'body': json.dumps({'message': '상태가 업데이트되었습니다', 'inquiry': inquiry})
+                    'body': json.dumps({
+                        'message': '상태가 업데이트되었습니다', 
+                        'inquiry': inquiry
+                    }, ensure_ascii=False)
                 }
         
         return {
             'statusCode': 404,
             'headers': headers,
-            'body': json.dumps({'error': '문의를 찾을 수 없습니다'})
+            'body': json.dumps({'error': '문의를 찾을 수 없습니다'}, ensure_ascii=False)
         }
         
     except json.JSONDecodeError:
         return {
             'statusCode': 400,
             'headers': headers,
-            'body': json.dumps({'error': '잘못된 JSON 형식입니다'})
+            'body': json.dumps({'error': '잘못된 JSON 형식입니다'}, ensure_ascii=False)
         }
 
 def handle_dashboard(headers: Dict[str, str]) -> Dict[str, Any]:
@@ -169,5 +179,5 @@ def handle_dashboard(headers: Dict[str, str]) -> Dict[str, Any]:
                 'completed_count': completed_count,
                 'avg_satisfaction': round(avg_satisfaction, 1)
             }
-        })
+        }, ensure_ascii=False)
     }

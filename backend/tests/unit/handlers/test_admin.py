@@ -1,7 +1,7 @@
 import pytest
 import json
 from unittest.mock import patch
-from src.handlers.admin import handle_get_inquiries, handle_dashboard, handle_get_inquiry, handle_update_status
+from lambda_functions.admin import handle_get_inquiries, handle_dashboard, handle_get_inquiry, handle_update_status
 
 class TestAdminHandler:
     """관리자 API 핸들러 테스트"""
