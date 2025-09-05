@@ -17,10 +17,13 @@ show_usage() {
     echo "  --fast, -f     빠른 배포 (의존성 설치 스킵)"
     echo "  --help, -h     도움말"
     echo ""
+    echo "기본 배포: pip install, CDK bootstrap 포함"
+    echo "빠른 배포: 의존성 설치 스킵, 부트스트랩 스킵"
+    echo ""
     echo "예시:"
-    echo "  ./deploy.sh frontend      # 프론트엔드만 배포"
+    echo "  ./deploy.sh frontend      # 프론트엔드 기본 배포"
     echo "  ./deploy.sh api --fast    # API 빠른 배포"
-    echo "  ./deploy.sh               # 전체 배포"
+    echo "  ./deploy.sh               # 전체 기본 배포"
 }
 
 # 환경 설정
@@ -96,8 +99,23 @@ deploy_stack() {
             # Next.js 빌드
             echo "🔨 Next.js 빌드 중..."
             cd ../frontend
-            npm install > /dev/null 2>&1
-            npm run build > /dev/null 2>&1
+            
+            # Node.js 의존성 설치
+            if [ "$FAST_MODE" != "true" ] || [ ! -d "node_modules" ]; then
+                echo "  📦 npm 의존성 설치..."
+                npm install
+            fi
+            
+            # 빌드 실행
+            echo "  🔨 빌드 실행..."
+            npm run build
+            
+            # 빌드 결과 확인
+            if [ ! -d "public" ]; then
+                echo "❌ public 폴더가 없습니다"
+                exit 1
+            fi
+            
             cd ../infra
             
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
@@ -112,8 +130,23 @@ deploy_stack() {
             # Next.js 빌드
             echo "🔨 Next.js 빌드 중..."
             cd ../frontend
-            npm install > /dev/null 2>&1
-            npm run build > /dev/null 2>&1
+            
+            # Node.js 의존성 설치
+            if [ "$FAST_MODE" != "true" ] || [ ! -d "node_modules" ]; then
+                echo "  📦 npm 의존성 설치..."
+                npm install
+            fi
+            
+            # 빌드 실행
+            echo "  🔨 빌드 실행..."
+            npm run build
+            
+            # 빌드 결과 확인
+            if [ ! -d "public" ]; then
+                echo "❌ public 폴더가 없습니다"
+                exit 1
+            fi
+            
             cd ../infra
             
             # 의존성 순서대로 배포
@@ -135,7 +168,7 @@ deploy_stack() {
 
 # 메인 실행
 main() {
-    local FAST_MODE=false
+    local FAST_MODE=false  # 기본값 false
     local STACK_NAME="all"
     
     # 첫 번째 인자가 스택명인지 확인
@@ -167,7 +200,12 @@ main() {
         esac
     done
     
-    echo "🚀 CS 챗봇 배포 시작 (스택: $STACK_NAME, 빠른모드: $FAST_MODE)"
+    local mode_text="기본"
+    if [ "$FAST_MODE" = "true" ]; then
+        mode_text="빠른"
+    fi
+    
+    echo "🚀 CS 챗봇 배포 시작 (스택: $STACK_NAME, 모드: $mode_text)"
     echo "📌 고정 엔드포인트 유지: 모든 개발자가 동일한 스택 업데이트"
     
     setup_environment

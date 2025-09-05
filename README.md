@@ -50,7 +50,7 @@ aws configure --profile aws-hackathon
 ```bash
 # 개발 중 빠른 재배포용
 ./deploy.sh api --fast
-./deploy.sh frontend -f
+./deploy.sh frontend --fast
 ```
 
 **도움말**
@@ -132,12 +132,17 @@ cd team03-aws-hackathon
 
 ### ⚡ 개발 중 빠른 배포 팁
 ```bash
-# 백엔드 수정 후
+# 첫 배포 (전체 설치)
+./deploy.sh frontend
+
+# 개발 중 빠른 재배포
+./deploy.sh frontend --fast
 ./deploy.sh api --fast
 
-# 프론트엔드 수정 후  
-./deploy.sh frontend --fast
-
-# 데이터베이스 스키마 변경 후
+# 데이터베이스 스키마 변경
 ./deploy.sh data
 ```
+
+### 🔧 배포 모드 차이점
+- **기본 모드**: pip install + CDK bootstrap + npm install 포함
+- **빠른 모드 (--fast)**: 의존성 설치 스킵하여 5-10초 단축
