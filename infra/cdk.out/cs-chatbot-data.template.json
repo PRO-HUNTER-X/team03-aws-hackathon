@@ -76,7 +76,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGSQqAIBQA0LO4119ZnaALRLWP7xDZoOBAhHT3oFbvceBVAyXBKzCpdnYYAXmMKHeKV5jVbfF0SkCeUByadov98tBBB5e81A/t77g6W9RQ1dCSLRjDfLLRnBqG3xd8uK14ZQAAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXIyQmAMBBA0Vq8J+NegQUo6l0mixiXRMwEEbF3QU//8TPI0gKSCE/PpVr4agTcHaFcGJ5+UJfFzSkBd49i1awa7YeHtdq7cMhv1YH2QA9rLpqcjXNIcyij2RvDj2DJbBravy80oEwUbwAAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-data/CDKMetadata/Default"
@@ -84,6 +84,12 @@
   }
  },
  "Outputs": {
+  "TableName": {
+   "Description": "DynamoDB Table Name",
+   "Value": {
+    "Ref": "CSInquiryTableFB9F4D47"
+   }
+  },
   "ExportsOutputFnGetAttCSInquiryTableFB9F4D47Arn1628D4EA": {
    "Value": {
     "Fn::GetAtt": [

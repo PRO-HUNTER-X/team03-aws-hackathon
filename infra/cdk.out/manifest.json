@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/79f73ea987b02a14ba9c63b4249b1c74798b33363950aa25adad59fd26f4055e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/9fb72bf24173b40c6b1abb738f3e54c75a963deaee98852d21ceb370ade5e91d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,6 +46,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CSInquiryTableFB9F4D47"
+          }
+        ],
+        "/cs-chatbot-data/TableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableName"
           }
         ],
         "/cs-chatbot-data/CDKMetadata/Default": [
@@ -98,7 +104,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fcb590937558cd5cf7cd1328bef932ea2ad25c2fde346cec21945b7ecd48dc5c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/954adca69fd31c9e9826f33870f1bc3217dac9801788b8b13dd98b74fa167ad7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -160,7 +166,7 @@
         "/cs-chatbot-api/CSChatbotAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b"
+            "data": "CSChatbotAPIDeployment42D3E63C07ce1a94e12a9ab12f7769fa3b9773db"
           }
         ],
         "/cs-chatbot-api/CSChatbotAPI/DeploymentStage.prod/Resource": [
@@ -289,6 +295,36 @@
             "data": "CSChatbotAPIapiinquiriesidGET9B2425EC"
           }
         ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalate0D5235E7"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalateOPTIONS72CD2B81"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries.{id}.escalate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalatePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiinquiriesidescalate63D4F8C4"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries.{id}.escalate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalatePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiinquiriesidescalateEDC8D014"
+          }
+        ],
+        "/cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSChatbotAPIapiinquiriesidescalatePOST651CE598"
+          }
+        ],
         "/cs-chatbot-api/CSChatbotAPI/Default/api/ai-response/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -363,7 +399,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/84394f60e62974f190e2c980176b1e812ee73f5fbac8ac9df2d9765e8c7d4666.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fc0e2922ab4e287a67c19807ca08eddcd5be8b876aafec91b59302f9ad4e282a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
