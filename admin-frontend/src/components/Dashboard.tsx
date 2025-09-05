@@ -242,23 +242,7 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
             </div>
           </div>
 
-          {stats && (
-            <div className="mt-8 bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">문의 유형별 통계</h3>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {Object.entries(stats.types).map(([type, count]) => (
-                    <div key={type} className="text-center p-4 border rounded-lg">
-                      <p className="text-sm text-gray-600">{type}</p>
-                      <p className="text-2xl font-bold text-blue-600 mt-1">{count}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+
         </div>
       </main>
     </div>

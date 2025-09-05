@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ScanCommand } from '@aws-sdk/lib-dynamodb'
-import { dynamodb, TABLE_NAME } from '@/lib/dynamodb'
+import { mockInquiries } from '@/lib/mock-data'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '5')
 
-    const command = new ScanCommand({
-      TableName: TABLE_NAME,
-    })
-
-    const result = await dynamodb.send(command)
-    const items = result.Items || []
-
-    // 최신순 정렬 후 제한
-    const recentInquiries = items
+    // Mock 데이터에서 최신순 정렬 후 제한
+    const recentInquiries = [...mockInquiries]
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, limit)
 
