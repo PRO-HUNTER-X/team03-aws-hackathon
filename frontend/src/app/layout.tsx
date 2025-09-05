@@ -1,11 +1,34 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+const pretendard = localFont({
+  src: [
+    {
+      path: "./fonts/Pretendard-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Pretendard-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Pretendard-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Pretendard-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-pretendard",
+  display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -25,7 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body className={`${pretendard.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <nav className="border-b bg-white">
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
