@@ -1,0 +1,5 @@
+
+> frontend@0.1.0 dev
+> next dev --turbopack
+
+You are using Node.js 18.15.0. For Next.js, Node.js version "^18.18.0 || ^19.8.0 || >= 20.0.0" is required.

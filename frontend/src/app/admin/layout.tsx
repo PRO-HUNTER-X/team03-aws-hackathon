@@ -16,6 +16,12 @@ export default function AdminLayout({
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
+    // 로그인 페이지는 인증 체크 우회
+    if (pathname === '/admin/login') {
+      setUser({ email: 'guest', name: 'Guest', role: 'guest' })
+      return
+    }
+
     const token = localStorage.getItem('admin_token')
     const userData = localStorage.getItem('admin_user')
 
@@ -29,7 +35,7 @@ export default function AdminLayout({
     } catch {
       router.push('/admin/login')
     }
-  }, [router])
+  }, [router, pathname])
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
@@ -39,6 +45,11 @@ export default function AdminLayout({
 
   if (!user) {
     return <div className="min-h-screen flex items-center justify-center">로딩 중...</div>
+  }
+
+  // 로그인 페이지는 레이아웃 없이 렌더링
+  if (pathname === '/admin/login') {
+    return <>{children}</>
   }
 
   const navigation = [
