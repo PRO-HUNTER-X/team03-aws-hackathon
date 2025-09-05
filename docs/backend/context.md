@@ -2,8 +2,9 @@
 
 ## 아키텍처
 - **패턴**: 서버리스 마이크로서비스
-- **프레임워크**: Node.js + Express (Lambda 런타임)
-- **ORM**: Prisma (PostgreSQL)
+- **언어**: Python 3.11
+- **런타임**: AWS Lambda (순수 함수)
+- **데이터베이스**: DynamoDB (서버리스)
 - **인증**: JWT + AWS Cognito
 
 ## 핵심 서비스 모듈
@@ -34,9 +35,30 @@
 - AI 응답 생성: < 3초
 - 동시 처리: 100 req/sec
 
+## Lambda 함수 구조
+```
+backend/
+├── src/
+│   ├── handlers/          # Lambda 핸들러 함수들
+│   │   ├── create_inquiry.py
+│   │   ├── get_inquiry.py
+│   │   ├── list_inquiries.py
+│   │   ├── update_status.py
+│   │   └── escalate_inquiry.py
+│   ├── services/          # 비즈니스 로직
+│   │   ├── ai_service.py
+│   │   ├── email_service.py
+│   │   └── dynamodb_service.py
+│   └── utils/             # 공통 유틸리티
+│       ├── response.py
+│       └── validation.py
+├── requirements.txt
+└── template.yaml          # SAM 템플릿
+```
+
 ## 현재 진행 상황
-- [ ] 프로젝트 초기 설정
-- [ ] 데이터베이스 연결 설정
+- [ ] Python Lambda 프로젝트 구조 설정
+- [ ] DynamoDB 서비스 연동
 - [ ] AWS Bedrock 연동
-- [ ] 기본 CRUD API 구현
-- [ ] 인증 미들웨어 구현
+- [ ] 핵심 Lambda 함수 구현
+- [ ] 에러 핸들링 및 로깅 구현

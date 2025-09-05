@@ -15,14 +15,14 @@
 ### Backend (서버리스)
 ```
 기존: Node.js + Express + Prisma + PostgreSQL
-개선: Python + AWS Lambda + API Gateway + DynamoDB + Step Functions
+개선: Python 순수 Lambda + API Gateway + DynamoDB + boto3
 ```
 
 **변경 이유:**
-- **Python**: AI/ML 라이브러리 생태계 우수, AWS SDK 완성도 높음
-- **Lambda**: 서버 관리 불필요, 자동 스케일링
+- **Python Lambda**: 빠른 개발, 최소 콜드 스타트
 - **DynamoDB**: 서버리스 NoSQL, 밀리초 응답시간
-- **Step Functions**: 복잡한 워크플로우 관리 (문의 → AI → 에스컬레이션)
+- **boto3**: AWS 서비스 완벽 통합
+- **순수 함수**: 프레임워크 오버헤드 제거
 
 ### Frontend (정적 호스팅)
 ```
@@ -147,106 +147,99 @@ AWS CloudTrail: API 호출 감사
 ## 🔧 DynamoDB 테이블 설계
 
 ### Companies 테이블
-```javascript
+```python
 {
-  PK: "COMPANY#${companyId}",
-  SK: "METADATA",
-  name: "회사명",
-  apiKey: "API 키",
-  domainContext: "회사 도메인 정보",
-  faqData: {...},
-  subscriptionTier: "basic|pro|enterprise",
-  createdAt: "2024-01-01T00:00:00Z"
+    "PK": "COMPANY#{company_id}",
+    "SK": "METADATA",
+    "name": "회사명",
+    "api_key": "API 키",
+    "domain_context": "회사 도메인 정보",
+    "faq_data": {...},
+    "subscription_tier": "basic|pro|enterprise",
+    "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
 ### Inquiries 테이블
-```javascript
+```python
 {
-  PK: "INQUIRY#${inquiryId}",
-  SK: "METADATA",
-  GSI1PK: "COMPANY#${companyId}",
-  GSI1SK: "INQUIRY#${timestamp}",
-  customerEmail: "customer@example.com",
-  category: "기술문의",
-  title: "문의 제목",
-  content: "문의 내용",
-  urgency: "high|medium|low",
-  status: "pending|ai_responded|escalated|resolved",
-  aiResponse: "AI 응답 내용",
-  humanResponse: "인간 응답 내용",
-  estimatedResponseTime: 180,
-  createdAt: "2024-01-01T00:00:00Z"
+    "PK": "INQUIRY#{inquiry_id}",
+    "SK": "METADATA",
+    "GSI1PK": "COMPANY#{company_id}",
+    "GSI1SK": "INQUIRY#{timestamp}",
+    "customer_email": "customer@example.com",
+    "category": "기술문의",
+    "title": "문의 제목",
+    "content": "문의 내용",
+    "urgency": "high|medium|low",
+    "status": "pending|ai_responded|escalated|resolved",
+    "ai_response": "AI 응답 내용",
+    "human_response": "인간 응답 내용",
+    "estimated_response_time": 180,
+    "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
 ### AI_Responses 테이블
-```javascript
+```python
 {
-  PK: "AI_RESPONSE#${responseId}",
-  SK: "METADATA",
-  GSI1PK: "INQUIRY#${inquiryId}",
-  GSI1SK: "RESPONSE#${timestamp}",
-  modelUsed: "claude-3-5-sonnet",
-  promptTokens: 500,
-  completionTokens: 200,
-  responseQualityScore: 4.2,
-  createdAt: "2024-01-01T00:00:00Z"
+    "PK": "AI_RESPONSE#{response_id}",
+    "SK": "METADATA",
+    "GSI1PK": "INQUIRY#{inquiry_id}",
+    "GSI1SK": "RESPONSE#{timestamp}",
+    "model_used": "claude-3-5-sonnet",
+    "prompt_tokens": 500,
+    "completion_tokens": 200,
+    "response_quality_score": 4.2,
+    "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
 ---
 
-## 🚀 Lambda 함수 구조 (Python)
+## 🚀 Python Lambda 함수 구조
 
-### 1. inquiry-handler
+### 1. create_inquiry.py
 ```python
 # POST /api/inquiries
 import json
-import boto3
-from datetime import datetime
+import uuid
+from services.dynamodb_service import save_inquiry
+from services.ai_service import generate_response
 
 def lambda_handler(event, context):
     # 1. 입력 검증
     # 2. DynamoDB에 문의 저장
-    # 3. Step Functions 워크플로우 시작
-    # 4. 응답 반환
+    # 3. AI 응답 생성
+    # 4. 결과 반환
     pass
 ```
 
-### 2. ai-response-generator
+### 2. get_inquiry.py
 ```python
-# Step Functions에서 호출
-import boto3
-from boto3.dynamodb.conditions import Key
+# GET /api/inquiries/{id}
+import json
+from services.dynamodb_service import get_inquiry_by_id
 
 def lambda_handler(event, context):
-    # 1. 회사 컨텍스트 조회
-    # 2. Comprehend로 감정/우선순위 분석
-    # 3. Bedrock으로 AI 응답 생성
-    # 4. 품질 점수 계산
-    # 5. DynamoDB 업데이트
+    # 1. 문의 ID 추출
+    # 2. DynamoDB에서 조회
+    # 3. 결과 반환
     pass
 ```
 
-### 3. status-tracker
-```python
-# GET /api/inquiries/{id}/status
-def lambda_handler(event, context):
-    # 1. 문의 ID로 상태 조회
-    # 2. 예상 응답 시간 계산
-    # 3. 진행 상황 반환
-    pass
-```
-
-### 4. escalation-handler
+### 3. escalate_inquiry.py
 ```python
 # POST /api/inquiries/{id}/escalate
+import json
+from services.email_service import send_escalation_email
+from services.dynamodb_service import update_inquiry_status
+
 def lambda_handler(event, context):
     # 1. 에스컬레이션 요청 처리
     # 2. SES로 관리자 이메일 발송
-    # 3. SNS로 푸시 알림
-    # 4. 상태 업데이트
+    # 3. 상태 업데이트
+    # 4. 결과 반환
     pass
 ```
 
