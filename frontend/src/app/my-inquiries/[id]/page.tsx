@@ -1,6 +1,6 @@
 import InquiryDetailClient from './inquiry-detail-client';
 
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<{ id: string }[]> {
   // 정적 생성할 기본 ID들
   return [
     { id: 'demo-001' },

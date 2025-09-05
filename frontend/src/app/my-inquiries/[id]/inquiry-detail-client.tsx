@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, MessageSquare, Bot, User, Clock } from "lucide-react";
-import { mockApi, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/mock-data";
+import { getInquiryById, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/api";
 
 export default function InquiryDetailClient() {
   const params = useParams();
@@ -26,7 +26,7 @@ export default function InquiryDetailClient() {
   const loadInquiry = async (id: string) => {
     try {
       setIsLoading(true);
-      const data = await mockApi.getInquiry(id);
+      const data = await getInquiryById(id);
       if (data) {
         setInquiry(data);
       } else {

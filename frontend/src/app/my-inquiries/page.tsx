@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Plus, Filter } from "lucide-react";
-import { mockApi, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/mock-data";
+import { getMyInquiries, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/api";
 
 export default function MyInquiriesPage() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -30,7 +30,7 @@ export default function MyInquiriesPage() {
   const loadInquiries = async () => {
     try {
       setIsLoading(true);
-      const data = await mockApi.getMyInquiries();
+      const data = await getMyInquiries();
       setInquiries(data);
     } catch (error) {
       console.error("문의 목록 로드 실패:", error);

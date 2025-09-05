@@ -143,6 +143,18 @@ export async function escalateInquiry(inquiryId: string, reason?: string): Promi
   }
 }
 
+export interface Inquiry {
+  id: string;
+  title: string;
+  content: string;
+  status: 'pending' | 'ai_responded' | 'human_responded' | 'resolved';
+  created_at: string;
+  updated_at: string;
+  category: string;
+  ai_response?: string;
+  human_response?: string;
+}
+
 export interface InquiryDetail {
   inquiry_id: string;
   companyId: string;
@@ -155,6 +167,82 @@ export interface InquiryDetail {
   created_at: string;
   updatedAt?: string;
   estimatedResponseTime: number;
+}
+
+export const getStatusLabel = (status: string): string => {
+  switch (status) {
+    case 'pending': return '접수됨';
+    case 'ai_responded': return 'AI 답변 완료';
+    case 'human_responded': return '상담사 답변 완료';
+    case 'resolved': return '해결됨';
+    default: return '알 수 없음';
+  }
+};
+
+export const getStatusColor = (status: string): string => {
+  switch (status) {
+    case 'pending': return 'bg-yellow-100 text-yellow-800';
+    case 'ai_responded': return 'bg-blue-100 text-blue-800';
+    case 'human_responded': return 'bg-green-100 text-green-800';
+    case 'resolved': return 'bg-gray-100 text-gray-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
+
+export async function getMyInquiries(): Promise<Inquiry[]> {
+  const url = `${API_BASE_URL}/api/inquiries`;
+  
+  logger.info('내 문의 목록 조회 API 호출 시작', { url }, 'api');
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    logger.info('내 문의 목록 조회 API 응답 수신', { 
+      status: response.status, 
+      statusText: response.statusText 
+    }, 'api');
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      logger.error('내 문의 목록 조회 API 에러', new Error(result.error || 'Failed to get inquiries'), {
+        status: response.status,
+        result
+      }, 'api');
+      throw new Error(result.error || 'Failed to get inquiries');
+    }
+
+    logger.info('내 문의 목록 조회 성공', { count: result.data?.length || 0 }, 'api');
+    return result.data || [];
+  } catch (error) {
+    logger.error('내 문의 목록 조회 네트워크 에러', error as Error, { url }, 'api');
+    throw error;
+  }
+}
+
+export async function getInquiryById(id: string): Promise<Inquiry | null> {
+  try {
+    const detail = await getInquiry(id);
+    return {
+      id: detail.inquiry_id,
+      title: detail.title,
+      content: detail.content,
+      status: detail.status as 'pending' | 'ai_responded' | 'human_responded' | 'resolved',
+      created_at: detail.created_at,
+      updated_at: detail.updatedAt || detail.created_at,
+      category: detail.category,
+      ai_response: undefined,
+      human_response: undefined
+    };
+  } catch (error) {
+    logger.error('문의 상세 조회 실패', error as Error, { id }, 'api');
+    return null;
+  }
 }
 
 export async function getInquiry(inquiryId: string): Promise<InquiryDetail> {
