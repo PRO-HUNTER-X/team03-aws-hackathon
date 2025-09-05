@@ -60,6 +60,19 @@ install_dependencies() {
     fi
 }
 
+# 배포 상태 확인
+check_deployment_status() {
+    local stack_name=$1
+    local status=$(aws cloudformation describe-stacks --stack-name $stack_name --query 'Stacks[0].StackStatus' --output text 2>/dev/null || echo "NOT_EXISTS")
+    
+    if [[ $status == *"IN_PROGRESS"* ]]; then
+        echo "⚠️  $stack_name 스택이 현재 배포 중입니다. 잠시 후 다시 시도하세요."
+        echo "현재 상태: $status"
+        return 1
+    fi
+    return 0
+}
+
 # 개별 스택 배포
 deploy_stack() {
     local stack_name=$1
@@ -68,18 +81,26 @@ deploy_stack() {
     case $stack_name in
         "data")
             echo "💾 데이터 스택 배포 중..."
+            check_deployment_status "cs-chatbot-data" || exit 1
             cdk deploy cs-chatbot-data --require-approval never --concurrency 10
             ;;
         "api")
             echo "🔗 API 스택 배포 중..."
+            check_deployment_status "cs-chatbot-api" || exit 1
             cdk deploy cs-chatbot-api --require-approval never --concurrency 10
             ;;
         "frontend")
             echo "🌐 프론트엔드 스택 배포 중..."
+            check_deployment_status "cs-chatbot-frontend" || exit 1
             cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
             ;;
         "all")
             echo "🚀 전체 스택 배포 중..."
+            # 각 스택 상태 확인
+            check_deployment_status "cs-chatbot-data" || exit 1
+            check_deployment_status "cs-chatbot-api" || exit 1
+            check_deployment_status "cs-chatbot-frontend" || exit 1
+            
             # 의존성 순서대로 배포
             cdk deploy cs-chatbot-data --require-approval never --concurrency 10
             cdk deploy cs-chatbot-api --require-approval never --concurrency 10  
@@ -132,6 +153,7 @@ main() {
     done
     
     echo "🚀 CS 챗봇 배포 시작 (스택: $STACK_NAME, 빠른모드: $FAST_MODE)"
+    echo "📌 고정 엔드포인트 유지: 모든 개발자가 동일한 스택 업데이트"
     
     setup_environment
     install_dependencies

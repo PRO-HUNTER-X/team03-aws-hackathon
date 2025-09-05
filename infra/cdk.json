@@ -17,10 +17,6 @@
   "build": "python app.py",
   "requireApproval": "never",
   "context": {
-    "@aws-cdk/core:enableStackNameDuplicates": true,
-    "@aws-cdk/core:stackRelativeExports": true,
-    "@aws-cdk/core:newStyleStackSynthesis": true,
-    "@aws-cdk/aws-s3-deployment:createDefaultLoggingPolicy": false,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
@@ -59,9 +55,6 @@
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-opensearchservice:enableLogging": true,
     "@aws-cdk/aws-normlizedkeys:props": true,
-    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
-    "@aws-cdk/core:assetHashSalt": "cs-chatbot-v1",
-    "@aws-cdk/core:bundlingStacks": [],
-    "@aws-cdk/aws-s3-deployment:retainOnDelete": false
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true
   }
 }
