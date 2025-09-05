@@ -55,10 +55,13 @@ jobs:
           aws-region: us-east-1
           audience: sts.amazonaws.com
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v4
+      - name: 🐍 Setup Python & venv
+        uses: getsentry/action-setup-venv@v2.2.0
+        id: venv
         with:
           python-version: '3.11'
+          cache-dependency-path: infra/requirements.txt
+          install-cmd: pip install -r infra/requirements.txt
 
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
@@ -70,19 +73,17 @@ jobs:
       - name: 🔧 Install CDK
         run: npm install -g aws-cdk
 
-      - name: 🏗️ Setup Infrastructure
+      - name: 🏗️ Bootstrap CDK
         working-directory: infra
         run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           cdk bootstrap
 
       - name: 🗄️ Deploy Data Stack
         if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
         working-directory: infra
         run: |
-          source venv/bin/activate
+          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           echo "📊 데이터 스택 배포 중..."
           cdk deploy cs-chatbot-data --require-approval never --concurrency 10
 
@@ -90,7 +91,7 @@ jobs:
         if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
         working-directory: infra
         run: |
-          source venv/bin/activate
+          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           echo "🔗 API 스택 배포 중..."
           cdk deploy cs-chatbot-api --require-approval never --concurrency 10
 
@@ -111,7 +112,7 @@ jobs:
           fi
           
           cd ../infra
-          source venv/bin/activate
+          source ${{ steps.venv.outputs.venv-path }}/bin/activate
           echo "🌐 프론트엔드 스택 배포 중..."
           cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
 
