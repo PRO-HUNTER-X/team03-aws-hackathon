@@ -97,10 +97,42 @@ export default function InquiriesPage() {
       urgency,
       type
     }))
+    
+    // 필터 설정 후 바로 데이터 조회
+    const fetchWithParams = async () => {
+      setLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (status !== '전체') params.set('status', status)
+        if (urgency) params.set('urgency', urgency)
+        if (type) params.set('type', type)
+        params.set('sortBy', 'createdAt')
+        params.set('sortOrder', 'desc')
+        params.set('page', '1')
+        params.set('limit', '10')
+
+        const response = await fetch(`/api/inquiries?${params}`)
+        const data = await response.json()
+
+        if (data.success) {
+          setInquiries(data.data)
+          setPagination(data.pagination)
+        }
+      } catch (error) {
+        console.error('문의 목록 로딩 실패:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchWithParams()
   }, [searchParams])
 
   useEffect(() => {
-    fetchInquiries(1)
+    // 필터 변경시에만 조회 (URL 파라미터 변경 제외)
+    if (searchParams.get('status') === null && searchParams.get('urgency') === null && searchParams.get('type') === null) {
+      fetchInquiries(1)
+    }
   }, [filters.status, filters.urgency, filters.type])
 
 
