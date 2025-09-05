@@ -1,7 +1,7 @@
 {
   "name": "admin-backend-auth",
   "version": "1.0.0",
-  "description": "CS 챗봇 관리자 인증 백엔드",
+  "description": "CS 챗봇 관리자 인증 설정 (프론트엔드 직접 처리)",
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
@@ -12,8 +12,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "build:lambda": "tsc lambda/*.ts --outDir lambda/dist --target ES2020 --module commonjs",
-    "test:lambda": "node lambda/test-local.js"
+    "test:e2e": "jest --config ./tests/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

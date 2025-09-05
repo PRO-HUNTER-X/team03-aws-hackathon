@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -23,10 +25,10 @@ describe('AuthController', () => {
     authService = module.get<AuthService>(AuthService);
   });
 
-  describe('로그인_성공시_JWT_토큰_반환', () => {
-    it('올바른 인증정보로 로그인 성공', async () => {
+  describe('POST /auth/login', () => {
+    it('올바른_인증정보로_로그인_성공', async () => {
       // Given
-      const loginDto = { username: 'admin', password: 'admin123' };
+      const loginDto: LoginDto = { username: 'admin', password: 'admin123' };
       const expectedResult = {
         access_token: 'jwt.token.here',
         expires_in: 3600,
@@ -41,21 +43,61 @@ describe('AuthController', () => {
       expect(result).toEqual(expectedResult);
       expect(authService.login).toHaveBeenCalledWith(loginDto);
     });
-  });
 
-  describe('잘못된_인증정보로_로그인_실패', () => {
-    it('잘못된 비밀번호로 401 에러', async () => {
+    it('잘못된_인증정보로_UnauthorizedException_발생', async () => {
       // Given
-      const loginDto = { username: 'admin', password: 'wrong_password' };
+      const loginDto: LoginDto = { username: 'admin', password: 'wrong_password' };
 
       jest.spyOn(authService, 'login').mockRejectedValue(
-        new Error('인증에 실패했습니다')
+        new UnauthorizedException('인증에 실패했습니다')
       );
 
       // When & Then
       await expect(controller.login(loginDto)).rejects.toThrow(
+        UnauthorizedException
+      );
+      await expect(controller.login(loginDto)).rejects.toThrow(
         '인증에 실패했습니다'
       );
+    });
+  });
+
+  describe('POST /auth/verify', () => {
+    it('유효한_토큰으로_검증_성공', () => {
+      // Given
+      const mockRequest = {
+        user: { username: 'admin' }
+      };
+
+      // When
+      const result = controller.verifyToken(mockRequest);
+
+      // Then
+      expect(result).toEqual({
+        valid: true,
+        user: { username: 'admin' }
+      });
+    });
+  });
+
+  describe('GET /auth/profile', () => {
+    it('인증된_사용자_프로필_조회_성공', () => {
+      // Given
+      const mockRequest = {
+        user: { username: 'admin', userId: 'admin' }
+      };
+
+      // When
+      const result = controller.getProfile(mockRequest);
+
+      // Then
+      expect(result).toEqual({
+        success: true,
+        data: {
+          username: 'admin',
+          userId: 'admin'
+        }
+      });
     });
   });
 });

@@ -1,82 +1,154 @@
-# CS 챗봇 관리자 인증 백엔드
+# Admin Backend - 프론트엔드 직접 처리 방식
 
-## 🚀 빠른 시작
+## 🎯 변경 사항
 
-### 설치 및 실행
-```bash
-# 의존성 설치
-npm install
+**기존**: Lambda 함수로 인증 처리  
+**변경**: 프론트엔드에서 직접 AWS Cognito 사용
 
-# 환경변수 설정
-cp .env.example .env
+## 💡 왜 변경했나?
 
-# 개발 서버 실행
-npm run start:dev
+1. **개발 속도**: 람다 배포 없이 즉시 테스트
+2. **서버리스 패턴**: 프론트엔드 직접 AWS 서비스 호출
+3. **비용 절약**: 람다 실행 비용 제거
+4. **단순화**: 중간 계층 제거
 
-# 테스트 실행
-npm test
-```
+## 🔧 프론트엔드 구현 예시
 
-### 📋 API 엔드포인트
+### 1. AWS Cognito 설정
+```javascript
+// lib/auth.js
+import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
 
-#### 로그인
-```bash
-POST /auth/login
-Content-Type: application/json
+const cognitoClient = new CognitoIdentityProviderClient({
+  region: 'us-east-1'
+})
 
-{
-  "username": "admin",
-  "password": "admin123"
+export const adminLogin = async (username, password) => {
+  try {
+    const command = new InitiateAuthCommand({
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
+      AuthParameters: {
+        USERNAME: username,
+        PASSWORD: password
+      }
+    })
+    
+    const response = await cognitoClient.send(command)
+    
+    return {
+      success: true,
+      data: {
+        access_token: response.AuthenticationResult.AccessToken,
+        expires_in: response.AuthenticationResult.ExpiresIn
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: { message: '인증에 실패했습니다' }
+    }
+  }
 }
 ```
 
-**응답 (성공)**
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expires_in": 3600
+### 2. 토큰 검증
+```javascript
+// lib/auth.js
+import { CognitoIdentityProviderClient, GetUserCommand } from '@aws-sdk/client-cognito-identity-provider'
+
+export const verifyToken = async (accessToken) => {
+  try {
+    const command = new GetUserCommand({
+      AccessToken: accessToken
+    })
+    
+    const response = await cognitoClient.send(command)
+    
+    return {
+      success: true,
+      data: {
+        username: response.Username,
+        userId: response.UserSub
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: { message: '토큰이 유효하지 않습니다' }
+    }
+  }
 }
 ```
 
-**응답 (실패)**
-```json
-{
-  "statusCode": 401,
-  "message": "인증에 실패했습니다"
+### 3. 로그인 컴포넌트
+```javascript
+// components/AdminLogin.jsx
+import { useState } from 'react'
+import { adminLogin } from '@/lib/auth'
+
+export default function AdminLogin() {
+  const [credentials, setCredentials] = useState({ username: '', password: '' })
+  const [loading, setLoading] = useState(false)
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    
+    const result = await adminLogin(credentials.username, credentials.password)
+    
+    if (result.success) {
+      localStorage.setItem('admin_token', result.data.access_token)
+      // 관리자 페이지로 리다이렉트
+    } else {
+      alert(result.error.message)
+    }
+    
+    setLoading(false)
+  }
+
+  return (
+    <form onSubmit={handleLogin}>
+      <input
+        type="text"
+        placeholder="사용자명"
+        value={credentials.username}
+        onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+      />
+      <input
+        type="password"
+        placeholder="비밀번호"
+        value={credentials.password}
+        onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+      />
+      <button type="submit" disabled={loading}>
+        {loading ? '로그인 중...' : '로그인'}
+      </button>
+    </form>
+  )
 }
 ```
 
-### 🧪 테스트
+## 🚀 장점
+
+1. **즉시 테스트**: 코드 변경 후 바로 확인
+2. **단순한 구조**: AWS Cognito ↔ 프론트엔드
+3. **비용 효율**: 람다 실행 비용 없음
+4. **확장성**: Cognito의 다양한 기능 활용 가능
+
+## 📋 TODO
+
+1. AWS Cognito User Pool 생성
+2. 프론트엔드에 AWS SDK 설치
+3. 환경변수 설정 (Cognito Client ID)
+4. 기존 람다 함수 제거
+
+## 🔧 환경변수
 
 ```bash
-# 전체 테스트
-npm test
-
-# 테스트 커버리지
-npm run test:cov
-
-# 테스트 감시 모드
-npm run test:watch
+# .env.local
+NEXT_PUBLIC_COGNITO_CLIENT_ID=your_cognito_client_id
+NEXT_PUBLIC_AWS_REGION=us-east-1
 ```
 
-### 🔧 개발 가이드
-
-- **TDD 방식**: 테스트 작성 → 구현 → 리팩토링
-- **JWT 토큰**: 1시간 유효기간
-- **기본 포트**: 3001
-- **CORS**: 프론트엔드(3000) 허용
-
-### 📁 프로젝트 구조
-
-```
-src/
-├── auth/
-│   ├── dto/
-│   │   └── login.dto.ts
-│   ├── auth.controller.ts
-│   ├── auth.service.ts
-│   ├── auth.module.ts
-│   └── auth.controller.spec.ts
-├── app.module.ts
-└── main.ts
-```
+이제 람다 없이 프론트엔드에서 직접 인증을 처리합니다! 🎉
