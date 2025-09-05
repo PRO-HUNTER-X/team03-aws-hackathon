@@ -22,7 +22,7 @@
 4. **진행 현황**: 예상 응답 시간 및 처리 상태 UI
 
 ## 기술 스택
-- **Backend**: Node.js/Express, AWS Lambda
+- **Backend**: Python Lambda, AWS Bedrock, DynamoDB
 - **Frontend**: React/Next.js
 - **AI**: AWS Bedrock (Claude/GPT 연동)
 - **Database**: AWS RDS (PostgreSQL)

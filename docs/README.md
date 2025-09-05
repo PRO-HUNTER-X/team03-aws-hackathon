@@ -135,7 +135,7 @@ git push origin docs/your-branch-name
 ### 효과적인 질문 패턴
 ```bash
 # 컨텍스트 기반 구체적 질문
-q chat "현재 API 명세서에 맞춰 문의 접수 엔드포인트를 Express로 구현해줘"
+q chat "현재 API 명세서에 맞춰 문의 접수 Lambda 함수를 Python으로 구현해줘"
 
 # 팀원 작업과 연동
 q chat "현재 프론트엔드 컴포넌트 구조에 맞춰 백엔드 응답 형식 조정해줘"
@@ -194,7 +194,7 @@ git rebase main
 
 ## 👥 팀 역할 & 책임
 
-- **Backend**: Node.js/Express + AWS Lambda + Bedrock
+- **Backend**: Python Lambda + AWS Bedrock + DynamoDB
 - **Frontend**: React/Next.js + Tailwind + shadcn/ui  
 - **Infrastructure**: AWS CDK + Lambda + RDS + API Gateway
 - **Full-stack**: 필요시 여러 영역 지원
