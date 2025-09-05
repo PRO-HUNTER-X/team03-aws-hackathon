@@ -32,7 +32,7 @@ export default function Home() {
       const data = await response.json()
       
       if (data.data.hasQnAData) {
-        setAppState('dashboard')
+        window.location.href = '/dashboard'
       } else {
         setAppState('qna-setup')
       }
@@ -44,11 +44,15 @@ export default function Home() {
 
   const handleLoginSuccess = (newToken: string, hasQnASetup: boolean) => {
     setToken(newToken)
-    setAppState(hasQnASetup ? 'dashboard' : 'qna-setup')
+    if (hasQnASetup) {
+      window.location.href = '/dashboard'
+    } else {
+      setAppState('qna-setup')
+    }
   }
 
   const handleQnASetupComplete = () => {
-    setAppState('dashboard')
+    window.location.href = '/dashboard'
   }
 
   const handleLogout = () => {
