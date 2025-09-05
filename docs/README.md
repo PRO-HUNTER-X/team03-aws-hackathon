@@ -22,7 +22,7 @@ docs/
 
 ## 🚀 해커톤 워크플로우 (27시간 몰입)
 
-### 1. 초기 설정 (최초 1회)
+### 1. 팀원 시작 가이드 (최초 1회)
 ```bash
 # 1. 레포지토리 클론
 git clone https://github.com/PRO-HUNTER-X/team03-aws-hackathon.git
@@ -32,38 +32,82 @@ cd team03-aws-hackathon
 mkdir -p .q
 echo "docs/AGENT.md,docs/shared/,docs/backend/context.md,docs/frontend/context.md,docs/infra/context.md" > .q/context
 
-# 3. Q Agent 시작
+# 3. 본인 역할 확인 및 태스크 파악
+cat docs/README.md  # 전체 가이드 확인
+cat docs/backend/tasks/sprint-1.md    # 백엔드 개발자
+cat docs/frontend/tasks/sprint-1.md   # 프론트엔드 개발자  
+cat docs/infra/tasks/sprint-1.md      # 인프라 개발자
+
+# 4. Q Agent 시작
 q chat
 ```
 
-### 2. 실시간 협업 워크플로우
+### 2. 코드 개발 워크플로우 (main 브랜치)
 
-#### 작업 시작 전 (매번)
+#### 코드 작업 시
 ```bash
 # 최신 변경사항 동기화
 git pull origin main
 
-# Q Agent 시작 (컨텍스트 자동 로드)
-q chat
-```
-
-#### 작업 완료 후 (즉시 푸시)
-```bash
-# 변경사항 커밋 & 푸시
+# 코드 개발 (src/, components/, infrastructure/ 등)
+# 개발 완료 후 즉시 푸시
 git add .
 git commit -m "feat: 구현한 기능 설명"
 git push origin main
 ```
 
-#### 충돌 발생 시
+### 3. 문서 업데이트 워크플로우 (피쳐 브랜치)
+
+#### 문서 수정이 필요한 경우
 ```bash
-# 충돌 해결 후 즉시 푸시
-git pull origin main
-# 충돌 해결
-git add .
-git commit -m "fix: merge conflict resolved"
-git push origin main
+# 1. 피쳐 브랜치 생성 (역할별 명명 규칙)
+git checkout -b docs/backend-update-api     # 백엔드 개발자
+git checkout -b docs/frontend-update-ui     # 프론트엔드 개발자
+git checkout -b docs/infra-update-deploy    # 인프라 개발자
+
+# 2. 본인 담당 문서만 수정
+# 백엔드: docs/backend/, docs/shared/api-contracts.md, docs/shared/database-schema.md
+# 프론트엔드: docs/frontend/, docs/shared/api-contracts.md (읽기 전용)
+# 인프라: docs/infra/, docs/shared/deployment-guide.md
+
+# 3. 문서 커밋 & 푸시
+git add docs/
+git commit -m "docs: 업데이트 내용 설명"
+git push origin docs/your-branch-name
+
+# 4. PR 생성 후 즉시 머지 (리뷰 없이)
+# GitHub에서 PR 생성 → 즉시 머지 → 브랜치 삭제
 ```
+
+## 📋 문서 수정 권한 & 충돌 방지 규칙
+
+### 역할별 문서 수정 권한
+```
+백엔드 개발자:
+✅ docs/backend/ (전체)
+✅ docs/shared/api-contracts.md
+✅ docs/shared/database-schema.md
+❌ docs/frontend/, docs/infra/
+
+프론트엔드 개발자:
+✅ docs/frontend/ (전체)  
+✅ docs/shared/api-contracts.md (API 사용법 추가만)
+❌ docs/backend/, docs/infra/, docs/shared/database-schema.md
+
+인프라 개발자:
+✅ docs/infra/ (전체)
+✅ docs/shared/deployment-guide.md
+❌ docs/backend/, docs/frontend/, docs/shared/api-contracts.md
+
+공통:
+✅ 본인 역할의 context.md 체크리스트 업데이트
+❌ docs/AGENT.md (프로젝트 리더만 수정)
+```
+
+### 문서 업데이트 우선순위
+1. **긴급 (즉시 업데이트)**: API 변경, DB 스키마 변경
+2. **중요 (2시간 내)**: 새 기능 완성, 배포 가이드 변경  
+3. **일반 (하루 내)**: 진행 상황 체크리스트, 태스크 추가
 
 ## 🤖 Q Agent 협업 최적화
 
@@ -87,15 +131,36 @@ q chat "현재 데이터베이스 스키마와 API 명세가 일치하는지 검
 
 ## ⚡ 해커톤 협업 팁
 
-### 커뮤니케이션
-- **Slack/Discord**: API 변경, 중요 결정사항 즉시 공유
-- **화면 공유**: 복잡한 로직은 페어 프로그래밍으로 해결
-- **30분 체크인**: 전체 팀 진행상황 공유
+### 충돌 방지 전략
+- **코드 vs 문서 분리**: 코드는 main, 문서는 피쳐 브랜치
+- **역할별 문서 영역**: 본인 담당 docs 폴더만 수정
+- **실시간 소통**: 문서 수정 전 팀 채팅에 공지
+- **빠른 머지**: 문서 PR은 30분 내 머지
 
-### 충돌 최소화
-- **작업 영역 분리**: 가능한 다른 파일에서 작업
-- **자주 푸시**: 2-3시간마다 중간 커밋
-- **즉시 동기화**: 다른 팀원 푸시 시 바로 pull
+### 커뮤니케이션 규칙
+- **Slack/Discord**: 
+  - API 변경 시: "@channel API 변경: 엔드포인트명 - 변경내용"
+  - DB 스키마 변경: "@channel DB 변경: 테이블명 - 변경내용"  
+  - 문서 수정: "docs 업데이트 중: 파일명 (5분 소요 예정)"
+- **화면 공유**: 복잡한 로직은 페어 프로그래밍으로 해결
+- **1시간 체크인**: 전체 팀 진행상황 공유
+
+### 충돌 발생 시 해결법
+```bash
+# 코드 충돌 (main 브랜치)
+git pull origin main
+# 충돌 해결 후
+git add .
+git commit -m "fix: resolve merge conflict"
+git push origin main
+
+# 문서 충돌 (피쳐 브랜치) - 거의 발생하지 않음
+git checkout main
+git pull origin main  
+git checkout docs/your-branch
+git rebase main
+# 충돌 해결 후 PR 재생성
+```
 
 ### Q Agent 활용 극대화
 - **컨텍스트 공유**: 모든 팀원이 동일한 프로젝트 이해도 유지
