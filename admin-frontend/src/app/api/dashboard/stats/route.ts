@@ -31,10 +31,13 @@ export async function GET() {
         normal: dataToUse.filter(item => item.urgency === '보통').length,
         low: dataToUse.filter(item => item.urgency === '낮음').length,
       },
-      types: dataToUse.reduce((acc, item) => {
-        acc[item.type] = (acc[item.type] || 0) + 1
+      types: dataToUse.reduce((acc: Record<string, number>, item: any) => {
+        const type = String(item.type || '')
+        if (type) {
+          acc[type] = (acc[type] || 0) + 1
+        }
         return acc
-      }, {} as Record<string, number>)
+      }, {})
     }
 
     return NextResponse.json({
@@ -57,10 +60,13 @@ export async function GET() {
         normal: mockInquiries.filter(item => item.urgency === '보통').length,
         low: mockInquiries.filter(item => item.urgency === '낮음').length,
       },
-      types: mockInquiries.reduce((acc, item) => {
-        acc[item.type] = (acc[item.type] || 0) + 1
+      types: mockInquiries.reduce((acc: Record<string, number>, item: any) => {
+        const type = String(item.type || '')
+        if (type) {
+          acc[type] = (acc[type] || 0) + 1
+        }
         return acc
-      }, {} as Record<string, number>)
+      }, {})
     }
     
     return NextResponse.json({
