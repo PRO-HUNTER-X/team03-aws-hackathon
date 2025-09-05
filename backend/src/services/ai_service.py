@@ -18,69 +18,62 @@ class AIService:
         self.config = ai_model_config
     
     def generate_response(self, inquiry_data: Dict[str, Any], company_context: str = None) -> str:
-        """AI 응답 생성 - 적응형 모델 선택"""
+        """AI 응답 생성 - converse API 사용"""
         try:
-            # 요청 복잡도 및 우선순위 분석
             complexity = analyze_request_complexity(
                 inquiry_data.get('content', ''), 
                 inquiry_data.get('category', 'general')
             )
             priority = get_request_priority(inquiry_data.get('urgency', 'normal'))
             
-            # 최적 모델 선택
             selected_model = self.config.get_model_for_request(complexity, priority)
             
             logger.info(f"Selected model: {selected_model} (complexity: {complexity}, priority: {priority})")
             
-            # AI 응답 생성 시도
-            return self._invoke_model_with_fallback(inquiry_data, company_context, selected_model)
+            return self._invoke_converse_api(inquiry_data, company_context, selected_model)
             
         except Exception as e:
             logger.error(f"Error generating AI response: {str(e)}")
-            return self._get_fallback_response(inquiry_data)
+            return self._get_smart_fallback_response(inquiry_data)
     
-    def _invoke_model_with_fallback(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
-        """모델 호출 및 폴백 처리"""
+    def _invoke_converse_api(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
+        """Converse API를 사용한 모델 호출"""
         try:
-            return self._invoke_bedrock_model(inquiry_data, company_context, model_id)
+            return self._call_converse_api(inquiry_data, company_context, model_id)
         except Exception as e:
             logger.warning(f"Primary model {model_id} failed: {str(e)}. Trying fallback model.")
             
-            # 폴백 모델로 재시도
             fallback_model = self.config.get_fallback_model()
             try:
-                return self._invoke_bedrock_model(inquiry_data, company_context, fallback_model)
+                return self._call_converse_api(inquiry_data, company_context, fallback_model)
             except Exception as fallback_error:
                 logger.error(f"Fallback model {fallback_model} also failed: {str(fallback_error)}")
                 raise fallback_error
     
-    def _invoke_bedrock_model(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
-        """Bedrock 모델 호출"""
+    def _call_converse_api(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
+        """Converse API 호출"""
         prompt = self._build_prompt(inquiry_data, company_context)
         
-        # 모델 파라미터 가져오기
+        conversation = [
+            {
+                "role": "user",
+                "content": [{"text": prompt}]
+            }
+        ]
+        
         model_params = self.config.get_model_parameters(model_id)
         
-        body = {
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": model_params["body"]["max_tokens"],
-            "temperature": model_params["body"]["temperature"],
-            "top_p": model_params["body"]["top_p"],
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        }
-        
-        response = self.bedrock.invoke_model(
+        response = self.bedrock.converse(
             modelId=model_id,
-            body=json.dumps(body)
+            messages=conversation,
+            inferenceConfig={
+                "maxTokens": model_params["body"]["max_tokens"],
+                "temperature": model_params["body"]["temperature"],
+                "topP": model_params["body"]["top_p"]
+            }
         )
         
-        response_body = json.loads(response['body'].read())
-        ai_response = response_body['content'][0]['text']
+        ai_response = response["output"]["message"]["content"][0]["text"]
         
         logger.info(f"AI response generated using {model_id} for inquiry: {inquiry_data.get('title', 'Unknown')}")
         return ai_response
@@ -116,3 +109,41 @@ class AIService:
 긴급한 사항이시라면 '사람과 연결' 버튼을 클릭해주세요.
 
 감사합니다."""
+    
+    def _get_smart_fallback_response(self, inquiry_data: Dict[str, Any]) -> str:
+        """카테고리별 스마트 폴백 응답"""
+        category = inquiry_data.get('category', 'general')
+        title = inquiry_data.get('title', '문의')
+        
+        responses = {
+            'technical': f"""안녕하세요, {title}에 대해 문의해주셔서 감사합니다.
+
+기술적인 문제의 경우 다음 단계를 먼저 시도해보시기 바랍니다:
+1. 브라우저 캐시 및 쿠키 삭제
+2. 다른 브라우저나 시크릿 모드에서 재시도
+3. 인터넷 연결 상태 확인
+
+문제가 지속되면 담당자가 직접 도움을 드리겠습니다.
+
+감사합니다.""",
+            
+            'billing': f"""안녕하세요, {title}에 대해 문의해주셔서 감사합니다.
+
+결제 관련 문의는 보안상 담당자가 직접 처리해드립니다.
+영업일 기준 24시간 내에 연락드리겠습니다.
+
+긴급한 경우 고객센터로 직접 연락해주세요.
+
+감사합니다.""",
+            
+            'general': f"""안녕하세요, {title}에 대해 문의해주셔서 감사합니다.
+
+고객님의 문의를 정확히 파악하여 최적의 답변을 드리기 위해
+담당자가 직접 검토 후 답변드리겠습니다.
+
+평균 응답 시간은 2-4시간입니다.
+
+감사합니다."""
+        }
+        
+        return responses.get(category, responses['general'])
