@@ -63,16 +63,31 @@ def lambda_handler(event, context):
             return success_response(result)
             
         elif http_method == 'GET':
-            # 문의 조회
             inquiry_id = path_parameters.get('id')
-            if not inquiry_id:
-                return error_response("Inquiry ID is required")
             
-            inquiry = db_service.get_inquiry(inquiry_id)
-            if not inquiry:
-                return error_response("Inquiry not found", 404)
-            
-            return success_response(inquiry)
+            if inquiry_id:
+                # 특정 문의 조회
+                inquiry = db_service.get_inquiry(inquiry_id)
+                if not inquiry:
+                    return error_response("Inquiry not found", 404)
+                return success_response(inquiry)
+            else:
+                # 문의 목록 조회
+                query_params = event.get('queryStringParameters') or {}
+                company_id = query_params.get('companyId')
+                
+                if not company_id:
+                    return error_response("companyId is required for listing inquiries")
+                
+                status = query_params.get('status')
+                limit = int(query_params.get('limit', 50))
+                
+                inquiries = db_service.list_inquiries(company_id, status, limit)
+                
+                return success_response({
+                    'inquiries': inquiries,
+                    'count': len(inquiries)
+                })
         
         else:
             return error_response(f"Method {http_method} not allowed", 405)
