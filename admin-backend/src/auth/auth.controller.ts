@@ -18,6 +18,21 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('verify')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '토큰 검증' })
+  @ApiResponse({ status: 200, description: '토큰 검증 성공' })
+  @ApiResponse({ status: 401, description: '토큰 검증 실패' })
+  verifyToken(@Request() req) {
+    return {
+      valid: true,
+      user: {
+        username: req.user.username
+      }
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: '프로필 조회' })
