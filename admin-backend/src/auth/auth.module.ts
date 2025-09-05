@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { SetupModule } from '../setup/setup.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       secret: process.env.JWT_SECRET || 'cs-chatbot-secret-key',
       signOptions: { expiresIn: '1h' },
     }),
+    SetupModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

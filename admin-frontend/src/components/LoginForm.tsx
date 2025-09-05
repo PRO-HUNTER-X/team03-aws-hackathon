@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { AuthService, LoginRequest } from '@/lib/auth'
 
 interface LoginFormProps {
-  onLoginSuccess: (token: string) => void
+  onLoginSuccess: (token: string, hasQnASetup: boolean) => void
 }
 
 export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
@@ -23,7 +23,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     try {
       const response = await AuthService.login(credentials)
       AuthService.setToken(response.access_token)
-      onLoginSuccess(response.access_token)
+      onLoginSuccess(response.access_token, response.redirect.hasQnASetup)
     } catch (err) {
       setError(err instanceof Error ? err.message : '로그인에 실패했습니다')
     } finally {

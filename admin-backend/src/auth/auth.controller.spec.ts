@@ -32,6 +32,11 @@ describe('AuthController', () => {
       const expectedResult = {
         access_token: 'jwt.token.here',
         expires_in: 3600,
+        redirect: {
+          hasQnASetup: false,
+          nextRoute: '/qna-setup',
+          message: 'QnA 설정을 완료해주세요'
+        }
       };
 
       jest.spyOn(authService, 'login').mockResolvedValue(expectedResult);
