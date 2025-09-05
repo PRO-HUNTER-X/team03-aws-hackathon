@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { AuthService } from '@/lib/auth'
 
 interface DashboardProps {
@@ -36,6 +37,7 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
   const [recentInquiries, setRecentInquiries] = useState<Inquiry[]>([])
   const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlerts | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   const fetchDashboardData = async () => {
     try {
@@ -109,22 +111,34 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
           {/* 통계 카드 */}
           {stats && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow">
+              <button 
+                onClick={() => router.push('/inquiries')}
+                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left"
+              >
                 <h3 className="text-lg font-medium text-gray-900">전체 문의</h3>
                 <p className="text-3xl font-bold text-blue-600 mt-2">{stats.total}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow">
+              </button>
+              <button 
+                onClick={() => router.push('/inquiries?status=대기')}
+                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left"
+              >
                 <h3 className="text-lg font-medium text-gray-900">대기 중</h3>
                 <p className="text-3xl font-bold text-yellow-600 mt-2">{stats.status.pending}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow">
+              </button>
+              <button 
+                onClick={() => router.push('/inquiries?status=처리중')}
+                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left"
+              >
                 <h3 className="text-lg font-medium text-gray-900">처리 중</h3>
                 <p className="text-3xl font-bold text-green-600 mt-2">{stats.status.processing}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow">
+              </button>
+              <button 
+                onClick={() => router.push('/inquiries?status=완료')}
+                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left"
+              >
                 <h3 className="text-lg font-medium text-gray-900">완료</h3>
                 <p className="text-3xl font-bold text-gray-600 mt-2">{stats.status.completed}</p>
-              </div>
+              </button>
             </div>
           )}
 
@@ -134,7 +148,12 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
               <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-medium text-gray-900">
-                    긴급 알림 ({urgentAlerts.count}건)
+                    <button 
+                      onClick={() => router.push('/inquiries?urgency=높음')}
+                      className="hover:text-blue-600"
+                    >
+                      긴급 알림 ({urgentAlerts.count}건)
+                    </button>
                   </h3>
                 </div>
                 <div className="p-6">
