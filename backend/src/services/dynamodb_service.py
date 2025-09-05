@@ -3,6 +3,7 @@ import os
 from typing import Dict, Any, Optional
 import logging
 from datetime import datetime
+from boto3.dynamodb.conditions import Attr
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,7 +19,7 @@ class DynamoDBService:
         """문의 생성"""
         try:
             self.inquiries_table.put_item(Item=inquiry_data)
-            logger.info(f"Inquiry created: {inquiry_data['id']}")
+            logger.info(f"Inquiry created: {inquiry_data.get('inquiry_id', 'unknown')}")
             return True
         except Exception as e:
             logger.error(f"Error creating inquiry: {str(e)}")
@@ -33,13 +34,13 @@ class DynamoDBService:
             logger.error(f"Error getting inquiry: {str(e)}")
             return None
     
-    def update_inquiry_status(self, inquiry_id: str, status: str, human_response: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def update_inquiry_status(self, inquiry_id: str, status: str, human_response: Optional[str] = None) -> bool:
         """문의 상태 업데이트"""
         try:
             # 먼저 아이템 존재 여부 확인
             existing_item = self.get_inquiry(inquiry_id)
             if not existing_item:
-                return None
+                return False
             
             update_expression = "SET #status = :status, updatedAt = :updated_at"
             expression_values = {
@@ -64,27 +65,27 @@ class DynamoDBService:
                 ReturnValues='ALL_NEW'
             )
             
-            return response.get('Attributes')
+            return True
         except Exception as e:
             logger.error(f"Error updating inquiry status: {str(e)}")
-            return None
+            return False
     
     def list_inquiries(self, company_id: str, status: str = None, limit: int = 50) -> list:
         """회사별 문의 목록 조회"""
         try:
-            # 간단한 스캔으로 구현 (테스트용)
-            scan_kwargs = {
-                'FilterExpression': 'companyId = :company_id',
-                'ExpressionAttributeValues': {':company_id': company_id},
-                'Limit': limit
-            }
+            from boto3.dynamodb.conditions import Attr
+            
+            # Condition 객체 사용
+            filter_expression = Attr('companyId').eq(company_id)
             
             if status:
-                scan_kwargs['FilterExpression'] += ' AND #status = :status'
-                scan_kwargs['ExpressionAttributeValues'][':status'] = status
-                scan_kwargs['ExpressionAttributeNames'] = {'#status': 'status'}
+                filter_expression = filter_expression & Attr('status').eq(status)
             
-            response = self.inquiries_table.scan(**scan_kwargs)
+            response = self.inquiries_table.scan(
+                FilterExpression=filter_expression,
+                Limit=limit
+            )
+            
             return response.get('Items', [])
             
         except Exception as e:
