@@ -41,12 +41,13 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
             'inquiry_id': inquiry_id,
             'companyId': body['companyId'],
             'customerEmail': body['customerEmail'],
+            'customerPassword': body.get('customerPassword'),  # 고객 인증용 비밀번호 저장
             'category': body.get('category', 'general'),
             'title': body['title'],
             'content': body['content'],
             'urgency': body.get('urgency', 'medium'),
             'status': 'pending',
-            'createdAt': datetime.utcnow().isoformat(),
+            'created_at': datetime.utcnow().isoformat(),
             'estimatedResponseTime': 15
         }
         
