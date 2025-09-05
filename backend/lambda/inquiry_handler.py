@@ -128,17 +128,68 @@ def get_inquiry(inquiry_id):
         logger.error(f"Error getting inquiry: {str(e)}")
         return None
 
+def escalate_inquiry(inquiry_id, reason=None):
+    """문의 에스케이션"""
+    try:
+        import boto3
+        
+        dynamodb = boto3.resource('dynamodb')
+        table_name = os.environ.get('DYNAMODB_TABLE', 'cs-inquiries')
+        table = dynamodb.Table(table_name)
+        
+        # 문의 존재 확인
+        inquiry = get_inquiry(inquiry_id)
+        if not inquiry:
+            return None
+        
+        # 상태 업데이트
+        updated_at = datetime.utcnow().isoformat()
+        
+        table.update_item(
+            Key={'inquiry_id': inquiry_id},
+            UpdateExpression='SET #status = :status, updatedAt = :updated_at, escalationReason = :reason',
+            ExpressionAttributeNames={'#status': 'status'},
+            ExpressionAttributeValues={
+                ':status': 'escalated',
+                ':updated_at': updated_at,
+                ':reason': reason or '고객이 에스케이션을 요청했습니다.'
+            }
+        )
+        
+        logger.info(f"Inquiry {inquiry_id} escalated successfully")
+        return {'inquiryId': inquiry_id, 'status': 'escalated', 'updatedAt': updated_at}
+        
+    except Exception as e:
+        logger.error(f"Error escalating inquiry: {str(e)}")
+        raise e
+
 def lambda_handler(event, context):
     """통합 문의 처리 Lambda 핸들러"""
     try:
         http_method = event.get('httpMethod', 'GET')
         path_parameters = event.get('pathParameters') or {}
+        resource_path = event.get('resource', '')
         
         # OPTIONS 요청 처리 (CORS preflight)
         if http_method == 'OPTIONS':
             return options_response()
         
-        if http_method == 'POST':
+        # 에스케이션 요청 처리
+        if http_method == 'POST' and 'escalate' in resource_path:
+            inquiry_id = path_parameters.get('id')
+            if not inquiry_id:
+                return error_response("Inquiry ID is required")
+            
+            body = json.loads(event.get('body', '{}'))
+            reason = body.get('reason')
+            
+            result = escalate_inquiry(inquiry_id, reason)
+            if not result:
+                return error_response("Inquiry not found", 404)
+            
+            return success_response(result)
+        
+        elif http_method == 'POST':
             # 문의 생성
             body = json.loads(event.get('body', '{}'))
             

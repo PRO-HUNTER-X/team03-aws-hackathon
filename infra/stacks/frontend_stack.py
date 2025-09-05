@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_cloudfront_origins as origins,
     aws_s3_deployment as s3deploy,
     RemovalPolicy,
+    Duration,
     CfnOutput
 )
 from constructs import Construct
@@ -43,13 +44,32 @@ class FrontendStack(Stack):
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED
             ),
-            default_root_object="index.html"
+            default_root_object="index.html",
+            # SPA 라우팅을 위한 404 에러 처리
+            error_responses=[
+                cloudfront.ErrorResponse(
+                    http_status=404,
+                    response_http_status=200,
+                    response_page_path="/index.html",
+                    ttl=Duration.minutes(5)
+                ),
+                cloudfront.ErrorResponse(
+                    http_status=403,
+                    response_http_status=200,
+                    response_page_path="/index.html",
+                    ttl=Duration.minutes(5)
+                )
+            ]
         )
         
-        # Deploy static files to S3
+        # Deploy Next.js standalone build
         s3deploy.BucketDeployment(
             self, "DeployWebsite",
-            sources=[s3deploy.Source.asset("../frontend/out")],
+            sources=[
+                s3deploy.Source.asset("../frontend/.next/standalone"),
+                s3deploy.Source.asset("../frontend/.next/static"),
+                s3deploy.Source.asset("../frontend/public")
+            ],
             destination_bucket=website_bucket,
             distribution=distribution,
             distribution_paths=["/*"],

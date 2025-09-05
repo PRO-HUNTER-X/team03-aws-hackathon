@@ -132,6 +132,10 @@ class ApiStack(Stack):
         inquiry_by_id = inquiries.add_resource("{id}")
         inquiry_by_id.add_method("GET", apigateway.LambdaIntegration(inquiry_handler))  # Get inquiry
         
+        # Escalation endpoint
+        escalate = inquiry_by_id.add_resource("escalate")
+        escalate.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))  # Escalate inquiry
+        
         # AI response endpoint
         ai_response = api_v1.add_resource("ai-response")
         ai_response.add_method("POST", apigateway.LambdaIntegration(ai_response_generator))
