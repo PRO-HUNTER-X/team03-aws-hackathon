@@ -148,8 +148,8 @@ deploy_stack() {
             npm run build
             
             # 빌드 결과 확인
-            if [ ! -d "public" ]; then
-                echo "❌ public 폴더가 없습니다"
+            if [ ! -d ".next" ] && [ ! -d "public" ]; then
+                echo "❌ Next.js 빌드 실패"
                 exit 1
             fi
             
@@ -183,8 +183,8 @@ deploy_stack() {
             npm run build
             
             # 빌드 결과 확인
-            if [ ! -d "public" ]; then
-                echo "❌ public 폴더가 없습니다"
+            if [ ! -d ".next" ] && [ ! -d "public" ]; then
+                echo "❌ Next.js 빌드 실패"
                 exit 1
             fi
             
