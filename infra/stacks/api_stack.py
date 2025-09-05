@@ -1,0 +1,99 @@
+from aws_cdk import (
+    Stack,
+    aws_lambda as _lambda,
+    aws_apigateway as apigateway,
+    aws_dynamodb as dynamodb,
+    aws_iam as iam,
+    Duration,
+    CfnOutput
+)
+from constructs import Construct
+
+class ApiStack(Stack):
+    def __init__(self, scope: Construct, construct_id: str, 
+                 dynamodb_table: dynamodb.Table, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
+        
+        # Lambda execution role
+        lambda_role = iam.Role(
+            self, "LambdaExecutionRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ]
+        )
+        
+        # Grant DynamoDB permissions
+        dynamodb_table.grant_read_write_data(lambda_role)
+        
+        # Bedrock permissions
+        lambda_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["bedrock:InvokeModel"],
+                resources=["*"]
+            )
+        )
+        
+        # Lambda functions
+        health_check = _lambda.Function(
+            self, "HealthCheck",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="health_check.lambda_handler",
+            code=_lambda.Code.from_asset("../backend/lambda"),
+            timeout=Duration.seconds(10),
+            memory_size=128
+        )
+        
+        inquiry_handler = _lambda.Function(
+            self, "InquiryHandler",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="inquiry_handler.lambda_handler",
+            code=_lambda.Code.from_asset("../backend/lambda"),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            role=lambda_role,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name
+            }
+        )
+        
+        ai_response_generator = _lambda.Function(
+            self, "AIResponseGenerator",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="ai_response_generator.lambda_handler",
+            code=_lambda.Code.from_asset("../backend/lambda"),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            role=lambda_role,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name
+            }
+        )
+        
+        # API Gateway
+        api = apigateway.RestApi(
+            self, "CSChatbotAPI",
+            rest_api_name="CS Chatbot API",
+            default_cors_preflight_options=apigateway.CorsOptions(
+                allow_origins=apigateway.Cors.ALL_ORIGINS,
+                allow_methods=apigateway.Cors.ALL_METHODS,
+                allow_headers=["Content-Type", "Authorization"]
+            )
+        )
+        
+        # API endpoints
+        # Health check at root path
+        api.root.add_method("GET", apigateway.LambdaIntegration(health_check))
+        
+        inquiries = api.root.add_resource("inquiries")
+        inquiries.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))
+        
+        ai_response = api.root.add_resource("ai-response")
+        ai_response.add_method("POST", apigateway.LambdaIntegration(ai_response_generator))
+        
+        self.api_url = api.url
+        
+        # Output API URL
+        CfnOutput(self, "ApiUrl", 
+                 value=api.url,
+                 description="CS Chatbot API Gateway URL")
