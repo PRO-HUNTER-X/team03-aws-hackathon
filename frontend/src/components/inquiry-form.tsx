@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AIResponse } from "@/components/ai-response";
+import { createInquiry, generateAIResponse, escalateInquiry } from "@/lib/api";
 
 const inquirySchema = z.object({
   category: z.string().min(1, "문의 유형을 선택해주세요"),
@@ -44,48 +45,51 @@ export function InquiryForm() {
     setShowAiResponse(true);
 
     try {
-      // TODO: 실제 API 호출로 교체
-      console.log("문의 제출:", data);
+      // 1. 문의 생성
+      const inquiryResponse = await createInquiry({
+        companyId: 'demo-company', // TODO: 실제 회사 ID로 교체
+        customerEmail: 'customer@example.com', // TODO: 실제 고객 이메일로 교체
+        category: data.category,
+        title: data.title,
+        content: data.content,
+        urgency: data.urgency,
+      });
 
-      // 임시 문의 ID 생성
-      const tempId = `INQ-${Date.now()}`;
-      setInquiryId(tempId);
+      setInquiryId(inquiryResponse.inquiryId);
 
-      // AI 응답 시뮬레이션 (3초 대기)
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      // 임시 AI 응답 생성
-      const mockResponse = generateMockAIResponse(data);
-      setAiResponse(mockResponse);
+      // 2. AI 응답 생성
+      const aiResponseData = await generateAIResponse({
+        title: data.title,
+        content: data.content,
+        category: data.category
+      });
+      setAiResponse(aiResponseData.aiResponse);
     } catch (error) {
       console.error("문의 제출 실패:", error);
-      alert("문의 제출에 실패했습니다. 다시 시도해주세요.");
+      alert(`문의 제출에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
       setShowAiResponse(false);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const generateMockAIResponse = (data: InquiryFormData): string => {
-    const responses = {
-      technical: `## 기술 문의 답변\n\n**${data.title}**에 대한 답변을 드립니다.\n\n### 해결 방법\n1. 먼저 브라우저 캐시를 삭제해보세요\n2. 다른 브라우저에서 시도해보세요\n3. 네트워크 연결을 확인해주세요\n\n### 추가 도움\n위 방법으로 해결되지 않으면 **사람과 연결하기**를 클릭해주세요.`,
-      billing: `## 결제 문의 답변\n\n**${data.title}**에 대해 안내드립니다.\n\n### 결제 정보\n- 월 구독료: 29,000원\n- 결제일: 매월 가입일 기준\n- 결제 방법: 신용카드, 계좌이체\n\n### 환불 정책\n7일 이내 100% 환불 가능합니다.\n\n더 자세한 내용은 담당자와 상담하시기 바랍니다.`,
-      general: `## 일반 문의 답변\n\n**${data.title}**에 대해 답변드립니다.\n\n### 서비스 안내\n저희 CS 챗봇 플랫폼은 다음과 같은 기능을 제공합니다:\n\n- ✅ 24시간 AI 자동 응답\n- ✅ 실시간 상담 연결\n- ✅ 문의 이력 관리\n- ✅ 다양한 채널 지원\n\n추가 궁금한 점이 있으시면 언제든 문의해주세요!`,
-      other: `## 기타 문의 답변\n\n**${data.title}**에 대해 확인해보겠습니다.\n\n현재 제공해드린 정보로는 정확한 답변이 어려울 수 있습니다.\n\n### 권장사항\n더 정확한 답변을 위해 **사람과 연결하기**를 통해\n담당자와 직접 상담받으시기를 권장드립니다.\n\n평균 응답시간은 2-4시간입니다.`,
-    };
 
-    return responses[data.category as keyof typeof responses] || responses.other;
-  };
 
-  const handleEscalation = () => {
-    // TODO: 에스컬레이션 API 호출
-    alert(
-      `문의 ID: ${inquiryId}\n담당자에게 연결 요청이 전송되었습니다.\n상태 추적 페이지에서 진행 상황을 확인하실 수 있습니다.`
-    );
+  const handleEscalation = async () => {
+    if (!inquiryId) return;
 
-    // 상태 추적 페이지로 이동
-    if (inquiryId) {
+    try {
+      await escalateInquiry(inquiryId, '고객이 AI 응답에 만족하지 않아 에스컬레이션을 요청했습니다.');
+      
+      alert(
+        `문의 ID: ${inquiryId}\n담당자에게 연결 요청이 전송되었습니다.\n상태 추적 페이지에서 진행 상황을 확인하실 수 있습니다.`
+      );
+
+      // 상태 추적 페이지로 이동
       router.push(`/status/${inquiryId}`);
+    } catch (error) {
+      console.error('에스컬레이션 실패:', error);
+      alert(`에스컬레이션 요청에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     }
   };
 
@@ -233,3 +237,4 @@ export function InquiryForm() {
     </>
   );
 }
+

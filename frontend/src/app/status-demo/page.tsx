@@ -1,14 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, CheckCircle, AlertCircle, MessageCircle, User, Bot } from "lucide-react";
 import Link from "next/link";
+import { getInquiry, InquiryDetail } from "@/lib/api";
 
-export default function StatusDemoPage() {
+function StatusDemoContent() {
+  const searchParams = useSearchParams();
+  const inquiryId = searchParams.get('id');
+  
   const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
+  const [realInquiry, setRealInquiry] = useState<InquiryDetail | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // 실제 문의 ID가 있으면 API에서 데이터 가져오기
+  useEffect(() => {
+    if (inquiryId) {
+      setLoading(true);
+      getInquiry(inquiryId)
+        .then(setRealInquiry)
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, [inquiryId]);
 
   const demoScenarios = [
     {
@@ -55,6 +73,115 @@ export default function StatusDemoPage() {
   const getProgressPercentage = (timeRemaining: number, totalTime: number = 240) => {
     return Math.max(10, 100 - (timeRemaining / totalTime) * 100);
   };
+
+  // 실제 문의 데이터가 있으면 상태 추적 페이지로 리다이렉트
+  if (realInquiry) {
+    return (
+      <div className="container mx-auto p-4 max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">문의 상태 확인</h1>
+          <p className="text-muted-foreground">문의 ID: {realInquiry.inquiry_id}</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>현재 상태</span>
+                  <Badge className="bg-yellow-100 text-yellow-800">
+                    <Clock className="w-4 h-4" />
+                    <span className="ml-1">대기중</span>
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <h3 className="font-semibold mb-2">{realInquiry.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  카테고리: {realInquiry.category === "technical" ? "기술 문의" : "일반 문의"}
+                </p>
+                <p className="text-sm mb-4">{realInquiry.content}</p>
+
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                    <span className="font-medium">예상 응답 시간</span>
+                  </div>
+                  <p className="text-lg font-semibold text-blue-700">약 {realInquiry.estimatedResponseTime}분 후 답변 예정</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>처리 과정</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <MessageCircle className="w-4 h-4" />
+                      </div>
+                      <div className="w-px h-8 bg-gray-200 mt-2"></div>
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <h4 className="font-medium">문의 접수</h4>
+                      <p className="text-sm text-muted-foreground mb-1">고객님의 문의가 접수되었습니다.</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(realInquiry.created_at).toLocaleString("ko-KR")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <Bot className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <h4 className="font-medium">AI 자동 응답</h4>
+                      <p className="text-sm text-muted-foreground mb-1">AI가 초기 답변을 제공했습니다.</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(realInquiry.created_at).toLocaleString("ko-KR")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>빠른 액션</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href="/inquiry">새 문의 작성</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 max-w-4xl">
+        <div className="flex items-center justify-center py-16">
+          <div className="text-center">
+            <Clock className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+            <p>문의 정보를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-6xl">
@@ -267,5 +394,20 @@ export default function StatusDemoPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function StatusDemoPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto p-4 max-w-4xl">
+        <div className="flex items-center justify-center py-16">
+          <Clock className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p>로딩 중...</p>
+        </div>
+      </div>
+    }>
+      <StatusDemoContent />
+    </Suspense>
   );
 }

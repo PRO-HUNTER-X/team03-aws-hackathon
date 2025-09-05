@@ -29,7 +29,11 @@ class ApiStack(Stack):
         # Bedrock permissions
         lambda_role.add_to_policy(
             iam.PolicyStatement(
-                actions=["bedrock:InvokeModel"],
+                actions=[
+                    "bedrock:InvokeModel",
+                    "bedrock:GetModel",
+                    "bedrock:ListModels"
+                ],
                 resources=["*"]
             )
         )
@@ -56,7 +60,13 @@ class ApiStack(Stack):
             memory_size=512,
             role=lambda_role,
             environment={
-                "DYNAMODB_TABLE": dynamodb_table.table_name
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
+                "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
+                "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
+                "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+                "BEDROCK_MAX_TOKENS": "4096",
+                "BEDROCK_TEMPERATURE": "0.7",
+                "BEDROCK_SELECTION_STRATEGY": "adaptive"
             }
         )
         
@@ -69,7 +79,13 @@ class ApiStack(Stack):
             memory_size=512,
             role=lambda_role,
             environment={
-                "DYNAMODB_TABLE": dynamodb_table.table_name
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
+                "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
+                "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
+                "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+                "BEDROCK_MAX_TOKENS": "4096",
+                "BEDROCK_TEMPERATURE": "0.7",
+                "BEDROCK_SELECTION_STRATEGY": "adaptive"
             }
         )
         
@@ -80,7 +96,16 @@ class ApiStack(Stack):
             default_cors_preflight_options=apigateway.CorsOptions(
                 allow_origins=apigateway.Cors.ALL_ORIGINS,
                 allow_methods=apigateway.Cors.ALL_METHODS,
-                allow_headers=["Content-Type", "Authorization"]
+                allow_headers=[
+                    "Content-Type", 
+                    "Authorization", 
+                    "X-Requested-With",
+                    "Accept",
+                    "Origin",
+                    "Access-Control-Request-Method",
+                    "Access-Control-Request-Headers"
+                ],
+                max_age=Duration.seconds(86400)
             )
         )
         
@@ -99,6 +124,10 @@ class ApiStack(Stack):
         # Individual inquiry endpoints
         inquiry_by_id = inquiries.add_resource("{id}")
         inquiry_by_id.add_method("GET", apigateway.LambdaIntegration(inquiry_handler))  # Get inquiry
+        
+        # Escalation endpoint
+        escalate = inquiry_by_id.add_resource("escalate")
+        escalate.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))  # Escalate inquiry
         
         # AI response endpoint
         ai_response = api_v1.add_resource("ai-response")

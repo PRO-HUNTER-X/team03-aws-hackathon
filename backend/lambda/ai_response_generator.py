@@ -16,7 +16,9 @@ def success_response(data):
         'statusCode': 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
         },
         'body': json.dumps({
             'success': True,
@@ -30,12 +32,27 @@ def error_response(message, status_code=400):
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
         },
         'body': json.dumps({
             'success': False,
             'error': message
         }, ensure_ascii=False)
+    }
+
+def options_response():
+    """OPTIONS 요청 응답 (CORS preflight)"""
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+            'Access-Control-Max-Age': '86400'
+        },
+        'body': ''
     }
 
 def generate_ai_response(inquiry_data):
@@ -100,6 +117,10 @@ def generate_ai_response(inquiry_data):
 def lambda_handler(event, context):
     """AI 응답 생성 Lambda 핸들러"""
     try:
+        # OPTIONS 요청 처리 (CORS preflight)
+        if event.get('httpMethod') == 'OPTIONS':
+            return options_response()
+        
         body = json.loads(event.get('body', '{}'))
         
         # 필수 필드 검증

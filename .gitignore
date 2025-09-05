@@ -1,2 +1,4 @@
 chat-history
 .idea
+infra/cdk.out/
+infra/stacks/__pycache__/
