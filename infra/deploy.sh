@@ -150,6 +150,7 @@ deploy_stack() {
             # 빌드 결과 확인
             if [ ! -d "out" ]; then
                 echo "❌ Next.js 빌드 실패 - out 폴더가 생성되지 않았습니다"
+                echo "generateStaticParams 함수를 확인하세요."
                 exit 1
             fi
             
@@ -197,6 +198,7 @@ deploy_stack() {
             # 빌드 결과 확인
             if [ ! -d "out" ]; then
                 echo "❌ Next.js 빌드 실패 - out 폴더가 생성되지 않았습니다"
+                echo "generateStaticParams 함수를 확인하세요."
                 exit 1
             fi
             
