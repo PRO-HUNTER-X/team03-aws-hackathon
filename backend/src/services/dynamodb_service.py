@@ -66,3 +66,27 @@ class DynamoDBService:
         except Exception as e:
             logger.error(f"Error updating inquiry status: {str(e)}")
             return None
+    
+    def list_inquiries(self, company_id: str, status: str = None, limit: int = 50) -> list:
+        """회사별 문의 목록 조회"""
+        try:
+            # 실제 구현에서는 GSI를 사용하여 companyId로 쿼리
+            # 현재는 스캔으로 임시 구현
+            filter_expression = 'companyId = :company_id'
+            expression_values = {':company_id': company_id}
+            
+            if status:
+                filter_expression += ' AND #status = :status'
+                expression_values[':status'] = status
+            
+            response = self.inquiries_table.scan(
+                FilterExpression=filter_expression,
+                ExpressionAttributeValues=expression_values,
+                ExpressionAttributeNames={'#status': 'status'} if status else None,
+                Limit=limit
+            )
+            
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error listing inquiries: {str(e)}")
+            return []
