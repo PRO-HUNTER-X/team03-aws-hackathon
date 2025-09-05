@@ -35,11 +35,17 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     try:
+        logger.info(f"Customer inquiries request: {json.dumps(event)}")
+        
         # 간단한 이메일 기반 인증
         query_params = event.get('queryStringParameters') or {}
         customer_email = query_params.get('email')
         
+        logger.info(f"Query params: {query_params}")
+        logger.info(f"Customer email: {customer_email}")
+        
         if not customer_email:
+            logger.warning("No email parameter provided")
             return {
                 'statusCode': 400,
                 'headers': headers,
@@ -50,32 +56,42 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         # 고객의 문의 목록 조회
+        logger.info(f"Fetching inquiries for email: {customer_email}")
         inquiries = db_service.get_inquiries_by_email(customer_email)
+        logger.info(f"Retrieved {len(inquiries)} inquiries")
         
         # 비밀번호 필드 제거 (보안)
         for inquiry in inquiries:
             if 'customerPassword' in inquiry:
                 del inquiry['customerPassword']
         
+        response_data = {
+            'success': True,
+            'data': {
+                'inquiries': inquiries,
+                'count': len(inquiries)
+            }
+        }
+        
+        logger.info(f"Returning response: {len(inquiries)} inquiries found")
+        
         return {
             'statusCode': 200,
             'headers': headers,
-            'body': json.dumps({
-                'success': True,
-                'data': {
-                    'inquiries': inquiries,
-                    'count': len(inquiries)
-                }
-            }, ensure_ascii=False)
+            'body': json.dumps(response_data, ensure_ascii=False)
         }
         
     except Exception as e:
-        logger.error(f"고객 문의 조회 오류: {str(e)}")
+        import traceback
+        error_msg = f"고객 문의 조회 오류: {str(e)}"
+        logger.error(error_msg)
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        
         return {
             'statusCode': 500,
             'headers': headers,
             'body': json.dumps({
                 'success': False,
-                'error': {'message': '서버 오류가 발생했습니다'}
+                'error': {'message': '서버 오류가 발생했습니다', 'details': str(e)}
             }, ensure_ascii=False)
         }
