@@ -57,8 +57,11 @@ backend/
 ```
 
 ## 현재 진행 상황
-- [ ] Python Lambda 프로젝트 구조 설정
-- [ ] DynamoDB 서비스 연동
+- [x] Python Lambda 프로젝트 구조 설정 (TDD 환경 포함)
+- [x] DynamoDB 서비스 연동 (CRUD 연산 완료)
 - [ ] AWS Bedrock 연동
-- [ ] 핵심 Lambda 함수 구현
-- [ ] 에러 핸들링 및 로깅 구현
+- [x] 핵심 Lambda 함수 구현 (create, get, update 완료)
+- [x] 에러 핸들링 및 로깅 구현
+- [ ] 나머지 Lambda 함수 (list, escalate)
+- [ ] AI 서비스 연동
+- [ ] 이메일 서비스 연동

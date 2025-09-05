@@ -17,14 +17,23 @@ class DataStack(Stack):
                 name="inquiry_id",
                 type=dynamodb.AttributeType.STRING
             ),
-            sort_key=dynamodb.Attribute(
-                name="created_at",
-                type=dynamodb.AttributeType.STRING
-            ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
             point_in_time_recovery_specification=dynamodb.PointInTimeRecoverySpecification(
                 point_in_time_recovery_enabled=True
+            )
+        )
+        
+        # GSI for company queries
+        self.table.add_global_secondary_index(
+            index_name="company-index",
+            partition_key=dynamodb.Attribute(
+                name="companyId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="created_at",
+                type=dynamodb.AttributeType.STRING
             )
         )
         
