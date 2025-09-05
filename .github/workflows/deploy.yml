@@ -73,6 +73,12 @@ jobs:
       - name: 🔧 Install CDK
         run: npm install -g aws-cdk
 
+      - name: 🔨 Build Frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: 🏗️ Bootstrap CDK
         working-directory: infra
         run: cdk bootstrap
@@ -95,19 +101,6 @@ jobs:
         if: needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true'
         working-directory: infra
         run: |
-          # Frontend 빌드
-          echo "🔨 프론트엔드 빌드 중..."
-          cd ../frontend
-          npm ci
-          npm run build
-          
-          # 빌드 결과 확인
-          if [ ! -d "out" ]; then
-            echo "❌ Next.js 빌드 실패 - out 폴더가 생성되지 않았습니다"
-            exit 1
-          fi
-          
-          cd ../infra
           echo "🌐 프론트엔드 스택 배포 중..."
           cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
 
