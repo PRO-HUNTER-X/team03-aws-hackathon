@@ -140,6 +140,33 @@ class ApiStack(Stack):
         ai_response = api_v1.add_resource("ai-response")
         ai_response.add_method("POST", apigateway.LambdaIntegration(ai_response_generator))
         
+        # Logs endpoint
+        logs_handler = _lambda.Function(
+            self, "LogsHandler",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="lambda/logs_handler.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
+            timeout=Duration.seconds(30),
+            memory_size=256,
+            role=lambda_role
+        )
+        
+        # CloudWatch Logs permissions
+        lambda_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "logs:FilterLogEvents",
+                    "logs:DescribeLogGroups",
+                    "logs:DescribeLogStreams"
+                ],
+                resources=["*"]
+            )
+        )
+        
+        logs = api_v1.add_resource("logs")
+        logs_by_function = logs.add_resource("{function}")
+        logs_by_function.add_method("GET", apigateway.LambdaIntegration(logs_handler))
+        
         self.api_url = api.url
         self.api = api
         
