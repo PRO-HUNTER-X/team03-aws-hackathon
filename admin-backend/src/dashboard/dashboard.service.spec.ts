@@ -22,7 +22,7 @@ describe('DashboardService', () => {
       expect(stats.status.pending).toBe(2);
       expect(stats.status.processing).toBe(2);
       expect(stats.status.completed).toBe(1);
-      expect(stats.urgency.urgent).toBe(2);
+      expect(stats.urgency.high).toBe(2);
       expect(stats.urgency.normal).toBe(2);
       expect(stats.urgency.low).toBe(1);
     });
@@ -32,11 +32,10 @@ describe('DashboardService', () => {
       const stats = service.getStats();
 
       // Then
-      expect(stats.types['배송 문의']).toBe(1);
+      expect(stats.types['기술 문의']).toBe(2);
       expect(stats.types['결제 문의']).toBe(1);
-      expect(stats.types['상품 문의']).toBe(1);
-      expect(stats.types['기술 지원']).toBe(1);
-      expect(stats.types['기타 문의']).toBe(1);
+      expect(stats.types['일반 문의']).toBe(1);
+      expect(stats.types['기타']).toBe(1);
     });
   });
 
@@ -78,7 +77,7 @@ describe('DashboardService', () => {
       // Then
       expect(alerts.count).toBe(2);
       alerts.inquiries.forEach(inquiry => {
-        expect(inquiry.urgency).toBe('긴급');
+        expect(inquiry.urgency).toBe('높음');
         expect(inquiry.status).not.toBe('완료');
       });
     });

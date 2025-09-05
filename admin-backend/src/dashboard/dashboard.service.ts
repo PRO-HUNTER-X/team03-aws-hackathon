@@ -6,7 +6,7 @@ export interface Inquiry {
   type: string;
   title: string;
   content: string;
-  urgency: '긴급' | '보통' | '낮음';
+  urgency: '낮음' | '보통' | '높음';
   customerId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -18,10 +18,10 @@ export class DashboardService {
     {
       id: 'inq_001',
       status: '대기',
-      type: '배송 문의',
-      title: '배송이 지연되고 있어요',
-      content: '주문한 상품이 예정일보다 늦어지고 있습니다.',
-      urgency: '긴급',
+      type: '기술 문의',
+      title: '로그인이 안돼요',
+      content: '계속 로그인 오류가 발생합니다.',
+      urgency: '높음',
       customerId: 'customer_001',
       createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2시간 전
       updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
@@ -40,7 +40,7 @@ export class DashboardService {
     {
       id: 'inq_003',
       status: '완료',
-      type: '상품 문의',
+      type: '일반 문의',
       title: '상품 정보 문의',
       content: '상품 사이즈 정보를 알고 싶습니다.',
       urgency: '낮음',
@@ -51,10 +51,10 @@ export class DashboardService {
     {
       id: 'inq_004',
       status: '대기',
-      type: '기술 지원',
-      title: '로그인이 안돼요',
-      content: '계속 로그인 오류가 발생합니다.',
-      urgency: '긴급',
+      type: '기술 문의',
+      title: '앱 오류 문의',
+      content: '앱이 계속 종료됩니다.',
+      urgency: '높음',
       customerId: 'customer_004',
       createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30분 전
       updatedAt: new Date(Date.now() - 30 * 60 * 1000)
@@ -62,7 +62,7 @@ export class DashboardService {
     {
       id: 'inq_005',
       status: '처리중',
-      type: '기타 문의',
+      type: '기타',
       title: '회원 탈퇴 문의',
       content: '회원 탈퇴 방법을 알려주세요.',
       urgency: '보통',
@@ -78,7 +78,7 @@ export class DashboardService {
     const processing = this.inquiries.filter(i => i.status === '처리중').length;
     const completed = this.inquiries.filter(i => i.status === '완료').length;
 
-    const urgent = this.inquiries.filter(i => i.urgency === '긴급').length;
+    const high = this.inquiries.filter(i => i.urgency === '높음').length;
     const normal = this.inquiries.filter(i => i.urgency === '보통').length;
     const low = this.inquiries.filter(i => i.urgency === '낮음').length;
 
@@ -95,7 +95,7 @@ export class DashboardService {
         completed
       },
       urgency: {
-        urgent,
+        high,
         normal,
         low
       },
@@ -115,7 +115,7 @@ export class DashboardService {
 
   getUrgentAlerts() {
     const urgentInquiries = this.inquiries.filter(
-      inquiry => inquiry.urgency === '긴급' && inquiry.status !== '완료'
+      inquiry => inquiry.urgency === '높음' && inquiry.status !== '완료'
     );
 
     return {

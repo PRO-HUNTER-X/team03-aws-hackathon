@@ -15,17 +15,17 @@ export class StatsResponseDto {
   };
 
   @ApiProperty({
-    example: { urgent: 2, normal: 2, low: 1 },
+    example: { high: 2, normal: 2, low: 1 },
     description: '긴급도별 문의 수'
   })
   urgency: {
-    urgent: number;
+    high: number;
     normal: number;
     low: number;
   };
 
   @ApiProperty({
-    example: { '배송 문의': 1, '결제 문의': 1, '상품 문의': 1 },
+    example: { '기술 문의': 2, '결제 문의': 1, '일반 문의': 1, '기타': 1 },
     description: '유형별 문의 수'
   })
   types: Record<string, number>;

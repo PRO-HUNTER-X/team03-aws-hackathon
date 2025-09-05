@@ -22,8 +22,8 @@ describe('DashboardController', () => {
       const mockStats = {
         total: 5,
         status: { pending: 2, processing: 2, completed: 1 },
-        urgency: { urgent: 2, normal: 2, low: 1 },
-        types: { '배송 문의': 1 }
+        urgency: { high: 2, normal: 2, low: 1 },
+        types: { '기술 문의': 2 }
       };
       jest.spyOn(service, 'getStats').mockReturnValue(mockStats);
 
@@ -44,10 +44,10 @@ describe('DashboardController', () => {
         {
           id: 'inq_001',
           status: '대기' as const,
-          type: '배송 문의',
-          title: '배송 지연',
-          content: '배송이 늦어요',
-          urgency: '긴급' as const,
+          type: '기술 문의',
+          title: '로그인 오류',
+          content: '로그인이 안돼요',
+          urgency: '높음' as const,
           customerId: 'customer_001',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -87,10 +87,10 @@ describe('DashboardController', () => {
           {
             id: 'inq_001',
             status: '대기' as const,
-            type: '배송 문의',
-            title: '긴급 배송',
-            content: '긴급해요',
-            urgency: '긴급' as const,
+            type: '기술 문의',
+            title: '긴급 오류',
+            content: '앱이 종료돼요',
+            urgency: '높음' as const,
             customerId: 'customer_001',
             createdAt: new Date(),
             updatedAt: new Date(),
