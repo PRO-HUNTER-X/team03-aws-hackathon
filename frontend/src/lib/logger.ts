@@ -16,7 +16,7 @@ export interface LogEntry {
     message: string;
     stack?: string;
   };
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface LoggerConfig {
@@ -36,7 +36,7 @@ export class Logger {
     };
   }
 
-  log(level: LogLevel, message: string, error?: Error, context?: Record<string, any>, category = 'general'): void {
+  log(level: LogLevel, message: string, error?: Error, context?: Record<string, unknown>, category = 'general'): void {
     const logEntry: LogEntry = {
       id: this.generateId(),
       timestamp: new Date().toISOString(),
@@ -61,19 +61,19 @@ export class Logger {
     }
   }
 
-  info(message: string, context?: Record<string, any>, category?: string): void {
+  info(message: string, context?: Record<string, unknown>, category?: string): void {
     this.log(LogLevel.INFO, message, undefined, context, category);
   }
 
-  warn(message: string, context?: Record<string, any>, category?: string): void {
+  warn(message: string, context?: Record<string, unknown>, category?: string): void {
     this.log(LogLevel.WARN, message, undefined, context, category);
   }
 
-  error(message: string, error?: Error, context?: Record<string, any>, category?: string): void {
+  error(message: string, error?: Error, context?: Record<string, unknown>, category?: string): void {
     this.log(LogLevel.ERROR, message, error, context, category);
   }
 
-  debug(message: string, context?: Record<string, any>, category?: string): void {
+  debug(message: string, context?: Record<string, unknown>, category?: string): void {
     this.log(LogLevel.DEBUG, message, undefined, context, category);
   }
 

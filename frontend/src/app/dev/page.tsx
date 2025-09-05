@@ -22,7 +22,7 @@ export default function DevPage() {
 
   useEffect(() => {
     filterLogs();
-  }, [logs, selectedLevel, searchTerm, selectedCategory]);
+  }, [logs, selectedLevel, searchTerm, selectedCategory, filterLogs]);
 
   const loadLogs = () => {
     const allLogs = logger.getLogs();
