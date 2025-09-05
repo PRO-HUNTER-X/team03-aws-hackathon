@@ -15,6 +15,8 @@ import { AIResponse } from "@/components/ai-response";
 import { createInquiry, generateAIResponse, escalateInquiry } from "@/lib/api";
 
 const inquirySchema = z.object({
+  email: z.string().email("올바른 이메일 주소를 입력해주세요"),
+  password: z.string().min(6, "비밀번호는 6자 이상 입력해주세요"),
   category: z.string().min(1, "문의 유형을 선택해주세요"),
   title: z.string().min(1, "제목을 입력해주세요").max(100, "제목은 100자 이내로 입력해주세요"),
   content: z.string().min(10, "내용을 10자 이상 입력해주세요").max(1000, "내용은 1000자 이내로 입력해주세요"),
@@ -33,6 +35,8 @@ export function InquiryForm() {
   const form = useForm<InquiryFormData>({
     resolver: zodResolver(inquirySchema),
     defaultValues: {
+      email: "",
+      password: "",
       category: "",
       title: "",
       content: "",
@@ -47,8 +51,9 @@ export function InquiryForm() {
     try {
       // 1. 문의 생성
       const inquiryResponse = await createInquiry({
-        companyId: 'demo-company', // TODO: 실제 회사 ID로 교체
-        customerEmail: 'customer@example.com', // TODO: 실제 고객 이메일로 교체
+        companyId: "hunters-company",
+        customerEmail: data.email,
+        customerPassword: data.password,
         category: data.category,
         title: data.title,
         content: data.content,
@@ -61,26 +66,24 @@ export function InquiryForm() {
       const aiResponseData = await generateAIResponse({
         title: data.title,
         content: data.content,
-        category: data.category
+        category: data.category,
       });
       setAiResponse(aiResponseData.aiResponse);
     } catch (error) {
       console.error("문의 제출 실패:", error);
-      alert(`문의 제출에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      alert(`문의 제출에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
       setShowAiResponse(false);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-
-
   const handleEscalation = async () => {
     if (!inquiryId) return;
 
     try {
-      await escalateInquiry(inquiryId, '고객이 AI 응답에 만족하지 않아 에스컬레이션을 요청했습니다.');
-      
+      await escalateInquiry(inquiryId, "고객이 AI 응답에 만족하지 않아 에스컬레이션을 요청했습니다.");
+
       alert(
         `문의 ID: ${inquiryId}\n담당자에게 연결 요청이 전송되었습니다.\n상태 추적 페이지에서 진행 상황을 확인하실 수 있습니다.`
       );
@@ -88,8 +91,8 @@ export function InquiryForm() {
       // 상태 추적 페이지로 이동
       router.push(`/status/${inquiryId}`);
     } catch (error) {
-      console.error('에스컬레이션 실패:', error);
-      alert(`에스컬레이션 요청에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      console.error("에스컬레이션 실패:", error);
+      alert(`에스컬레이션 요청에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
     }
   };
 
@@ -109,12 +112,42 @@ export function InquiryForm() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>새 문의 작성</CardTitle>
+          <CardTitle>헌터스 고객지원 문의</CardTitle>
           {inquiryId && <p className="text-sm text-muted-foreground">문의 ID: {inquiryId}</p>}
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* 이메일 입력 */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이메일 *</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="이메일 주소를 입력해주세요" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* 비밀번호 입력 */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>비밀번호 *</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="비밀번호를 입력해주세요 (6자 이상)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* 문의 유형 선택 */}
               <FormField
                 control={form.control}
@@ -237,4 +270,3 @@ export function InquiryForm() {
     </>
   );
 }
-

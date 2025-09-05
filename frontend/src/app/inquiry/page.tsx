@@ -10,17 +10,17 @@ export default function InquiryPage() {
           <div className="space-y-8">
             <div>
               <h1 className="text-6xl font-bold mb-6 leading-tight text-gray-900">
-                문의하기
+                헌터스 고객지원
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed mb-8">
-                궁금한 점이나 문제가 있으시면 언제든 문의해 주세요.
+                헌터스 서비스에 대한 문의사항이 있으시면 언제든지 문의해주세요.
               </p>
             </div>
             
             {/* Features */}
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                   <span className="text-white font-bold text-sm">AI</span>
                 </div>
                 <div>
@@ -30,7 +30,7 @@ export default function InquiryPage() {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                   <span className="text-white font-bold text-sm">→</span>
                 </div>
                 <div>
@@ -40,7 +40,7 @@ export default function InquiryPage() {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                   <span className="text-white font-bold text-sm">✓</span>
                 </div>
                 <div>
