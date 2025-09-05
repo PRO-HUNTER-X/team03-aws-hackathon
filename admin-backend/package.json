@@ -12,8 +12,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "build:lambda": "tsc lambda/*.ts --outDir lambda/dist --target ES2020 --module commonjs",
-    "test:lambda": "node lambda/test-local.js"
+    "build:lambda": "tsc lambda/*.ts --outDir dist --target ES2020 --module commonjs --esModuleInterop --allowSyntheticDefaultImports",
+    "test:lambda": "node lambda/test-local.js",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

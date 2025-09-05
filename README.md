@@ -47,6 +47,9 @@ aws configure --profile aws-hackathon
 
 # 프론트엔드만 (~20초)
 ./deploy.sh frontend
+
+# 관리자 페이지만 (~30초)
+./deploy.sh admin
 ```
 
 **빠른 배포 (의존성 설치 스킵) 🚀**
@@ -54,6 +57,7 @@ aws configure --profile aws-hackathon
 # 개발 중 빠른 재배포용
 ./deploy.sh api --fast
 ./deploy.sh frontend --fast
+./deploy.sh admin --fast
 ```
 
 ### 🧪 개발 환경 (개인별 독립)
@@ -115,11 +119,16 @@ aws configure --profile aws-hackathon
 배포 완료 후 다음 URL들이 출력됩니다:
 
 #### 📱 프론트엔드 (사용자 접속)
-- **CloudFront URL**: `https://d1234567890.cloudfront.net`
+- **CloudFront URL**: `https://d2mksyj4now3a0.cloudfront.net/`
 - CS 챗봇 웹 인터페이스
 
+#### 👑 관리자 페이지 (관리자 접속)
+- **Admin CloudFront URL**: `https://d1czy2j4qpa1wq.cloudfront.net`
+- CS 챗봇 관리자 대시보드
+
 #### 🔗 백엔드 API (개발자용)
-- **API Gateway URL**: `https://abcd1234.execute-api.us-east-1.amazonaws.com/prod/`
+- **API Gateway URL**: `https://n0e8yoz90k.execute-api.us-east-1.amazonaws.com/prod/`
+- **Admin API URL**: `https://3tbdb8uvll.execute-api.us-east-1.amazonaws.com/prod/admin/`
 - REST API 엔드포인트
 
 #### 📊 AWS 리소스 확인
@@ -130,6 +139,8 @@ cdk list
 # 프로덕션 환경 확인
 aws cloudformation describe-stacks --stack-name cs-chatbot-frontend --query 'Stacks[0].Outputs'
 aws cloudformation describe-stacks --stack-name cs-chatbot-api --query 'Stacks[0].Outputs'
+aws cloudformation describe-stacks --stack-name cs-chatbot-admin-frontend --query 'Stacks[0].Outputs'
+aws cloudformation describe-stacks --stack-name cs-chatbot-admin-api --query 'Stacks[0].Outputs'
 
 # 개발 환경 확인 (개발자명 대체)
 aws cloudformation describe-stacks --stack-name cs-chatbot-dev-dahye-frontend --query 'Stacks[0].Outputs'
@@ -153,6 +164,7 @@ cdk destroy --all
 2. **2차 인간 연결**: AI 답변 불만족 시 원클릭 메일 문의
 3. **데이터 학습**: 인간 답변을 AI 학습 데이터로 활용
 4. **진행 현황**: 예상 응답 시간 및 처리 상태 UI
+5. **관리자 대시보드**: 문의 관리 및 통계 확인
 
 ### 🛠️ 기술 스택
 - **Backend**: Python Lambda + AWS Bedrock (Claude 3.5)
@@ -174,8 +186,10 @@ cd team03-aws-hackathon
 
 ### 📁 프로젝트 구조
 ```
-├── backend/          # Lambda 함수
-├── frontend/         # React 앱
+├── backend/          # Lambda 함수 (사용자용)
+├── frontend/         # React 앱 (사용자용)
+├── admin-backend/    # Lambda 함수 (관리자용)
+├── admin-frontend/   # React 앱 (관리자용)
 ├── infra/           # AWS CDK 스택
 └── docs/            # 개발 문서
 ```
@@ -196,6 +210,7 @@ cd team03-aws-hackathon
 # 개발 중 빠른 재배포
 ./deploy.sh frontend --fast
 ./deploy.sh api --fast
+./deploy.sh admin --fast
 
 # 데이터베이스 스키마 변경
 ./deploy.sh data

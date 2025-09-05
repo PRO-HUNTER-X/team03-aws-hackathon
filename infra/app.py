@@ -4,6 +4,8 @@ import os
 from stacks.api_stack import ApiStack
 from stacks.data_stack import DataStack
 from stacks.frontend_stack import FrontendStack
+from stacks.admin_api_stack import AdminApiStack
+from stacks.admin_frontend_stack import AdminFrontendStack
 
 app = cdk.App()
 
@@ -34,5 +36,15 @@ frontend_stack = FrontendStack(app, f"{stack_prefix}-frontend",
                               api_url=api_stack.api_url,
                               developer=developer,
                               env=env)
+
+# Admin stacks
+admin_api_stack = AdminApiStack(app, f"{stack_prefix}-admin-api",
+                               dynamodb_table=data_stack.table,
+                               developer=developer,
+                               env=env)
+admin_frontend_stack = AdminFrontendStack(app, f"{stack_prefix}-admin-frontend",
+                                         admin_api_url=admin_api_stack.api_url,
+                                         developer=developer,
+                                         env=env)
 
 app.synth()
