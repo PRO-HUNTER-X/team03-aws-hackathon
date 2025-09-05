@@ -38,7 +38,10 @@ export default function RootLayout({
                   문의하기
                 </Link>
                 <Link href="/demo" className="text-sm hover:underline">
-                  데모
+                  AI 데모
+                </Link>
+                <Link href="/status-demo" className="text-sm hover:underline">
+                  상태 데모
                 </Link>
               </div>
             </div>

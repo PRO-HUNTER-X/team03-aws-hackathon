@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,7 @@ const inquirySchema = z.object({
 type InquiryFormData = z.infer<typeof inquirySchema>
 
 export function InquiryForm() {
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [aiResponse, setAiResponse] = useState<string | null>(null)
   const [showAiResponse, setShowAiResponse] = useState(false)
@@ -79,7 +81,12 @@ export function InquiryForm() {
 
   const handleEscalation = () => {
     // TODO: 에스컬레이션 API 호출
-    alert(`문의 ID: ${inquiryId}\n담당자에게 연결 요청이 전송되었습니다.\n이메일로 답변을 받으실 수 있습니다.`)
+    alert(`문의 ID: ${inquiryId}\n담당자에게 연결 요청이 전송되었습니다.\n상태 추적 페이지에서 진행 상황을 확인하실 수 있습니다.`)
+    
+    // 상태 추적 페이지로 이동
+    if (inquiryId) {
+      router.push(`/status/${inquiryId}`)
+    }
   }
 
   const handleRating = (rating: number) => {
@@ -223,12 +230,20 @@ export function InquiryForm() {
       />
     )}
 
-    {/* 새 문의 작성 버튼 */}
+    {/* 새 문의 작성 버튼 & 상태 추적 링크 */}
     {aiResponse && !isSubmitting && (
-      <div className="mt-6 text-center">
+      <div className="mt-6 flex gap-4 justify-center">
         <Button variant="outline" onClick={handleNewInquiry}>
           새 문의 작성하기
         </Button>
+        {inquiryId && (
+          <Button 
+            variant="default" 
+            onClick={() => router.push(`/status/${inquiryId}`)}
+          >
+            상태 추적하기
+          </Button>
+        )}
       </div>
     )}
     </>
