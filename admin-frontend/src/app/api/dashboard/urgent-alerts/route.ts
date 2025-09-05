@@ -1,19 +1,10 @@
 import { NextResponse } from 'next/server'
-import { ScanCommand } from '@aws-sdk/lib-dynamodb'
-import { dynamodb, TABLE_NAME } from '@/lib/dynamodb'
+import { mockInquiries } from '@/lib/mock-data'
 
 export async function GET() {
   try {
-    const command = new ScanCommand({
-      TableName: TABLE_NAME,
-      FilterExpression: 'urgency = :urgency',
-      ExpressionAttributeValues: {
-        ':urgency': '높음'
-      }
-    })
-
-    const result = await dynamodb.send(command)
-    const urgentInquiries = result.Items || []
+    // Mock 데이터에서 긴급 문의 필터링
+    const urgentInquiries = mockInquiries.filter(item => item.urgency === '높음')
 
     return NextResponse.json({
       success: true,
