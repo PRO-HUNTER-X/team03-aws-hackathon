@@ -18,11 +18,11 @@ class ModelSelectionStrategy(Enum):
     ADAPTIVE = "adaptive"
     COST_OPTIMIZED = "cost_optimized"
 
-# 기본 AI 모델 설정
+# 기본 AI 모델 설정 (실제 Bedrock 모델 ID)
 AI_MODEL_CONFIG = {
-    "default_model": ModelType.CLAUDE_4_1_OPUS.value,
-    "fallback_model": ModelType.CLAUDE_4_OPUS.value,
-    "fast_model": ModelType.CLAUDE_4_SONNET.value,
+    "default_model": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "fallback_model": "anthropic.claude-3-sonnet-20240229-v1:0", 
+    "fast_model": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_tokens": 4096,
     "temperature": 0.7,
     "model_selection_strategy": ModelSelectionStrategy.ADAPTIVE.value
@@ -87,7 +87,8 @@ class AIModelConfig:
             "accept": "application/json",
             "body": {
                 "max_tokens": self.config["max_tokens"],
-                "temperature": self.config["temperature"]
+                "temperature": self.config["temperature"],
+                "top_p": 0.9
             }
         }
     
