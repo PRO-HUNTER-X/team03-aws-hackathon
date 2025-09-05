@@ -98,12 +98,14 @@
 
 #### Task C2: 핵심 Lambda 함수 구현 (4시간)
 ```python
-# 구현할 Lambda 함수들
-handlers/create_inquiry.py     # POST /api/inquiries
-handlers/get_inquiry.py        # GET /api/inquiries/{id}
-handlers/list_inquiries.py     # GET /api/inquiries
-handlers/update_status.py      # PUT /api/inquiries/{id}/status
-handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
+# 구현 완료된 Lambda 함수들
+handlers/inquiry_handler.py    # POST/GET /api/inquiries (통합)
+handlers/ai_response_generator.py  # POST /api/ai-response
+handlers/health_check.py       # GET /
+
+# 추가 구현 필요한 Lambda 함수들 (우선순위)
+handlers/update_status.py      # PUT /api/inquiries/{id}/status - 관리자용
+handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 ```
 
 ### Phase 2 (5-12시간): AI 연동 & 고급 기능
@@ -115,15 +117,27 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
 - [ ] AI 응답 품질 점수 계산
 
 #### Task C4: 이메일 알림 & DynamoDB 연동 (2시간)
-- [ ] services/email_service.py - AWS SES 연동
-- [ ] services/dynamodb_service.py - DB 연동
+- [ ] services/email_service.py - AWS SES 실제 연동 (기본 구조 완성)
+- [x] services/dynamodb_service.py - DB 연동 완성
 - [ ] 이메일 템플릿 (에스컬레이션, 답변 완료)
 - [ ] 회사 정보 관리 로직
 
+#### Task C5: 추가 필수 API 구현 (3시간) - **신규 추가**
+- [ ] **에스컬레이션 API** (POST /api/inquiries/{id}/escalate)
+  - 문의 상태를 'escalated'로 변경
+  - 관리자에게 이메일 알림 발송
+  - 고객에게 확인 응답 반환
+- [ ] **상태 업데이트 API** (PUT /api/inquiries/{id}/status)
+  - 관리자가 문의 상태 변경 (pending → in_progress → resolved)
+  - 상태 변경 시 타임스탬프 업데이트
+  - 고객에게 상태 변경 알림 (선택적)
+
 **완료 기준:**
-- 모든 Lambda 함수 개별 테스트 통과
-- AI 응답 생성 3초 이내 완료
-- DynamoDB 연동 및 에러 핸들링 구현
+- 모든 Lambda 함수 개별 테스트 통과 (7/7 함수)
+- AI 응답 생성 3초 이내 완료 ✅
+- DynamoDB 연동 및 에러 핸들링 구현 ✅
+- 에스컬레이션 플로우 완전 동작
+- 관리자 상태 관리 기능 완성
 
 ---
 
@@ -254,10 +268,17 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
 - [ ] 에러 처리 완성
 
 ### 규원 - Backend
-- [x] 모든 API 엔드포인트 완성 (5/5 Lambda 함수)
+- [x] 기본 API 엔드포인트 완성 (5/7 Lambda 함수)
+  - [x] POST /api/inquiries (문의 생성)
+  - [x] GET /api/inquiries (문의 목록 조회)
+  - [x] GET /api/inquiries/{id} (특정 문의 조회)
+  - [x] POST /api/ai-response (AI 응답 생성)
+  - [x] GET / (헬스체크)
+  - [ ] **PUT /api/inquiries/{id}/status** (상태 업데이트) - 우선순위 1
+  - [ ] **POST /api/inquiries/{id}/escalate** (에스컬레이션) - 우선순위 2
 - [x] AI 응답 생성 완성 (Bedrock Claude 연동)
-- [x] 이메일 알림 완성 (기본 구조)
-- [x] 에러 핸들링 완성
+- [ ] 이메일 알림 완성 (SES 실제 연동 필요)
+- [x] 에러 핸들링 완성 (Decimal 직렬화 등)
 
 ### 다혜 - Infrastructure
 - [ ] AWS 인프라 배포 완성
@@ -266,9 +287,15 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate
 - [ ] 샘플 데이터 투입 완성
 
 ### 전체 통합
-- [ ] 고객 문의 → AI 응답 플로우 동작
-- [ ] 에스컬레이션 → 이메일 알림 동작
-- [ ] 관리자 대시보드 → 문의 관리 동작
+- [x] 고객 문의 → AI 응답 플로우 동작 (기본 API 완성)
+- [ ] 에스컬레이션 → 이메일 알림 동작 (**API 추가 필요**)
+- [ ] 관리자 대시보드 → 문의 관리 동작 (**상태 업데이트 API 필요**)
 - [ ] 상태 추적 → 실시간 업데이트 동작
+
+### 우선순위 개발 작업 (다음 단계)
+1. **에스컬레이션 API** - 고객이 "사람과 연결" 버튼 클릭 시 필요
+2. **상태 업데이트 API** - 관리자가 문의 상태 변경 시 필요
+3. **JWT 인증 API** - 관리자 로그인/인증 시스템
+4. **이메일 서비스 완성** - AWS SES 실제 연동
 
 **목표**: 24시간 후 완전히 동작하는 MVP 데모 가능
