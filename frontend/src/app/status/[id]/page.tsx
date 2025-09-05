@@ -191,11 +191,13 @@ export default function StatusPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 max-w-4xl">
-        <div className="flex items-center justify-center py-16">
-          <div className="text-center">
-            <Clock className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-            <p>문의 정보를 불러오는 중...</p>
+      <div className="min-h-screen bg-background pt-20">
+        <div className="container mx-auto px-6 py-20 max-w-4xl">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <Clock className="w-12 h-12 animate-spin mx-auto mb-6 text-primary" />
+              <p className="text-lg text-muted-foreground">문의 정보를 불러오는 중...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -204,17 +206,19 @@ export default function StatusPage() {
 
   if (!inquiry) {
     return (
-      <div className="container mx-auto p-4 max-w-4xl">
-        <Card>
-          <CardContent className="text-center py-16">
-            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-            <h2 className="text-xl font-semibold mb-2">문의를 찾을 수 없습니다</h2>
-            <p className="text-muted-foreground mb-4">요청하신 문의 ID({inquiryId})를 찾을 수 없습니다.</p>
-            <Link href="/inquiry">
-              <Button>새 문의 작성하기</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-background pt-20">
+        <div className="container mx-auto px-6 py-20 max-w-4xl">
+          <Card className="bg-card border-0 shadow-sm">
+            <CardContent className="text-center py-20">
+              <AlertCircle className="w-16 h-16 mx-auto mb-6 text-destructive" />
+              <h2 className="text-2xl font-bold mb-4 text-foreground">문의를 찾을 수 없습니다</h2>
+              <p className="text-muted-foreground mb-8 text-lg">요청하신 문의 ID({inquiryId})를 찾을 수 없습니다.</p>
+              <Link href="/inquiry">
+                <Button className="bg-primary hover:bg-secondary text-primary-foreground px-8 py-3 text-lg">새 문의 작성하기</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -222,135 +226,142 @@ export default function StatusPage() {
   const statusInfo = getStatusInfo(inquiry.status);
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">문의 상태 확인</h1>
-        <p className="text-muted-foreground">문의 ID: {inquiry.id}</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>현재 상태</span>
-                <Badge className={statusInfo.color}>
-                  {statusInfo.icon}
-                  <span className="ml-1">{statusInfo.label}</span>
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <h3 className="font-semibold mb-2">{inquiry.title}</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                카테고리:{" "}
-                {inquiry.category === "technical"
-                  ? "기술 문의"
-                  : inquiry.category === "billing"
-                  ? "결제 문의"
-                  : "일반 문의"}
-              </p>
-
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                  <span className="font-medium">예상 응답 시간</span>
-                </div>
-                <p className="text-lg font-semibold text-blue-700">{formatTimeRemaining(timeRemaining)}</p>
-                {timeRemaining > 0 && (
-                  <div className="mt-2">
-                    <div className="w-full bg-blue-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-1000"
-                        style={{
-                          width: `${Math.max(10, 100 - (timeRemaining / inquiry.estimatedResponseTime) * 100)}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>처리 과정</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {inquiry.timeline.map((event, index) => (
-                  <div key={event.id} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                        {getTimelineIcon(event.icon)}
-                      </div>
-                      {index < inquiry.timeline.length - 1 && <div className="w-px h-8 bg-gray-200 mt-2"></div>}
-                    </div>
-                    <div className="flex-1 pb-4">
-                      <h4 className="font-medium">{event.title}</h4>
-                      <p className="text-sm text-muted-foreground mb-1">{event.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(event.timestamp).toLocaleString("ko-KR")}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-
-                {inquiry.status !== "completed" && (
-                  <div className="flex gap-4 opacity-50">
-                    <div className="flex flex-col items-center">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                        <CheckCircle className="w-4 h-4" />
-                      </div>
-                    </div>
-                    <div className="flex-1 pb-4">
-                      <h4 className="font-medium text-gray-500">답변 완료</h4>
-                      <p className="text-sm text-gray-400">담당자가 상세한 답변을 제공할 예정입니다.</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-background pt-20">
+      <div className="container mx-auto px-6 py-12 max-w-6xl">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-bold mb-4 text-foreground">문의 상태 확인</h1>
+          <p className="text-muted-foreground text-lg">문의 ID: {inquiry.id}</p>
         </div>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>빠른 액션</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/inquiry">새 문의 작성</Link>
-              </Button>
-              <Button variant="outline" className="w-full">
-                이메일로 알림 받기
-              </Button>
-              <Button variant="outline" className="w-full">
-                문의 내용 수정
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="bg-card border-0 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <span className="text-foreground">현재 상태</span>
+                  <Badge className={`${statusInfo.color} px-3 py-1 rounded-full font-medium`}>
+                    {statusInfo.icon}
+                    <span className="ml-2">{statusInfo.label}</span>
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <h3 className="font-semibold mb-3 text-lg text-foreground">{inquiry.title}</h3>
+                <p className="text-muted-foreground mb-6">
+                  카테고리:{" "}
+                  {inquiry.category === "technical"
+                    ? "기술 문의"
+                    : inquiry.category === "billing"
+                    ? "결제 문의"
+                    : "일반 문의"}
+                </p>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>도움말</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm space-y-2">
-              <p>
-                <strong>대기중:</strong> 문의가 접수되어 처리를 기다리고 있습니다.
-              </p>
-              <p>
-                <strong>처리중:</strong> 담당자가 문의를 검토하고 있습니다.
-              </p>
-              <p>
-                <strong>완료:</strong> 답변이 완료되었습니다.
-              </p>
-              <hr className="my-3" />
-              <p className="text-muted-foreground">평균 응답 시간은 2-4시간입니다. 긴급한 문의는 우선 처리됩니다.</p>
-            </CardContent>
-          </Card>
+                <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="font-semibold text-foreground">예상 응답 시간</span>
+                  </div>
+                  <p className="text-xl font-bold text-primary mb-4">{formatTimeRemaining(timeRemaining)}</p>
+                  {timeRemaining > 0 && (
+                    <div className="mt-4">
+                      <div className="w-full bg-primary/20 rounded-full h-3">
+                        <div
+                          className="bg-primary h-3 rounded-full transition-all duration-1000"
+                          style={{
+                            width: `${Math.max(10, 100 - (timeRemaining / inquiry.estimatedResponseTime) * 100)}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-0 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-xl text-foreground">처리 과정</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {inquiry.timeline.map((event, index) => (
+                    <div key={event.id} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                          {getTimelineIcon(event.icon)}
+                        </div>
+                        {index < inquiry.timeline.length - 1 && <div className="w-px h-8 bg-border mt-3"></div>}
+                      </div>
+                      <div className="flex-1 pb-4">
+                        <h4 className="font-semibold text-foreground mb-1">{event.title}</h4>
+                        <p className="text-muted-foreground mb-2 leading-relaxed">{event.description}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(event.timestamp).toLocaleString("ko-KR")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                  {inquiry.status !== "completed" && (
+                    <div className="flex gap-4 opacity-40">
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
+                          <CheckCircle className="w-5 h-5" />
+                        </div>
+                      </div>
+                      <div className="flex-1 pb-4">
+                        <h4 className="font-semibold text-muted-foreground mb-1">답변 완료</h4>
+                        <p className="text-muted-foreground leading-relaxed">담당자가 상세한 답변을 제공할 예정입니다.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+        </div>
+
+          <div className="space-y-8">
+            <Card className="bg-card border-0 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-xl text-foreground">빠른 액션</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all" asChild>
+                  <Link href="/inquiry">새 문의 작성</Link>
+                </Button>
+                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all">
+                  이메일로 알림 받기
+                </Button>
+                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all">
+                  문의 내용 수정
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-0 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-xl text-foreground">도움말</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 leading-relaxed">
+                <div className="space-y-3">
+                  <p className="text-foreground">
+                    <span className="font-semibold text-primary">대기중:</span> 문의가 접수되어 처리를 기다리고 있습니다.
+                  </p>
+                  <p className="text-foreground">
+                    <span className="font-semibold text-secondary">처리중:</span> 담당자가 문의를 검토하고 있습니다.
+                  </p>
+                  <p className="text-foreground">
+                    <span className="font-semibold text-primary">완료:</span> 답변이 완료되었습니다.
+                  </p>
+                </div>
+                <div className="border-t border-border pt-4 mt-4">
+                  <p className="text-muted-foreground">평균 응답 시간은 2-4시간입니다. 긴급한 문의는 우선 처리됩니다.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
