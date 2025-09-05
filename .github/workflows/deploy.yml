@@ -73,36 +73,20 @@ jobs:
       - name: 🔧 Install CDK
         run: npm install -g aws-cdk
 
-      - name: 🔨 Build Frontend
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run build
-
-      - name: 🏗️ Bootstrap CDK
-        working-directory: infra
-        run: cdk bootstrap
-
-      - name: 🗄️ Deploy Data Stack
-        if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
+      - name: 🚀 Deploy Infrastructure
         working-directory: infra
         run: |
-          echo "📊 데이터 스택 배포 중..."
-          cdk deploy cs-chatbot-data --require-approval never --concurrency 10
-
-      - name: 🔗 Deploy API Stack
-        if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.infra == 'true'
-        working-directory: infra
-        run: |
-          echo "🔗 API 스택 배포 중..."
-          cdk deploy cs-chatbot-api --require-approval never --concurrency 10
-
-      - name: 🌐 Deploy Frontend Stack
-        if: needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.infra == 'true'
-        working-directory: infra
-        run: |
-          echo "🌐 프론트엔드 스택 배포 중..."
-          cdk deploy cs-chatbot-frontend --require-approval never --concurrency 10
+          chmod +x deploy.sh
+          if [[ "${{ needs.detect-changes.outputs.backend }}" == "true" || "${{ needs.detect-changes.outputs.infra }}" == "true" ]]; then
+            echo "📊 데이터 + API 스택 배포 중..."
+            ./deploy.sh data
+            ./deploy.sh api
+          fi
+          
+          if [[ "${{ needs.detect-changes.outputs.frontend }}" == "true" || "${{ needs.detect-changes.outputs.infra }}" == "true" ]]; then
+            echo "🌐 프론트엔드 스택 배포 중..."
+            ./deploy.sh frontend
+          fi
 
       - name: ✨ Invalidate CloudFront Cache
         if: needs.detect-changes.outputs.frontend == 'true'
