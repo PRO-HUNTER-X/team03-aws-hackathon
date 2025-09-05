@@ -19,8 +19,10 @@ def create_inquiry(inquiry_data: Dict[str, Any]) -> bool:
     return db_service.create_inquiry(inquiry_data)
 
 def generate_ai_response(inquiry_data: Dict[str, Any]) -> str:
-    """AI 응답 생성 (추후 구현)"""
-    return f"{inquiry_data['title']}에 대한 AI 응답입니다."
+    """AI 응답 생성"""
+    from src.services.ai_service import AIService
+    ai_service = AIService()
+    return ai_service.generate_response(inquiry_data)
 
 def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
     try:
