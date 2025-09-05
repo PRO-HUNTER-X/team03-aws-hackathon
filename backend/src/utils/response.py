@@ -16,7 +16,7 @@ def success_response(data: Any) -> Dict[str, Any]:
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
             'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
         },
         'body': json.dumps({'success': True, 'data': data}, cls=DecimalEncoder, ensure_ascii=False)
@@ -29,8 +29,21 @@ def error_response(message: str, status_code: int = 400) -> Dict[str, Any]:
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
             'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
         },
         'body': json.dumps({'success': False, 'error': message}, ensure_ascii=False)
+    }
+
+def options_response() -> Dict[str, Any]:
+    """OPTIONS 요청 응답 (CORS preflight)"""
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With',
+            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+            'Access-Control-Max-Age': '86400'
+        },
+        'body': ''
     }

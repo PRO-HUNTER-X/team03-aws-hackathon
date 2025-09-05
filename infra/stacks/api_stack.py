@@ -96,7 +96,16 @@ class ApiStack(Stack):
             default_cors_preflight_options=apigateway.CorsOptions(
                 allow_origins=apigateway.Cors.ALL_ORIGINS,
                 allow_methods=apigateway.Cors.ALL_METHODS,
-                allow_headers=["Content-Type", "Authorization"]
+                allow_headers=[
+                    "Content-Type", 
+                    "Authorization", 
+                    "X-Requested-With",
+                    "Accept",
+                    "Origin",
+                    "Access-Control-Request-Method",
+                    "Access-Control-Request-Headers"
+                ],
+                max_age=Duration.seconds(86400)
             )
         )
         

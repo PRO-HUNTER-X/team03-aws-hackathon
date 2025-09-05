@@ -20,8 +20,15 @@ export interface InquiryResponse {
 }
 
 export interface AIResponseData {
-  response: string;
+  aiResponse: string;
+  responseTime: number;
   confidence: number;
+}
+
+export interface AIRequestData {
+  title: string;
+  content: string;
+  category: string;
 }
 
 export async function createInquiry(data: InquiryData): Promise<InquiryResponse> {
@@ -62,10 +69,10 @@ export async function createInquiry(data: InquiryData): Promise<InquiryResponse>
   }
 }
 
-export async function generateAIResponse(inquiryId: string): Promise<AIResponseData> {
+export async function generateAIResponse(data: AIRequestData): Promise<AIResponseData> {
   const url = `${API_BASE_URL}/api/ai-response`;
   
-  logger.info('AI 응답 생성 API 호출 시작', { url, inquiryId }, 'api');
+  logger.info('AI 응답 생성 API 호출 시작', { url, data: { ...data, content: '[REDACTED]' } }, 'api');
   
   try {
     const response = await fetch(url, {
@@ -73,7 +80,7 @@ export async function generateAIResponse(inquiryId: string): Promise<AIResponseD
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ inquiryId }),
+      body: JSON.stringify(data),
     });
 
     logger.info('AI 응답 생성 API 응답 수신', { 
@@ -94,7 +101,7 @@ export async function generateAIResponse(inquiryId: string): Promise<AIResponseD
     logger.info('AI 응답 생성 성공', { confidence: result.data?.confidence }, 'api');
     return result.data;
   } catch (error) {
-    logger.error('AI 응답 생성 네트워크 에러', error as Error, { url, inquiryId }, 'api');
+    logger.error('AI 응답 생성 네트워크 에러', error as Error, { url, data }, 'api');
     throw error;
   }
 }

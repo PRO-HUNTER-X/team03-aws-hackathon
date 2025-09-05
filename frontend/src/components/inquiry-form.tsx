@@ -58,8 +58,12 @@ export function InquiryForm() {
       setInquiryId(inquiryResponse.inquiryId);
 
       // 2. AI 응답 생성
-      const aiResponseData = await generateAIResponse(inquiryResponse.inquiryId);
-      setAiResponse(aiResponseData.response);
+      const aiResponseData = await generateAIResponse({
+        title: data.title,
+        content: data.content,
+        category: data.category
+      });
+      setAiResponse(aiResponseData.aiResponse);
     } catch (error) {
       console.error("문의 제출 실패:", error);
       alert(`문의 제출에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
