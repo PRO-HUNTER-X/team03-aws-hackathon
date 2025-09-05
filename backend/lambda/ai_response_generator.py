@@ -64,7 +64,7 @@ def generate_ai_response(inquiry_data):
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
         
         # 환경변수에서 모델 설정 가져오기 (올바른 Bedrock 모델 ID)
-        model_id = os.environ.get('BEDROCK_DEFAULT_MODEL', 'anthropic.claude-3-5-sonnet-20241022-v2:0')
+        model_id = os.environ.get('BEDROCK_DEFAULT_MODEL', 'anthropic.claude-opus-4-1-20250805-v1:0')
         max_tokens = int(os.environ.get('BEDROCK_MAX_TOKENS', '1000'))
         temperature = float(os.environ.get('BEDROCK_TEMPERATURE', '0.7'))
         

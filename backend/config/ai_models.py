@@ -20,9 +20,9 @@ class ModelSelectionStrategy(Enum):
 
 # 기본 AI 모델 설정 (실제 Bedrock 모델 ID)
 AI_MODEL_CONFIG = {
-    "default_model": "anthropic.claude-3-5-sonnet-20241022-v2:0",
-    "fallback_model": "anthropic.claude-3-sonnet-20240229-v1:0", 
-    "fast_model": "anthropic.claude-3-haiku-20240307-v1:0",
+    "default_model": "anthropic.claude-opus-4-1-20250805-v1:0",
+    "fallback_model": "anthropic.claude-opus-4-20250514-v1:0", 
+    "fast_model": "anthropic.claude-sonnet-4-20250514-v1:0",
     "max_tokens": 4096,
     "temperature": 0.7,
     "model_selection_strategy": ModelSelectionStrategy.ADAPTIVE.value
