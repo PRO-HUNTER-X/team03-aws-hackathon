@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Clock, CheckCircle, AlertCircle, MessageCircle, User, Bot } from "lucide-react";
-import Link from "next/link";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Badge } from "@/components/ui/badge";
+// import { Button } from "@/components/ui/button";
+// import { Clock, CheckCircle, AlertCircle, MessageCircle, User, Bot } from "lucide-react";
+// import Link from "next/link";
 import { getInquiry, InquiryDetail } from "@/lib/api";
 
 type InquiryStatus = "pending" | "processing" | "completed";
@@ -35,7 +35,7 @@ export default function StatusPageClient() {
   const inquiryId = params.id as string;
 
   const [inquiry, setInquiry] = useState<InquiryData | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  // const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,10 +55,10 @@ export default function StatusPageClient() {
 
         setInquiry(inquiryData);
 
-        const createdTime = new Date(inquiryData.createdAt).getTime();
-        const estimatedEndTime = createdTime + inquiryData.estimatedResponseTime * 60 * 1000;
-        const remaining = Math.max(0, estimatedEndTime - Date.now());
-        setTimeRemaining(Math.floor(remaining / 1000 / 60));
+        // const createdTime = new Date(inquiryData.createdAt).getTime();
+        // const estimatedEndTime = createdTime + inquiryData.estimatedResponseTime * 60 * 1000;
+        // const remaining = Math.max(0, estimatedEndTime - Date.now());
+        // setTimeRemaining(Math.floor(remaining / 1000 / 60));
 
       } catch (error) {
         console.error('문의 조회 실패:', error);
