@@ -73,18 +73,6 @@ export default function RootLayout({
                 >
                   문의하기
                 </Link>
-                <Link
-                  href="/demo"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-all duration-200"
-                >
-                  AI 데모
-                </Link>
-                <Link
-                  href="/status-demo"
-                  className="px-4 py-2 text-sm font-medium bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  상태 데모
-                </Link>
               </div>
             </div>
           </div>
