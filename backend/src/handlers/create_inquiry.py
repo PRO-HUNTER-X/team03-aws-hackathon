@@ -7,7 +7,6 @@ import logging
 from src.utils.response import success_response, error_response
 from src.utils.validation import validate_inquiry_data
 from src.services.dynamodb_service import DynamoDBService
-from src.services.ai_service import generate_ai_response
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -60,8 +59,10 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
         logger.info(f"AI 응답 생성 시작: {inquiry_id}")
         
         try:
-            # 실제 AI 응답 생성
-            ai_response = generate_ai_response(inquiry_data)
+            # AI 서비스 직접 사용
+            from src.services.ai_service import AIService
+            ai_service = AIService()
+            ai_response = ai_service.generate_response(inquiry_data)
             
             if not ai_response or ai_response.strip() == "":
                 logger.warning(f"AI 응답이 비어있음, 기본 응답 사용: {inquiry_id}")
@@ -71,6 +72,8 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
             
         except Exception as e:
             logger.error(f"AI 응답 생성 중 오류: {inquiry_id}, 오류: {str(e)}")
+            import traceback
+            logger.error(f"상세 오류: {traceback.format_exc()}")
             # AI 생성 실패 시 기본 응답 사용
             ai_response = f"안녕하세요! '{inquiry_data.get('title', '문의')}'에 대해 문의해주셔서 감사합니다. 현재 AI 서비스에 일시적인 문제가 발생하여 담당자가 직접 검토 후 답변드리겠습니다."
         
