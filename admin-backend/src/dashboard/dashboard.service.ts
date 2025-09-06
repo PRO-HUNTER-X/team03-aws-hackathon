@@ -15,7 +15,7 @@ export interface Inquiry {
 
 @Injectable()
 export class DashboardService {
-  private readonly adminInquiriesTable = process.env.ADMIN_INQUIRIES_TABLE || 'admin-inquiries';
+  private readonly adminInquiriesTable = process.env.CS_INQUIRIES_TABLE || 'cs-inquiries';
 
   constructor(private readonly dynamoDBService: DynamoDBService) {
     this.initializeSampleData();
