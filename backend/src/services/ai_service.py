@@ -20,21 +20,58 @@ class AIService:
     def generate_response(self, inquiry_data: Dict[str, Any], company_context: str = None) -> str:
         """AI 응답 생성 - converse API 사용"""
         try:
-            complexity = analyze_request_complexity(
-                inquiry_data.get('content', ''), 
-                inquiry_data.get('category', 'general')
-            )
-            priority = get_request_priority(inquiry_data.get('urgency', 'normal'))
+            logger.info(f"AI 응답 생성 시작: {inquiry_data.get('title', 'Unknown')}")
             
-            selected_model = self.config.get_model_for_request(complexity, priority)
+            # 간단한 모델로 테스트
+            model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
             
-            logger.info(f"Selected model: {selected_model} (complexity: {complexity}, priority: {priority})")
+            logger.info(f"사용할 모델: {model_id}")
             
-            return self._invoke_converse_api(inquiry_data, company_context, selected_model)
+            return self._call_converse_api_simple(inquiry_data, company_context, model_id)
             
         except Exception as e:
-            logger.error(f"Error generating AI response: {str(e)}")
+            logger.error(f"AI 응답 생성 중 오류: {str(e)}")
+            import traceback
+            logger.error(f"상세 오류: {traceback.format_exc()}")
             return self._get_smart_fallback_response(inquiry_data)
+    
+    def _call_converse_api_simple(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
+        """간단한 Converse API 호출"""
+        try:
+            prompt = self._build_prompt(inquiry_data, company_context)
+            logger.info(f"생성된 프롬프트 길이: {len(prompt)}")
+            
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [{"text": prompt}]
+                }
+            ]
+            
+            logger.info(f"Bedrock 호출 시작: {model_id}")
+            
+            response = self.bedrock.converse(
+                modelId=model_id,
+                messages=conversation,
+                inferenceConfig={
+                    "maxTokens": 1000,
+                    "temperature": 0.7,
+                    "topP": 0.9
+                }
+            )
+            
+            logger.info("Bedrock 응답 수신 완료")
+            
+            ai_response = response["output"]["message"]["content"][0]["text"]
+            
+            logger.info(f"AI 응답 생성 완료: 길이 {len(ai_response)}")
+            return ai_response
+            
+        except Exception as e:
+            logger.error(f"Converse API 호출 실패: {str(e)}")
+            import traceback
+            logger.error(f"상세 오류: {traceback.format_exc()}")
+            raise e
     
     def _invoke_converse_api(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
         """Converse API를 사용한 모델 호출"""
