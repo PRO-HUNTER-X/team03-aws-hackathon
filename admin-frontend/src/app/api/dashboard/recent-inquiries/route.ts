@@ -49,17 +49,28 @@ export async function GET(request: NextRequest) {
 }
 
 function getTimeAgo(dateString: string): string {
-  if (!dateString) return '방금 전'
-  
-  const now = new Date()
-  const date = new Date(dateString)
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / (1000 * 60))
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  try {
+    if (!dateString) return '방금 전'
+    
+    const now = new Date()
+    const date = new Date(dateString)
+    
+    // 유효하지 않은 날짜 체크
+    if (isNaN(date.getTime())) {
+      return '시간 미상'
+    }
+    
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  if (diffMins < 1) return '방금 전'
-  if (diffMins < 60) return `${diffMins}분 전`
-  if (diffHours < 24) return `${diffHours}시간 전`
-  return `${diffDays}일 전`
+    if (diffMins < 1) return '방금 전'
+    if (diffMins < 60) return `${diffMins}분 전`
+    if (diffHours < 24) return `${diffHours}시간 전`
+    return `${diffDays}일 전`
+  } catch (error) {
+    console.error('시간 계산 에러:', error)
+    return '시간 미상'
+  }
 }
