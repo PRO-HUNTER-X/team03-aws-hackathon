@@ -90,6 +90,25 @@ class ApiStack(Stack):
             }
         )
         
+        regenerate_ai_response = _lambda.Function(
+            self, "RegenerateAIResponse",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="src.handlers.regenerate_ai_response.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            role=lambda_role,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
+                "BEDROCK_DEFAULT_MODEL": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+                "BEDROCK_FALLBACK_MODEL": "anthropic.claude-3-sonnet-20240229-v1:0",
+                "BEDROCK_FAST_MODEL": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+                "BEDROCK_MAX_TOKENS": "4096",
+                "BEDROCK_TEMPERATURE": "0.7",
+                "BEDROCK_SELECTION_STRATEGY": "adaptive"
+            }
+        )
+        
         # dev 환경일 때만 개발자 이름 추가
         if developer:
             api_name = f"CS Chatbot API (dev-{developer})"
@@ -131,6 +150,10 @@ class ApiStack(Stack):
         # Individual inquiry endpoints
         inquiry_by_id = inquiries.add_resource("{id}")
         inquiry_by_id.add_method("GET", apigateway.LambdaIntegration(inquiry_handler))  # Get inquiry
+        
+        # AI 답변 재생성 endpoint
+        regenerate = inquiry_by_id.add_resource("regenerate")
+        regenerate.add_method("POST", apigateway.LambdaIntegration(regenerate_ai_response))  # Regenerate AI response
         
         # Escalation endpoint
         escalate = inquiry_by_id.add_resource("escalate")

@@ -5,14 +5,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MessageSquare, Clock, User, Bot } from "lucide-react";
-import { getInquiryById, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/api";
+import { ArrowLeft, MessageSquare, Clock, User, Bot, RefreshCw } from "lucide-react";
+import { getInquiryById, regenerateAIResponse, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/api";
 
 function InquiryDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [inquiry, setInquiry] = useState<Inquiry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   useEffect(() => {
     const id = searchParams.get('id');
@@ -30,6 +31,28 @@ function InquiryDetailContent() {
       console.error("문의 로드 실패:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRegenerateAI = async () => {
+    if (!inquiry) return;
+    
+    try {
+      setIsRegenerating(true);
+      const result = await regenerateAIResponse(inquiry.id);
+      
+      // 문의 상태 업데이트
+      setInquiry(prev => prev ? {
+        ...prev,
+        ai_response: result.aiResponse,
+        status: result.status as any
+      } : null);
+      
+    } catch (error) {
+      console.error("AI 답변 재생성 실패:", error);
+      alert("AI 답변 재생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsRegenerating(false);
     }
   };
 
@@ -118,10 +141,31 @@ function InquiryDetailContent() {
         {inquiry.ai_response && (
           <Card className="border-0 shadow-lg bg-blue-50 rounded-3xl mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-blue-700">
-                <Bot className="w-5 h-5" />
-                AI 답변
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <Bot className="w-5 h-5" />
+                  AI 답변
+                </CardTitle>
+                <Button
+                  onClick={handleRegenerateAI}
+                  disabled={isRegenerating}
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 border-blue-200 hover:bg-blue-100"
+                >
+                  {isRegenerating ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      재생성 중...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      답변 재생성
+                    </>
+                  )}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
@@ -164,12 +208,33 @@ function InquiryDetailContent() {
         {inquiry.status === 'pending' && (
           <Card className="border-0 shadow-lg bg-yellow-50 rounded-3xl">
             <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-yellow-600" />
-                <div>
-                  <h3 className="font-semibold text-yellow-800">문의 접수 완료</h3>
-                  <p className="text-yellow-700 text-sm">AI가 답변을 준비 중입니다. 잠시만 기다려주세요.</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-yellow-600" />
+                  <div>
+                    <h3 className="font-semibold text-yellow-800">문의 접수 완료</h3>
+                    <p className="text-yellow-700 text-sm">AI가 답변을 준비 중입니다. 잠시만 기다려주세요.</p>
+                  </div>
                 </div>
+                <Button
+                  onClick={handleRegenerateAI}
+                  disabled={isRegenerating}
+                  variant="outline"
+                  size="sm"
+                  className="text-yellow-600 border-yellow-200 hover:bg-yellow-100"
+                >
+                  {isRegenerating ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      생성 중...
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="w-4 h-4 mr-2" />
+                      AI 답변 생성
+                    </>
+                  )}
+                </Button>
               </div>
             </CardContent>
           </Card>

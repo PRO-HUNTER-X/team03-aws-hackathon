@@ -107,6 +107,42 @@ export async function generateAIResponse(data: AIRequestData): Promise<AIRespons
   }
 }
 
+export async function regenerateAIResponse(inquiryId: string): Promise<{aiResponse: string, status: string}> {
+  const url = `${API_BASE_URL}/api/inquiries/${inquiryId}/regenerate`;
+  
+  logger.info('AI 답변 재생성 API 호출 시작', { url, inquiryId }, 'api');
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    logger.info('AI 답변 재생성 API 응답 수신', { 
+      status: response.status, 
+      statusText: response.statusText 
+    }, 'api');
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      logger.error('AI 답변 재생성 API 에러', new Error(result.error || 'Failed to regenerate AI response'), {
+        status: response.status,
+        result
+      }, 'api');
+      throw new Error(result.error || 'Failed to regenerate AI response');
+    }
+
+    logger.info('AI 답변 재생성 성공', { inquiryId }, 'api');
+    return result.data;
+  } catch (error) {
+    logger.error('AI 답변 재생성 네트워크 에러', error as Error, { url, inquiryId }, 'api');
+    throw error;
+  }
+}
+
 export async function escalateInquiry(inquiryId: string, reason?: string): Promise<void> {
   const url = `${API_BASE_URL}/api/inquiries/${inquiryId}/escalate`;
   
