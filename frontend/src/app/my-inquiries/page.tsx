@@ -30,7 +30,6 @@ export default function MyInquiriesPage() {
   const loadInquiries = async () => {
     try {
       setIsLoading(true);
-      // URL 파라미터나 로컬스토리지에서 이메일 가져오기
       const urlParams = new URLSearchParams(window.location.search);
       const email = urlParams.get('email') || localStorage.getItem('customerEmail');
       
@@ -132,45 +131,45 @@ export default function MyInquiriesPage() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {filteredInquiries.map((inquiry) => (
-              <Card key={inquiry.id} className="border-0 shadow-lg bg-white rounded-3xl hover:shadow-xl transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-                          <Link href={`/my-inquiries/${inquiry.id}`}>
-                            {inquiry.title}
-                          </Link>
-                        </h3>
-                        <Badge className={`${getStatusColor(inquiry.status)} border-0`}>
-                          {getStatusLabel(inquiry.status)}
-                        </Badge>
+            {filteredInquiries.map((inquiry) => {
+              console.log('Inquiry ID:', inquiry.id, 'Full inquiry:', inquiry);
+              return (
+                <Card key={inquiry.id} className="border-0 shadow-lg bg-white rounded-3xl hover:shadow-xl transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                            <Link href={`/my-inquiries/${inquiry.id}`}>
+                              {inquiry.title}
+                            </Link>
+                          </h3>
+                          <Badge className={`${getStatusColor(inquiry.status)} border-0`}>
+                            {getStatusLabel(inquiry.status)}
+                          </Badge>
+                        </div>
+                        
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {inquiry.content}
+                        </p>
+                        
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <span>작성일: {formatDate(inquiry.created_at)}</span>
+                        </div>
                       </div>
                       
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {inquiry.content}
-                      </p>
-                      
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>작성일: {formatDate(inquiry.created_at)}</span>
-                        {inquiry.updated_at !== inquiry.created_at && (
-                          <span>수정일: {formatDate(inquiry.updated_at)}</span>
-                        )}
+                      <div className="ml-4">
+                        <Link href={`/my-inquiries/${inquiry.id}`}>
+                          <Button variant="outline" size="sm" className="rounded-xl">
+                            상세보기
+                          </Button>
+                        </Link>
                       </div>
                     </div>
-                    
-                    <div className="ml-4">
-                      <Link href={`/my-inquiries/${inquiry.id}`}>
-                        <Button variant="outline" size="sm" className="rounded-xl">
-                          상세보기
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
 
