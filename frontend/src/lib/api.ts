@@ -218,7 +218,19 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
     }
 
     logger.info('내 문의 목록 조회 성공', { count: result.data?.length || 0 }, 'api');
-    return result.data?.inquiries || [];
+    const inquiries = result.data?.inquiries || [];
+    // API 응답을 프론트엔드 형식에 맞게 변환
+    return inquiries.map((inquiry: any) => ({
+      id: inquiry.inquiry_id,
+      title: inquiry.title,
+      content: inquiry.content,
+      status: inquiry.status,
+      created_at: inquiry.created_at,
+      updated_at: inquiry.updatedAt || inquiry.created_at,
+      category: inquiry.category,
+      ai_response: inquiry.ai_response,
+      human_response: inquiry.human_response
+    }));
   } catch (error) {
     logger.error('내 문의 목록 조회 네트워크 에러', error as Error, { url }, 'api');
     throw error;
