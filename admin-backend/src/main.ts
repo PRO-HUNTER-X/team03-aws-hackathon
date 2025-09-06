@@ -13,10 +13,7 @@ async function bootstrap() {
   }));
 
   app.enableCors({
-    origin: [
-      process.env.FRONTEND_URL || 'http://localhost:3000',
-      'http://localhost:3002' // 어드민 프론트엔드
-    ],
+    origin: true, // 모든 origin 허용 (개발용)
     credentials: true,
   });
 
