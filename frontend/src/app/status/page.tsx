@@ -231,7 +231,7 @@ export default function StatusPage() {
             <h3 className="font-semibold text-blue-900 mb-2">💡 도움말</h3>
             <ul className="text-sm text-blue-700 space-y-1">
               <li>• 문의 ID는 문의 작성 완료 시 제공됩니다</li>
-              <li>• 문의 ID를 분실하신 경우 '내 문의 보기'를 이용해주세요</li>
+              <li>• 문의 ID를 분실하신 경우 &apos;내 문의 보기&apos;를 이용해주세요</li>
               <li>• 처리 시간은 문의 유형에 따라 다를 수 있습니다</li>
             </ul>
           </CardContent>
