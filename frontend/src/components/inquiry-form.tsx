@@ -102,7 +102,7 @@ export function InquiryForm() {
       );
 
       // 상태 추적 페이지로 이동
-      router.push(`/status/${inquiryId}`);
+      router.push(`/status?id=${inquiryId}`);
     } catch (error) {
       console.error("에스컬레이션 실패:", error);
       alert(`에스컬레이션 요청에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
@@ -296,7 +296,7 @@ export function InquiryForm() {
               {inquiryId && (
                 <Button
                   variant="default"
-                  onClick={() => router.push(`/status/${inquiryId}`)}
+                  onClick={() => router.push(`/status?id=${inquiryId}`)}
                   size="default"
                 >
                   진행상황 확인
