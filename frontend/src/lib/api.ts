@@ -152,8 +152,9 @@ export interface InquiryDetail {
   urgency: string;
   status: string;
   created_at: string;
-  updatedAt?: string;
+  updated_at?: string;
   estimatedResponseTime: number;
+  aiResponse?: string;
 }
 
 export async function getInquiry(inquiryId: string): Promise<InquiryDetail> {

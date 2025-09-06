@@ -76,7 +76,9 @@ export default function StatusPage() {
     switch (apiStatus) {
       case 'pending': return 'pending';
       case 'in_progress': 
+      case 'ai_response':
       case 'escalated': return 'processing';
+      case 'completed':
       case 'resolved': return 'completed';
       default: return 'pending';
     }
@@ -94,15 +96,28 @@ export default function StatusPage() {
       }
     ];
 
-    // AI 응답은 항상 있다고 가정
-    timeline.push({
-      id: '2',
-      type: 'ai_response',
-      title: 'AI 자동 응답',
-      description: 'AI가 초기 답변을 제공했습니다.',
-      timestamp: inquiry.created_at, // 실제로는 AI 응답 시간
-      icon: 'bot'
-    });
+    // AI 응답이 있는 경우
+    if (inquiry.status === 'ai_response' || inquiry.aiResponse) {
+      timeline.push({
+        id: '2',
+        type: 'ai_response',
+        title: 'AI 자동 응답',
+        description: 'AI가 초기 답변을 제공했습니다.',
+        timestamp: inquiry.updated_at || inquiry.created_at,
+        icon: 'bot'
+      });
+    }
+
+    if (inquiry.status === 'in_progress') {
+      timeline.push({
+        id: '3',
+        type: 'escalated',
+        title: '담당자 처리중',
+        description: '전문 상담사가 문의를 처리하고 있습니다.',
+        timestamp: inquiry.updated_at || inquiry.created_at,
+        icon: 'user'
+      });
+    }
 
     if (inquiry.status === 'escalated') {
       timeline.push({
@@ -110,18 +125,18 @@ export default function StatusPage() {
         type: 'escalated',
         title: '담당자 연결',
         description: '전문 상담사에게 문의가 전달되었습니다.',
-        timestamp: inquiry.updatedAt || inquiry.created_at,
+        timestamp: inquiry.updated_at || inquiry.created_at,
         icon: 'user'
       });
     }
 
-    if (inquiry.status === 'resolved') {
+    if (inquiry.status === 'completed' || inquiry.status === 'resolved') {
       timeline.push({
         id: '4',
         type: 'completed',
         title: '답변 완료',
         description: '담당자가 상세한 답변을 제공했습니다.',
-        timestamp: inquiry.updatedAt || inquiry.created_at,
+        timestamp: inquiry.updated_at || inquiry.created_at,
         icon: 'check'
       });
     }
