@@ -52,10 +52,19 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
         }
         
         # DynamoDB에 저장
-        create_inquiry(inquiry_data)
+        if not create_inquiry(inquiry_data):
+            return error_response("문의 생성에 실패했습니다", 500)
         
         # AI 응답 생성
         ai_response = generate_ai_response(inquiry_data)
+        logger.info(f"AI 응답 생성 완료: {inquiry_id}")
+        
+        # AI 응답을 DB에 저장
+        if not db_service.update_inquiry_ai_response(inquiry_id, ai_response):
+            logger.error(f"Failed to save AI response for inquiry: {inquiry_id}")
+            return error_response("AI 응답 저장에 실패했습니다", 500)
+        
+        logger.info(f"AI 응답 DB 저장 완료, 상태를 ai_responded로 변경: {inquiry_id}")
         
         result = {
             'inquiryId': inquiry_id,
@@ -63,6 +72,8 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
             'estimatedResponseTime': inquiry_data['estimatedResponseTime'],
             'status': 'ai_responded'
         }
+        
+        logger.info(f"문의 생성 및 AI 응답 완료: {inquiry_id}, status: ai_responded")
         
         return success_response(result)
         
