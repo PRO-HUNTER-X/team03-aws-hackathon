@@ -61,7 +61,7 @@
 
 ![demo-1](attachments/demo-1.gif)
 
-![demo-2](attachments/demo-2.mov)
+![demo-2](attachments/demo-2.gif)
 
 1. **문의 접수**: 고객이 웹 폼을 통해 문의 작성
 2. **AI 응답**: Claude 4.1 기반 맞춤형 답변 (평균 2초 내 응답 완료)
