@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NODE_ENV === 'development' 
-  ? 'http://localhost:3000' 
-  : 'https://3tbdb8uvll.execute-api.us-east-1.amazonaws.com/prod'
+  ? 'http://localhost:3002/api' 
+  : '/api'
 
 export interface LoginRequest {
   username: string
@@ -62,7 +62,7 @@ export interface InitialRouteResponse {
 
 export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/admin/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   static async verify(token: string): Promise<VerifyResponse> {
-    const response = await fetch(`${API_BASE_URL}/admin/auth/verify`, {
+    const response = await fetch(`${API_BASE_URL}/auth/verify`, {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -98,7 +98,7 @@ export class AuthService {
   }
 
   static async getInitialRoute(companyId: string): Promise<InitialRouteResponse> {
-    const response = await fetch(`${API_BASE_URL}/admin/auth/initial-route?companyId=${companyId}`, {
+    const response = await fetch(`${API_BASE_URL}/auth/initial-route?companyId=${companyId}`, {
       method: 'GET',
       mode: 'cors',
       headers: {

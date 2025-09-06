@@ -2,17 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const API_BASE_URL = 'https://3tbdb8uvll.execute-api.us-east-1.amazonaws.com/prod'
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const body = await request.json()
+    const { searchParams } = new URL(request.url)
+    const companyId = searchParams.get('companyId')
     
-    const response = await fetch(`${API_BASE_URL}/admin/auth/login`, {
-      method: 'POST',
+    const response = await fetch(`${API_BASE_URL}/admin/auth/initial-route?companyId=${companyId}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify(body),
     })
 
     const data = await response.json()
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       status: response.status,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Accept',
       },
     })
@@ -31,15 +31,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Accept',
-    },
-  })
 }

@@ -1,36 +1,36 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
+
+const API_BASE_URL = 'https://3tbdb8uvll.execute-api.us-east-1.amazonaws.com/prod'
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
+    const body = await request.json()
+    const authHeader = request.headers.get('authorization')
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return Response.json(
-        { message: '토큰이 제공되지 않았습니다' },
-        { status: 401 }
-      );
-    }
+    const response = await fetch(`${API_BASE_URL}/admin/auth/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': authHeader || '',
+      },
+      body: JSON.stringify(body),
+    })
 
-    const token = authHeader.substring(7);
-    
-    // 간단한 토큰 검증 (실제로는 JWT 라이브러리 사용)
-    if (token.startsWith('mock.')) {
-      return Response.json({
-        valid: true,
-        user: {
-          username: 'admin'
-        }
-      });
-    }
+    const data = await response.json()
 
-    return Response.json(
-      { message: '유효하지 않은 토큰입니다' },
-      { status: 401 }
-    );
+    return NextResponse.json(data, {
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Accept, Authorization',
+      },
+    })
   } catch (error) {
-    return Response.json(
-      { message: '서버 오류가 발생했습니다' },
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
