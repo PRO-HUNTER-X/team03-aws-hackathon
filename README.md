@@ -1,7 +1,9 @@
 # 🤖 CS 챗봇 자동화 플랫폼
 **Team 03** | **Amazon Q Developer로 구현한 지능형 고객 서비스 솔루션**
 
-> 💡 **핵심 가치**: 고객 문의 처리 시간 80% 단축, 운영 비용 60% 절감
+[![Live Demo](https://img.shields.io/badge/🔴_LIVE-Demo-red?style=for-the-badge)](https://cs-chatbot-demo.aws-team03.com) [![Admin Dashboard](https://img.shields.io/badge/📊_ADMIN-Dashboard-blue?style=for-the-badge)](https://admin.cs-chatbot-demo.aws-team03.com)
+
+> 💡 **실제 경험**: 우리 팀원 회사에서 하루 5건+ 운영 전화로 고통받던 문제를 해결
 
 ## 🎯 해결하고자 하는 문제
 
