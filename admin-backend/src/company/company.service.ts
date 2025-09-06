@@ -18,7 +18,8 @@ export class CompanyService {
   private readonly companyTable = process.env.COMPANY_TABLE || 'companies';
 
   constructor(private readonly dynamoDBService: DynamoDBService) {
-    this.initializeSampleData();
+    // 임시로 초기화 비활성화 - companies 테이블이 비어있음
+    // this.initializeSampleData();
   }
 
   private async initializeSampleData() {

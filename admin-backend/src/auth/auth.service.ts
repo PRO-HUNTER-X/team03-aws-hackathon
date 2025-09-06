@@ -40,6 +40,12 @@ export class AuthService {
     };
   }
 
+  async testDynamoDB() {
+    // 직접 AWS CLI로 확인된 데이터 조회 테스트
+    const result = await this.companyService.getCompanyById('hunters-company');
+    return result;
+  }
+
   async getInitialRoute(companyId: string) {
     const company = await this.companyService.getCompanyById(companyId);
     const qnaData = await this.setupService.getQnADataByCompany(companyId);

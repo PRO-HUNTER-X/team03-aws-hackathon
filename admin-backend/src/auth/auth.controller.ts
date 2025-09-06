@@ -48,6 +48,21 @@ export class AuthController {
     };
   }
 
+  @Get('health')
+  health() {
+    return { status: 'ok', timestamp: new Date().toISOString() };
+  }
+
+  @Get('test-db')
+  async testDb() {
+    try {
+      const result = await this.authService.testDynamoDB();
+      return { success: true, data: result };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   @Get('initial-route')
   @ApiOperation({ summary: '로그인 후 초기 라우팅 정보 조회' })
   @ApiResponse({ status: 200, description: '초기 라우팅 정보 조회 성공' })

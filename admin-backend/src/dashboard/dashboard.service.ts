@@ -23,7 +23,8 @@ export class DashboardService {
   private readonly adminInquiriesTable = process.env.CS_INQUIRIES_TABLE || 'cs-inquiries';
 
   constructor(private readonly dynamoDBService: DynamoDBService) {
-    this.initializeSampleData();
+    // 임시로 초기화 비활성화
+    // this.initializeSampleData();
   }
 
   private async initializeSampleData() {
