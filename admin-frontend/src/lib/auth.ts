@@ -24,6 +24,42 @@ export interface VerifyResponse {
   }
 }
 
+export interface Company {
+  companyId: string
+  companyName: string
+  industry: string
+  size: string
+  monthlyRevenue: number
+}
+
+export interface InitialRouteResponse {
+  success: boolean
+  data: {
+    hasQnAData: boolean
+    companyInfo: Company
+    redirectTo: string
+    qnaCount: number
+  }
+}
+
+export interface Company {
+  companyId: string
+  companyName: string
+  industry: string
+  size: string
+  monthlyRevenue: number
+}
+
+export interface InitialRouteResponse {
+  success: boolean
+  data: {
+    hasQnAData: boolean
+    companyInfo: Company
+    redirectTo: string
+    qnaCount: number
+  }
+}
+
 export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -57,6 +93,25 @@ export class AuthService {
     return response.json()
   }
 
+  static async getInitialRoute(companyId: string): Promise<InitialRouteResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/initial-route?companyId=${companyId}`, {
+      method: 'GET',
+      headers: {
+  static async getInitialRoute(companyId: string): Promise<InitialRouteResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/initial-route?companyId=${companyId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('초기 라우팅 정보를 가져올 수 없습니다')
+    }
+
+    return response.json()
+  }
+
   static getToken(): string | null {
     if (typeof window === 'undefined') return null
     return localStorage.getItem('admin_token')
@@ -70,5 +125,15 @@ export class AuthService {
   static removeToken(): void {
     if (typeof window === 'undefined') return
     localStorage.removeItem('admin_token')
+  }
+
+  static setCompanyId(companyId: string): void {
+    if (typeof window === 'undefined') return
+    localStorage.setItem('company_id', companyId)
+  }
+
+  static getCompanyId(): string | null {
+    if (typeof window === 'undefined') return null
+    return localStorage.getItem('company_id')
   }
 }
