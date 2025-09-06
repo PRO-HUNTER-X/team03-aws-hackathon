@@ -39,11 +39,12 @@ class DynamoDBService:
         try:
             self.inquiries_table.update_item(
                 Key={'inquiry_id': inquiry_id},
-                UpdateExpression="SET aiResponse = :ai_response, #status = :status, updatedAt = :updated_at",
+                UpdateExpression="SET aiResponse = :ai_response, #status = :status, updatedAt = :updated_at, ai_responded_at = :ai_responded_at",
                 ExpressionAttributeValues={
                     ':ai_response': ai_response,
                     ':status': 'ai_responded',
-                    ':updated_at': datetime.utcnow().isoformat()
+                    ':updated_at': datetime.utcnow().isoformat(),
+                    ':ai_responded_at': datetime.utcnow().isoformat()
                 },
                 ExpressionAttributeNames={'#status': 'status'}
             )

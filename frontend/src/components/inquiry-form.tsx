@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -43,6 +43,19 @@ export function InquiryForm() {
       urgency: "",
     },
   });
+
+  // 로그인 정보 자동 매핑
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('customerEmail');
+    const savedPassword = localStorage.getItem('customerPassword');
+    
+    if (savedEmail) {
+      form.setValue('email', savedEmail);
+    }
+    if (savedPassword) {
+      form.setValue('password', savedPassword);
+    }
+  }, [form]);
 
   const onSubmit = async (data: InquiryFormData) => {
     setIsSubmitting(true);
