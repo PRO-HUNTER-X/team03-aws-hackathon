@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthService } from '@/lib/auth'
 
@@ -37,33 +37,83 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
   const [recentInquiries, setRecentInquiries] = useState<Inquiry[]>([])
   const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlerts | null>(null)
   const [insights, setInsights] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState({ stats: true, inquiries: true, alerts: true, insights: true })
   const router = useRouter()
 
-  const fetchDashboardData = async () => {
+  // 개별 데이터 로딩 함수들
+  const fetchStats = useCallback(async () => {
     try {
-      const [statsRes, inquiriesRes, alertsRes, insightsRes] = await Promise.all([
-        fetch('/api/dashboard/stats'),
-        fetch('/api/dashboard/recent-inquiries?limit=5'),
-        fetch('/api/dashboard/urgent-alerts'),
-        fetch('/api/dashboard/insights')
-      ])
-
-      const statsData = await statsRes.json()
-      const inquiriesData = await inquiriesRes.json()
-      const alertsData = await alertsRes.json()
-      const insightsData = await insightsRes.json()
-
-      setStats(statsData.data)
-      setRecentInquiries(inquiriesData.data)
-      setUrgentAlerts(alertsData.data)
-      if (insightsData.success) setInsights(insightsData.data)
+      const res = await fetch('/api/dashboard/stats', { 
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+      const data = await res.json()
+      setStats(data.data)
     } catch (error) {
-      console.error('대시보드 데이터 로딩 실패:', error)
+      console.error('통계 로딩 실패:', error)
     } finally {
-      setLoading(false)
+      setLoading(prev => ({ ...prev, stats: false }))
     }
-  }
+  }, [])
+
+  const fetchRecentInquiries = useCallback(async () => {
+    try {
+      const res = await fetch('/api/dashboard/recent-inquiries?limit=5', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+      const data = await res.json()
+      setRecentInquiries(data.data)
+    } catch (error) {
+      console.error('최근 문의 로딩 실패:', error)
+    } finally {
+      setLoading(prev => ({ ...prev, inquiries: false }))
+    }
+  }, [])
+
+  const fetchUrgentAlerts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/dashboard/urgent-alerts', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+      const data = await res.json()
+      setUrgentAlerts(data.data)
+    } catch (error) {
+      console.error('긴급 알림 로딩 실패:', error)
+    } finally {
+      setLoading(prev => ({ ...prev, alerts: false }))
+    }
+  }, [])
+
+  const fetchInsights = useCallback(async () => {
+    try {
+      const res = await fetch('/api/dashboard/insights', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+      const data = await res.json()
+      if (data.success) setInsights(data.data)
+    } catch (error) {
+      console.error('인사이트 로딩 실패:', error)
+    } finally {
+      setLoading(prev => ({ ...prev, insights: false }))
+    }
+  }, [])
+
+  const fetchDashboardData = useCallback(async () => {
+    setLoading({ stats: true, inquiries: true, alerts: true, insights: true })
+    
+    // 중요한 데이터부터 순차적으로 로딩
+    await fetchStats()
+    
+    // 나머지는 병렬로 로딩
+    Promise.all([
+      fetchRecentInquiries(),
+      fetchUrgentAlerts(),
+      fetchInsights()
+    ])
+  }, [fetchStats, fetchRecentInquiries, fetchUrgentAlerts, fetchInsights])
 
   const handleLogout = () => {
     AuthService.removeToken()
@@ -72,15 +122,9 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
 
   useEffect(() => {
     fetchDashboardData()
-  }, [])
+  }, [fetchDashboardData])
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">대시보드 로딩 중...</div>
-      </div>
-    )
-  }
+  const isMainLoading = loading.stats
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -95,9 +139,10 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
             <div className="flex items-center space-x-4">
               <button
                 onClick={fetchDashboardData}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                disabled={isMainLoading}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
-                새로고침
+                {isMainLoading ? '로딩...' : '새로고침'}
               </button>
               <button
                 onClick={handleLogout}
@@ -112,7 +157,17 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {stats && (
+          {/* 통계 카드 - 우선 로딩 */}
+          {loading.stats ? (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white p-6 rounded-lg shadow animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : stats && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <button 
                 onClick={() => router.push('/inquiries')}
@@ -145,8 +200,24 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
             </div>
           )}
 
-          {/* AI 비즈니스 인사이트 */}
-          {insights && (
+          {/* AI 인사이트 - 지연 로딩 */}
+          {loading.insights ? (
+            <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow animate-pulse">
+              <div className="px-6 py-4 border-b border-blue-200">
+                <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="bg-white p-4 rounded-lg border">
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : insights && (
             <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow">
               <div className="px-6 py-4 border-b border-blue-200">
                 <h3 className="text-lg font-medium text-gray-900 flex items-center">
@@ -191,7 +262,22 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {urgentAlerts && (
+            {/* 긴급 알림 */}
+            {loading.alerts ? (
+              <div className="bg-white rounded-lg shadow animate-pulse">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                </div>
+                <div className="p-6 space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="border-l-4 border-gray-200 pl-4 py-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : urgentAlerts && (
               <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-medium text-gray-900">
@@ -237,61 +323,77 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
               </div>
             )}
 
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">
-                  최근 문의 ({recentInquiries.length}건)
-                </h3>
+            {/* 최근 문의 */}
+            {loading.inquiries ? (
+              <div className="bg-white rounded-lg shadow animate-pulse">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                </div>
+                <div className="p-6 space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="border rounded-lg p-4">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="p-6">
-                {recentInquiries.length > 0 ? (
-                  <div className="space-y-4">
-                    {recentInquiries.map((inquiry) => (
-                      <div 
-                        key={inquiry.id} 
-                        onClick={() => router.push(`/inquiries/${inquiry.id}`)}
-                        className="border rounded-lg p-4 hover:shadow-md cursor-pointer transition-shadow"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 hover:text-blue-600">{inquiry.title}</h4>
-                            <p className="text-sm text-gray-600 mt-1">{inquiry.content}</p>
-                            <div className="flex items-center space-x-4 mt-2">
-                              <span className="text-xs text-gray-500">{inquiry.type}</span>
-                              <span className="text-xs text-gray-500">{inquiry.timeAgo}</span>
+            ) : (
+              <div className="bg-white rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    최근 문의 ({recentInquiries.length}건)
+                  </h3>
+                </div>
+                <div className="p-6">
+                  {recentInquiries.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentInquiries.map((inquiry) => (
+                        <div 
+                          key={inquiry.id} 
+                          onClick={() => router.push(`/inquiries/${inquiry.id}`)}
+                          className="border rounded-lg p-4 hover:shadow-md cursor-pointer transition-shadow"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 hover:text-blue-600">{inquiry.title}</h4>
+                              <p className="text-sm text-gray-600 mt-1">{inquiry.content}</p>
+                              <div className="flex items-center space-x-4 mt-2">
+                                <span className="text-xs text-gray-500">{inquiry.type}</span>
+                                <span className="text-xs text-gray-500">{inquiry.timeAgo}</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end space-y-1">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                inquiry.status === '대기' ? 'bg-yellow-100 text-yellow-800' :
+                                inquiry.status === '처리중' ? 'bg-blue-100 text-blue-800' :
+                                'bg-green-100 text-green-800'
+                              }`}>
+                                {inquiry.status}
+                              </span>
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                inquiry.urgency === '높음' ? 'bg-red-100 text-red-800' :
+                                inquiry.urgency === '보통' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {inquiry.urgency}
+                              </span>
+                              <svg className="w-4 h-4 text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
                             </div>
                           </div>
-                          <div className="flex flex-col items-end space-y-1">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              inquiry.status === '대기' ? 'bg-yellow-100 text-yellow-800' :
-                              inquiry.status === '처리중' ? 'bg-blue-100 text-blue-800' :
-                              'bg-green-100 text-green-800'
-                            }`}>
-                              {inquiry.status}
-                            </span>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              inquiry.urgency === '높음' ? 'bg-red-100 text-red-800' :
-                              inquiry.urgency === '보통' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {inquiry.urgency}
-                            </span>
-                            <svg className="w-4 h-4 text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">최근 문의가 없습니다.</p>
-                )}
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">최근 문의가 없습니다.</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
-
-
         </div>
       </main>
     </div>

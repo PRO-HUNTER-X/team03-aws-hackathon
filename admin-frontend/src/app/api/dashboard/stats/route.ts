@@ -15,29 +15,41 @@ export async function GET() {
     
     console.log('조회된 데이터 개수:', items.length)
 
-    // 실제 DynamoDB 데이터만 사용
-    const dataToUse = items
-    
+    // 실제 DynamoDB 데이터 상태 매핑
     const stats = {
-      total: dataToUse.length,
+      total: items.length,
       status: {
-        pending: dataToUse.filter(item => item.status === '대기').length,
-        processing: dataToUse.filter(item => item.status === '처리중').length,
-        completed: dataToUse.filter(item => item.status === '완료').length,
+        pending: items.filter(item => 
+          item.status === 'pending' || item.status === '대기'
+        ).length,
+        processing: items.filter(item => 
+          item.status === 'ai_answered' || item.status === '처리중'
+        ).length,
+        completed: items.filter(item => 
+          item.status === 'human_answered' || item.status === 'closed' || item.status === '완료'
+        ).length,
       },
       urgency: {
-        high: dataToUse.filter(item => item.urgency === '높음').length,
-        normal: dataToUse.filter(item => item.urgency === '보통').length,
-        low: dataToUse.filter(item => item.urgency === '낮음').length,
+        high: items.filter(item => 
+          item.urgency === 'high' || item.urgency === '높음'
+        ).length,
+        normal: items.filter(item => 
+          item.urgency === 'medium' || item.urgency === '보통'
+        ).length,
+        low: items.filter(item => 
+          item.urgency === 'low' || item.urgency === '낮음'
+        ).length,
       },
-      types: dataToUse.reduce((acc: Record<string, number>, item: any) => {
-        const type = String(item.type || '')
+      types: items.reduce((acc: Record<string, number>, item: any) => {
+        const type = String(item.category || item.type || '기타')
         if (type) {
           acc[type] = (acc[type] || 0) + 1
         }
         return acc
       }, {})
     }
+
+    console.log('통계 결과:', stats)
 
     return NextResponse.json({
       success: true,

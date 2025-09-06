@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { dynamodb, TABLE_NAME } from '@/lib/dynamodb'
 
-// API Route를 동적으로 설정
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
@@ -18,97 +17,76 @@ export async function GET(request: NextRequest) {
 
     console.log('문의 목록 조회 시작:', { status, urgency, type, sortBy, sortOrder, page, limit })
 
-    // DynamoDB에서 문의 목록 조회
+    // DynamoDB에서 데이터 조회
     const command = new ScanCommand({
       TableName: TABLE_NAME,
     })
 
     const result = await dynamodb.send(command)
-    let items = result.Items || []
-    
-    console.log('DynamoDB 조회 결과:', items.length, '건')
+    const dbItems = result.Items || []
+
+    console.log('조회된 원본 데이터 개수:', dbItems.length)
+
+    // 실제 DynamoDB 데이터를 대시보드 형식으로 변환
+    let items = dbItems.map((item: any) => ({
+      id: item.inquiry_id || item.id,
+      status: item.status === 'pending' ? '대기' : 
+              item.status === 'ai_answered' ? '처리중' : 
+              item.status === 'human_answered' ? '완료' : 
+              item.status === 'closed' ? '완료' : '대기',
+      type: item.category || item.type || '기타',
+      title: item.title || '제목 없음',
+      content: item.content || item.question || '내용 없음',
+      urgency: item.urgency === 'high' ? '높음' : 
+               item.urgency === 'medium' ? '보통' : 
+               item.urgency === 'low' ? '낮음' : '보통',
+      customerId: item.customerEmail || item.customer_email || '고객',
+      customerEmail: item.customerEmail || item.customer_email || '',
+      created_at: item.created_at || item.createdAt || new Date().toISOString(),
+      aiResponse: item.aiResponse || '',
+      humanResponse: item.humanResponse || ''
+    }))
+
+    console.log('변환된 데이터 샘플:', items.slice(0, 2))
 
     // 필터링
     if (status && status !== '전체') {
-      // cs-inquiries 상태값 매핑
-      const statusMap: Record<string, string> = {
-        '대기': 'pending',
-        '처리중': 'ai_responded', 
-        '완료': 'escalated'
-      }
-      const mappedStatus = statusMap[status] || status
-      items = items.filter(item => item.status === mappedStatus)
+      items = items.filter(item => item.status === status)
+      console.log(`상태 필터링 후: ${items.length}개`)
     }
-    
-    if (urgency) {
-      // 긴급도 매핑
-      const urgencyMap: Record<string, string> = {
-        '높음': 'high',
-        '보통': 'medium',
-        '낮음': 'low'
-      }
-      const mappedUrgency = urgencyMap[urgency] || urgency
-      items = items.filter(item => item.urgency === mappedUrgency)
+    if (urgency && urgency !== '전체') {
+      items = items.filter(item => item.urgency === urgency)
+      console.log(`긴급도 필터링 후: ${items.length}개`)
     }
-    
-    if (type) {
-      items = items.filter(item => item.category === type)
+    if (type && type !== '전체') {
+      items = items.filter(item => item.type === type)
+      console.log(`타입 필터링 후: ${items.length}개`)
     }
-
-    // 데이터 변환 (cs-inquiries → admin-inquiries 형태)
-    const transformedItems = items.map(item => {
-      try {
-        return {
-          id: item.inquiry_id || 'unknown',
-          status: item.status === 'pending' ? '대기' : 
-                  item.status === 'ai_responded' ? '처리중' : '완료',
-          type: item.category || '일반 문의',
-          title: item.title || '제목 없음',
-          content: item.content || '내용 없음',
-          urgency: item.urgency === 'high' ? '높음' : 
-                   item.urgency === 'medium' ? '보통' : '낮음',
-          customerId: item.customerEmail || 'unknown',
-          customerName: item.customerEmail?.split('@')[0] || '고객',
-          customerEmail: item.customerEmail || 'unknown@example.com',
-          created_at: item.created_at || new Date().toISOString(),
-          timeAgo: calculateTimeAgo(item.created_at),
-          replyCount: 0
-        }
-      } catch (error) {
-        console.error('데이터 변환 에러:', error, item)
-        return null
-      }
-    }).filter(item => item !== null)
 
     // 정렬
-    transformedItems.sort((a, b) => {
-      let aValue: any = a.created_at
-      let bValue: any = b.created_at
+    items.sort((a, b) => {
+      const aValue = a[sortBy as keyof typeof a] || ''
+      const bValue = b[sortBy as keyof typeof b] || ''
       
-      if (sortBy === 'title') {
-        aValue = a.title
-        bValue = b.title
-      } else if (sortBy === 'status') {
-        aValue = a.status
-        bValue = b.status
-      } else if (sortBy === 'urgency') {
-        const urgencyOrder = { '높음': 3, '보통': 2, '낮음': 1 }
-        const aOrder = urgencyOrder[a.urgency as keyof typeof urgencyOrder] || 0
-        const bOrder = urgencyOrder[b.urgency as keyof typeof urgencyOrder] || 0
-        return sortOrder === 'desc' ? bOrder - aOrder : aOrder - bOrder
+      if (sortBy === 'created_at') {
+        const aTime = new Date(aValue as string).getTime()
+        const bTime = new Date(bValue as string).getTime()
+        return sortOrder === 'desc' ? bTime - aTime : aTime - bTime
       }
       
       if (sortOrder === 'desc') {
-        return bValue > aValue ? 1 : -1
+        return String(bValue).localeCompare(String(aValue))
       } else {
-        return aValue > bValue ? 1 : -1
+        return String(aValue).localeCompare(String(bValue))
       }
     })
 
     // 페이징
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
-    const paginatedItems = transformedItems.slice(startIndex, endIndex)
+    const paginatedItems = items.slice(startIndex, endIndex)
+
+    console.log(`페이징 결과: ${startIndex}-${endIndex}, 총 ${items.length}개 중 ${paginatedItems.length}개 반환`)
 
     return NextResponse.json({
       success: true,
@@ -116,9 +94,9 @@ export async function GET(request: NextRequest) {
       pagination: {
         page,
         limit,
-        total: transformedItems.length,
-        totalPages: Math.ceil(transformedItems.length / limit),
-        hasNext: endIndex < transformedItems.length,
+        total: items.length,
+        totalPages: Math.ceil(items.length / limit),
+        hasNext: endIndex < items.length,
         hasPrev: page > 1
       }
     })
@@ -128,34 +106,5 @@ export async function GET(request: NextRequest) {
       { success: false, error: '문의 목록을 불러올 수 없습니다.' },
       { status: 500 }
     )
-  }
-}
-
-function calculateTimeAgo(dateString: string): string {
-  try {
-    if (!dateString) return '시간 미상'
-    
-    const now = new Date()
-    const past = new Date(dateString)
-    
-    // 유효하지 않은 날짜 체크
-    if (isNaN(past.getTime())) {
-      return '시간 미상'
-    }
-    
-    const diffMs = now.getTime() - past.getTime()
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffHours / 24)
-    
-    if (diffDays > 0) {
-      return `${diffDays}일 전`
-    } else if (diffHours > 0) {
-      return `${diffHours}시간 전`
-    } else {
-      return '방금 전'
-    }
-  } catch (error) {
-    console.error('시간 계산 에러:', error)
-    return '시간 미상'
   }
 }
