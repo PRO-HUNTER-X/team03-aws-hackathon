@@ -178,13 +178,13 @@ class ApiStack(Stack):
             handler="src.handlers.escalate_inquiry.lambda_handler",
             code=_lambda.Code.from_asset("../backend"),
             environment={
-                "DYNAMODB_TABLE": data_stack.inquiry_table.table_name,
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
             },
             timeout=Duration.seconds(30)
         )
         
         # DynamoDB 권한 부여
-        data_stack.inquiry_table.grant_read_write_data(escalate_handler)
+        dynamodb_table.grant_read_write_data(escalate_handler)
         
         escalate = inquiry_by_id.add_resource("escalate")
         escalate.add_method("POST", apigateway.LambdaIntegration(escalate_handler))  # Escalate inquiry
