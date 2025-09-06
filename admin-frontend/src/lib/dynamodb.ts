@@ -12,3 +12,6 @@ const client = new DynamoDBClient({
 
 export const dynamodb = DynamoDBDocumentClient.from(client)
 export const TABLE_NAME = process.env.DYNAMODB_ADMIN_INQUIRIES_TABLE || 'cs-inquiries'
+
+// 로그로 테이블명 확인
+console.log('DynamoDB TABLE_NAME:', TABLE_NAME)
