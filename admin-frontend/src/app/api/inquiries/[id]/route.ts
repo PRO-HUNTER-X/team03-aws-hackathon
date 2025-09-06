@@ -13,10 +13,10 @@ export async function GET(
   try {
     const { id } = params
     
-    // DynamoDB에서 특정 문의 조회
+    // DynamoDB에서 특정 문의 조회 (실제 키는 inquiry_id)
     const command = new GetCommand({
       TableName: TABLE_NAME,
-      Key: { id }
+      Key: { inquiry_id: id }
     })
 
     const result = await dynamodb.send(command)
@@ -81,7 +81,7 @@ export async function PUT(
     // DynamoDB 업데이트
     const command = new UpdateCommand({
       TableName: TABLE_NAME,
-      Key: { id },
+      Key: { inquiry_id: id },
       UpdateExpression: 'SET #status = :status, #response = :response, updated_at = :updated_at',
       ExpressionAttributeNames: {
         '#status': 'status',
