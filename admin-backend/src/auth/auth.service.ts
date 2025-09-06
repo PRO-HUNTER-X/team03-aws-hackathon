@@ -2,12 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { SetupService } from '../setup/setup.service';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly setupService: SetupService
+    private readonly setupService: SetupService,
+    private readonly companyService: CompanyService
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -35,6 +37,18 @@ export class AuthService {
           ? '대시보드로 이동합니다' 
           : 'QnA 설정을 완료해주세요'
       }
+    };
+  }
+
+  async getInitialRoute(companyId: string) {
+    const company = await this.companyService.getCompanyById(companyId);
+    const qnaData = await this.setupService.getQnADataByCompany(companyId);
+    
+    return {
+      hasQnAData: qnaData.length > 0,
+      companyInfo: company,
+      redirectTo: qnaData.length > 0 ? '/dashboard' : '/setup',
+      qnaCount: qnaData.length
     };
   }
 }

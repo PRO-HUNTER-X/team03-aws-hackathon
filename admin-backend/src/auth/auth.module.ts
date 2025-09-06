@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { SetupModule } from '../setup/setup.module';
+import { CompanyModule } from '../company/company.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SetupModule } from '../setup/setup.module';
       signOptions: { expiresIn: '1h' },
     }),
     SetupModule,
+    CompanyModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
