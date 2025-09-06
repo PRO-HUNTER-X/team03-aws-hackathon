@@ -62,44 +62,43 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
             
             if not ai_response or ai_response.strip() == "":
                 logger.error(f"AI 응답이 비어있음: {inquiry_id}")
-                ai_response = "죄송합니다. 현재 AI 서비스에 일시적인 문제가 발생했습니다. 곧 상담사가 직접 답변드리겠습니다."
+                ai_response = "안녕하세요! 문의해주셔서 감사합니다. 담당자가 검토 후 24시간 내에 상세한 답변을 드리겠습니다."
             
             logger.info(f"AI 응답 생성 완료: {inquiry_id}, 길이: {len(ai_response)}")
             
-            # AI 응답을 DB에 저장
-            update_success = db_service.update_inquiry_ai_response(inquiry_id, ai_response)
-            if not update_success:
-                logger.error(f"AI 응답 저장 실패: {inquiry_id}")
-                # 저장 실패해도 문의는 생성되었으므로 pending 상태로 반환
-                return success_response({
-                    'inquiryId': inquiry_id,
-                    'status': 'pending',
-                    'estimatedResponseTime': inquiry_data['estimatedResponseTime'],
-                    'message': '문의가 접수되었습니다. AI 응답 저장 중 오류가 발생하여 상담사가 직접 답변드리겠습니다.'
-                })
-            
-            logger.info(f"AI 응답 DB 저장 완료, 상태를 ai_responded로 변경: {inquiry_id}")
-            
-            result = {
-                'inquiryId': inquiry_id,
-                'aiResponse': ai_response,
-                'estimatedResponseTime': inquiry_data['estimatedResponseTime'],
-                'status': 'ai_responded'
-            }
-            
-            logger.info(f"문의 생성 및 AI 응답 완료: {inquiry_id}, status: ai_responded")
-            
-            return success_response(result)
-            
         except Exception as ai_error:
             logger.error(f"AI 응답 생성 중 오류: {inquiry_id}, 오류: {str(ai_error)}")
-            # AI 오류 발생 시에도 문의는 생성되었으므로 pending 상태로 반환
+            import traceback
+            logger.error(f"상세 오류: {traceback.format_exc()}")
+            # AI 생성 실패 시 기본 응답 사용
+            ai_response = "안녕하세요! 문의해주셔서 감사합니다. 현재 AI 서비스에 일시적인 문제가 발생하여 담당자가 직접 검토 후 답변드리겠습니다. 영업일 기준 24시간 내에 연락드리겠습니다."
+        
+        # AI 응답을 DB에 저장 (성공/실패 관계없이 항상 저장)
+        logger.info(f"AI 응답 DB 저장 시도: {inquiry_id}")
+        update_success = db_service.update_inquiry_ai_response(inquiry_id, ai_response)
+        
+        if not update_success:
+            logger.error(f"AI 응답 저장 실패: {inquiry_id}")
+            # 저장 실패해도 문의는 생성되었으므로 pending 상태로 반환
             return success_response({
                 'inquiryId': inquiry_id,
                 'status': 'pending',
                 'estimatedResponseTime': inquiry_data['estimatedResponseTime'],
-                'message': '문의가 접수되었습니다. AI 응답 생성 중 오류가 발생하여 상담사가 직접 답변드리겠습니다.'
+                'message': '문의가 접수되었습니다. AI 응답 저장 중 오류가 발생하여 상담사가 직접 답변드리겠습니다.'
             })
+        
+        logger.info(f"AI 응답 DB 저장 완료, 상태를 ai_responded로 변경: {inquiry_id}")
+        
+        result = {
+            'inquiryId': inquiry_id,
+            'aiResponse': ai_response,
+            'estimatedResponseTime': inquiry_data['estimatedResponseTime'],
+            'status': 'ai_responded'
+        }
+        
+        logger.info(f"문의 생성 및 AI 응답 완료: {inquiry_id}, status: ai_responded")
+        
+        return success_response(result)
         
     except Exception as e:
         logger.error(f"Error creating inquiry: {str(e)}")

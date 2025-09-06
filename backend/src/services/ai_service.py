@@ -22,8 +22,8 @@ class AIService:
         try:
             logger.info(f"AI 응답 생성 시작: {inquiry_data.get('title', 'Unknown')}")
             
-            # 간단한 모델로 테스트
-            model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+            # Claude 4.1 Opus 모델 사용 (최고 성능)
+            model_id = "anthropic.claude-opus-4-1-20250805-v1:0"
             
             logger.info(f"사용할 모델: {model_id}")
             
