@@ -107,6 +107,41 @@ export default function MyInquiriesPage() {
           </div>
         </div>
 
+        {/* 통계 정보 */}
+        {inquiries.length > 0 && (
+          <Card className="mb-8 border-0 shadow-lg bg-white rounded-3xl">
+            <CardHeader>
+              <CardTitle className="text-lg">문의 현황</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{inquiries.length}</div>
+                  <div className="text-sm text-gray-600">전체 문의</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {inquiries.filter(i => i.status === 'pending').length}
+                  </div>
+                  <div className="text-sm text-gray-600">접수됨</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {inquiries.filter(i => i.status === 'ai_responded').length}
+                  </div>
+                  <div className="text-sm text-gray-600">AI 답변</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {inquiries.filter(i => i.status === 'human_responded').length}
+                  </div>
+                  <div className="text-sm text-gray-600">상담사 답변</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* 문의 목록 */}
         {filteredInquiries.length === 0 ? (
           <Card className="border-0 shadow-lg bg-white rounded-3xl">
@@ -171,41 +206,6 @@ export default function MyInquiriesPage() {
               );
             })}
           </div>
-        )}
-
-        {/* 통계 정보 */}
-        {inquiries.length > 0 && (
-          <Card className="mt-8 border-0 shadow-lg bg-white rounded-3xl">
-            <CardHeader>
-              <CardTitle className="text-lg">문의 현황</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{inquiries.length}</div>
-                  <div className="text-sm text-gray-600">전체 문의</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-600">
-                    {inquiries.filter(i => i.status === 'pending').length}
-                  </div>
-                  <div className="text-sm text-gray-600">접수됨</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {inquiries.filter(i => i.status === 'ai_responded').length}
-                  </div>
-                  <div className="text-sm text-gray-600">AI 답변</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
-                    {inquiries.filter(i => i.status === 'human_responded').length}
-                  </div>
-                  <div className="text-sm text-gray-600">상담사 답변</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </div>
     </div>

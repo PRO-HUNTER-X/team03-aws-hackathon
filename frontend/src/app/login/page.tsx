@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
   const form = useForm<LoginFormData>({
@@ -31,6 +32,21 @@ export default function LoginPage() {
     },
   });
 
+  // 페이지 로드 시 저장된 로그인 정보 확인
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('customerEmail');
+    const savedPassword = localStorage.getItem('customerPassword');
+    const isRemembered = localStorage.getItem('rememberLogin') === 'true';
+
+    if (savedEmail && savedPassword && isRemembered) {
+      // 자동 로그인
+      router.push(`/my-inquiries?email=${savedEmail}`);
+    } else if (savedEmail) {
+      // 이메일만 자동 입력
+      form.setValue('email', savedEmail);
+    }
+  }, [form, router]);
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
 
@@ -38,8 +54,16 @@ export default function LoginPage() {
       // TODO: 로그인 API 호출
       console.log("로그인 시도:", data);
 
-      // 이메일 저장
+      // 로그인 정보 저장
       localStorage.setItem('customerEmail', data.email);
+      
+      if (rememberMe) {
+        localStorage.setItem('customerPassword', data.password);
+        localStorage.setItem('rememberLogin', 'true');
+      } else {
+        localStorage.removeItem('customerPassword');
+        localStorage.removeItem('rememberLogin');
+      }
       
       // 성공 시 문의 목록 페이지로 이동
       router.push(`/my-inquiries?email=${data.email}`);
@@ -101,6 +125,23 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+
+                {/* 로그인 정보 저장 체크박스 */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-slate-600 focus:ring-slate-500"
+                  />
+                  <label
+                    htmlFor="remember"
+                    className="text-sm font-medium leading-none cursor-pointer"
+                  >
+                    로그인 정보 저장
+                  </label>
+                </div>
 
                 {/* 로그인 버튼 */}
                 <Button type="submit" size="lg" className="w-full rounded-xl" disabled={isLoading}>

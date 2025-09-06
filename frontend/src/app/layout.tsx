@@ -68,6 +68,12 @@ export default function RootLayout({
                   홈
                 </Link>
                 <Link
+                  href="/status"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all duration-200"
+                >
+                  진행사항 확인
+                </Link>
+                <Link
                   href="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all duration-200"
                 >
