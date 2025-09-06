@@ -97,10 +97,6 @@ export class AuthService {
     const response = await fetch(`${API_BASE_URL}/auth/initial-route?companyId=${companyId}`, {
       method: 'GET',
       headers: {
-  static async getInitialRoute(companyId: string): Promise<InitialRouteResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/initial-route?companyId=${companyId}`, {
-      method: 'GET',
-      headers: {
         'Content-Type': 'application/json',
       },
     })
