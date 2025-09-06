@@ -169,6 +169,12 @@ export interface InquiryDetail {
   created_at: string;
   updatedAt?: string;
   estimatedResponseTime: number;
+  aiResponse?: string;
+  ai_response?: string;
+  humanResponse?: string;
+  human_response?: string;
+  ai_responded_at?: string;
+  human_responded_at?: string;
 }
 
 export const getStatusLabel = (status: string): string => {
@@ -232,8 +238,11 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
       created_at: string;
       updatedAt?: string;
       category: string;
+      aiResponse?: string;
       ai_response?: string;
+      humanResponse?: string;
       human_response?: string;
+      ai_responded_at?: string;
     }
     
     const mappedInquiries = inquiries.map((inquiry: ApiInquiry) => {
@@ -245,8 +254,9 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
         created_at: inquiry.created_at,
         updated_at: inquiry.updatedAt || inquiry.created_at,
         category: inquiry.category,
-        ai_response: inquiry.ai_response,
-        human_response: inquiry.human_response
+        ai_response: inquiry.aiResponse || inquiry.ai_response,
+        human_response: inquiry.humanResponse || inquiry.human_response,
+        ai_responded_at: inquiry.ai_responded_at
       };
       logger.info('매핑된 문의', { original: inquiry.inquiry_id, mapped: mapped.id }, 'api');
       return mapped;
@@ -270,8 +280,9 @@ export async function getInquiryById(id: string): Promise<Inquiry | null> {
       created_at: detail.created_at,
       updated_at: detail.updatedAt || detail.created_at,
       category: detail.category,
-      ai_response: undefined,
-      human_response: undefined
+      ai_response: detail.aiResponse || detail.ai_response,
+      human_response: detail.humanResponse || detail.human_response,
+      ai_responded_at: detail.ai_responded_at
     };
   } catch (error) {
     logger.error('문의 상세 조회 실패', error as Error, { id }, 'api');
