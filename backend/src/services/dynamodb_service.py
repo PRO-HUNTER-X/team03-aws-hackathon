@@ -34,6 +34,25 @@ class DynamoDBService:
             logger.error(f"Error getting inquiry: {str(e)}")
             return None
     
+    def update_inquiry_ai_response(self, inquiry_id: str, ai_response: str) -> bool:
+        """문의에 AI 응답 저장"""
+        try:
+            self.inquiries_table.update_item(
+                Key={'inquiry_id': inquiry_id},
+                UpdateExpression="SET aiResponse = :ai_response, #status = :status, updatedAt = :updated_at",
+                ExpressionAttributeValues={
+                    ':ai_response': ai_response,
+                    ':status': 'ai_responded',
+                    ':updated_at': datetime.utcnow().isoformat()
+                },
+                ExpressionAttributeNames={'#status': 'status'}
+            )
+            logger.info(f"AI response saved for inquiry: {inquiry_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Error saving AI response: {str(e)}")
+            return False
+
     def update_inquiry_status(self, inquiry_id: str, status: str, human_response: Optional[str] = None) -> bool:
         """문의 상태 업데이트"""
         try:
