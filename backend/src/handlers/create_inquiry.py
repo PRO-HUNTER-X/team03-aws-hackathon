@@ -55,13 +55,23 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
         if not create_inquiry(inquiry_data):
             return error_response("문의 생성에 실패했습니다", 500)
         
-        # AI 응답 생성 (임시로 기본 응답 사용)
+        # AI 응답 생성
         logger.info(f"AI 응답 생성 시작: {inquiry_id}")
         
-        # 임시로 AI 생성을 우회하고 기본 응답 사용
-        ai_response = f"안녕하세요! '{inquiry_data.get('title', '문의')}'에 대해 문의해주셔서 감사합니다. 담당자가 검토 후 24시간 내에 상세한 답변을 드리겠습니다. 추가 문의사항이 있으시면 언제든 연락해주세요."
-        
-        logger.info(f"기본 AI 응답 생성 완료: {inquiry_id}, 길이: {len(ai_response)}")
+        try:
+            # 실제 AI 응답 생성
+            ai_response = generate_ai_response(inquiry_data)
+            
+            if not ai_response or ai_response.strip() == "":
+                logger.warning(f"AI 응답이 비어있음, 기본 응답 사용: {inquiry_id}")
+                ai_response = f"안녕하세요! '{inquiry_data.get('title', '문의')}'에 대해 문의해주셔서 감사합니다. 담당자가 검토 후 24시간 내에 상세한 답변을 드리겠습니다."
+            
+            logger.info(f"AI 응답 생성 완료: {inquiry_id}, 길이: {len(ai_response)}")
+            
+        except Exception as e:
+            logger.error(f"AI 응답 생성 중 오류: {inquiry_id}, 오류: {str(e)}")
+            # AI 생성 실패 시 기본 응답 사용
+            ai_response = f"안녕하세요! '{inquiry_data.get('title', '문의')}'에 대해 문의해주셔서 감사합니다. 현재 AI 서비스에 일시적인 문제가 발생하여 담당자가 직접 검토 후 답변드리겠습니다."
         
         # AI 응답을 DB에 저장
         logger.info(f"AI 응답 DB 저장 시도: {inquiry_id}")
