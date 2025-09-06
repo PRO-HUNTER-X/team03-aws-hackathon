@@ -42,8 +42,13 @@ export default function Home() {
     }
   }
 
-  const handleLoginSuccess = (newToken: string, hasQnASetup: boolean) => {
+  const handleLoginSuccess = (newToken: string, hasQnASetup: boolean, companyInfo?: any) => {
     setToken(newToken)
+    
+    if (companyInfo) {
+      console.log('로그인된 회사 정보:', companyInfo)
+    }
+    
     if (hasQnASetup) {
       window.location.href = '/dashboard'
     } else {
