@@ -3,13 +3,19 @@ import { DynamoDBService } from '../common/dynamodb.service';
 
 export interface Inquiry {
   inquiry_id: string;
-  status: 'pending' | 'in_progress' | 'resolved';
-  category: string;
-  content: string;
-  urgency: 'low' | 'medium' | 'high';
   companyId: string;
+  customerId?: string;
+  title?: string;
+  content: string;
+  category: string;
+  status: 'pending' | 'in_progress' | 'resolved';
+  urgency: 'low' | 'medium' | 'high';
+  aiResponse?: string;
+  humanResponse?: string;
+  satisfactionScore?: number;
   created_at: string;
   updated_at?: string;
+  resolved_at?: string;
 }
 
 @Injectable()
@@ -140,5 +146,44 @@ export class DashboardService {
     } else {
       return `${diffDays}일 전`;
     }
+  }
+
+  async getInquiriesByCompany(companyId: string): Promise<(Inquiry & { timeAgo: string })[]> {
+    const inquiries = await this.dynamoDBService.scan(
+      this.adminInquiriesTable,
+      'companyId = :companyId',
+      { ':companyId': companyId }
+    );
+    
+    return (inquiries as Inquiry[]).map(inquiry => ({
+      ...inquiry,
+      timeAgo: this.getTimeAgo(new Date(inquiry.created_at))
+    }));
+  }
+
+  async getInquiryStats() {
+    const inquiries = await this.dynamoDBService.scan(this.adminInquiriesTable);
+    
+    const categories = (inquiries as Inquiry[]).reduce((acc, inq) => {
+      acc[inq.category] = (acc[inq.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const status = (inquiries as Inquiry[]).reduce((acc, inq) => {
+      acc[inq.status] = (acc[inq.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const urgency = (inquiries as Inquiry[]).reduce((acc, inq) => {
+      acc[inq.urgency] = (acc[inq.urgency] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      total: inquiries.length,
+      categories,
+      status,
+      urgency
+    };
   }
 }
