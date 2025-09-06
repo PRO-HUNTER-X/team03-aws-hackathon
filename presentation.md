@@ -108,6 +108,19 @@ AI가 24시간 고객 응대
 </div>
 
 ---
+# 우리의 솔루션
+## AI 기반 실시간 문의 자동 처리 시스템
+
+<video src="attachments/demo-1.mov" controls width="80%"></video>
+
+---
+
+# 우리의 솔루션
+## AI 기반 실시간 문의 자동 처리 시스템
+
+<video src="attachments/demo-2.mov" controls width="80%"></video>
+
+---
 
 # 우리의 솔루션
 ## AI 기반 실시간 문의 자동 처리 시스템
