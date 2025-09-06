@@ -153,6 +153,8 @@ export interface Inquiry {
   category: string;
   ai_response?: string;
   human_response?: string;
+  ai_responded_at?: string;
+  human_responded_at?: string;
 }
 
 export interface InquiryDetail {
