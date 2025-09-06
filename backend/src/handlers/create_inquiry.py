@@ -7,6 +7,7 @@ import logging
 from src.utils.response import success_response, error_response
 from src.utils.validation import validate_inquiry_data
 from src.services.dynamodb_service import DynamoDBService
+from src.services.ai_service import generate_ai_response
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -88,11 +89,13 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
         
         logger.info(f"AI 응답 DB 저장 완료, 상태를 ai_responded로 변경: {inquiry_id}")
         
+        # AI 응답 저장 성공 시 ai_responded 상태로 반환
         result = {
             'inquiryId': inquiry_id,
             'aiResponse': ai_response,
             'estimatedResponseTime': inquiry_data['estimatedResponseTime'],
-            'status': 'ai_responded'
+            'status': 'ai_responded',
+            'createdAt': inquiry_data['created_at']
         }
         
         logger.info(f"문의 생성 및 AI 응답 완료: {inquiry_id}, status: ai_responded")
