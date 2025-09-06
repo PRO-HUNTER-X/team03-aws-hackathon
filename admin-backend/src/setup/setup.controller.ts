@@ -41,8 +41,8 @@ export class SetupController {
   @Get('qna')
   @ApiOperation({ summary: 'QnA 데이터 조회' })
   @ApiResponse({ status: 200, description: 'QnA 데이터 조회 성공' })
-  getQnAData(): { success: boolean; data: QnAData[]; count: number } {
-    const qnaData = this.setupService.getQnAData();
+  async getQnAData(): Promise<{ success: boolean; data: QnAData[]; count: number }> {
+    const qnaData = await this.setupService.getQnAData();
     return {
       success: true,
       data: qnaData,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CompanyService, Company } from '../company/company.service';
-import { DashboardService } from '../dashboard/dashboard.service';
+import { DashboardService, Inquiry } from '../dashboard/dashboard.service';
 import { SetupService } from '../setup/setup.service';
 
 @Injectable()

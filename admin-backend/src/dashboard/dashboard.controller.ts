@@ -32,9 +32,9 @@ export class DashboardController {
   @ApiOperation({ summary: '최근 문의 목록 조회' })
   @ApiResponse({ status: 200, description: '최근 문의 조회 성공' })
   @ApiQuery({ name: 'limit', required: false, description: '조회할 문의 수 (기본값: 10)' })
-  getRecentInquiries(@Query('limit') limit?: string) {
+  async getRecentInquiries(@Query('limit') limit?: string) {
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    const inquiries = this.dashboardService.getRecentInquiries(limitNum);
+    const inquiries = await this.dashboardService.getRecentInquiries(limitNum);
     
     return {
       success: true,

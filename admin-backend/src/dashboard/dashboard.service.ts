@@ -95,10 +95,10 @@ export class DashboardService {
     };
   }
 
-  async getRecentInquiries(limit: number = 10) {
+  async getRecentInquiries(limit: number = 10): Promise<(Inquiry & { timeAgo: string })[]> {
     const inquiries = await this.dynamoDBService.scan(this.adminInquiriesTable);
     
-    return inquiries
+    return (inquiries as Inquiry[])
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, limit)
       .map(inquiry => ({

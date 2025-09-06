@@ -40,7 +40,7 @@ export class DynamoDBService {
     return result.Items || [];
   }
 
-  async query(tableName: string, indexName: string, keyConditionExpression: string, expressionAttributeValues: any) {
+  async query(tableName: string, keyConditionExpression: string, expressionAttributeValues: any, indexName?: string) {
     const command = new QueryCommand({
       TableName: tableName,
       IndexName: indexName,

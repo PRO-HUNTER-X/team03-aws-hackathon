@@ -67,21 +67,23 @@ export class CompanyService {
   }
 
   async getAllCompanies(): Promise<Company[]> {
-    return await this.dynamoDBService.scan(this.companyTable);
+    const items = await this.dynamoDBService.scan(this.companyTable);
+    return items as Company[];
   }
 
   async getCompanyById(companyId: string): Promise<Company | null> {
     const result = await this.dynamoDBService.get(this.companyTable, { companyId });
-    return result || null;
+    return (result as Company) || null;
   }
 
   async getCompaniesByIndustry(industry: string): Promise<Company[]> {
-    return await this.dynamoDBService.query(
+    const items = await this.dynamoDBService.query(
       this.companyTable,
       'industry = :industry',
       { ':industry': industry },
       'industry-index'
     );
+    return items as Company[];
   }
 
   async getCompanyStats() {

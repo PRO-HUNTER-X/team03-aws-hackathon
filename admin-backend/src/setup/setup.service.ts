@@ -42,7 +42,8 @@ export class SetupService {
   }
 
   async getQnAData(): Promise<QnAData[]> {
-    return await this.dynamoDBService.scan(this.qnaTable);
+    const items = await this.dynamoDBService.scan(this.qnaTable);
+    return items as QnAData[];
   }
 
   async isSetupComplete(): Promise<boolean> {
