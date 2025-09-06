@@ -203,4 +203,62 @@ export class InsightsService {
     
     return accuracyMap[industry]?.[category] || 80;
   }
+
+  async getCompanyAnalysis(companyId: string) {
+    const company = await this.companyService.getCompanyById(companyId);
+    const inquiries = await this.dashboardService.getInquiriesByCompany(companyId);
+    
+    // 카테고리별 패턴 분석
+    const categoryCount = inquiries.reduce((acc, inq) => {
+      acc[inq.category] = (acc[inq.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const total = inquiries.length;
+    const industryPattern = Object.entries(categoryCount).map(([category, count]) => ({
+      category,
+      percentage: Math.round((count / total) * 100),
+      recommendation: this.getRecommendation(category, company.industry)
+    }));
+
+    return {
+      industryPattern,
+      benchmarking: []
+    };
+  }
+
+  async getAIOptimization(companyId: string) {
+    const qnaData = await this.setupService.getQnADataByCompany(companyId);
+    
+    // 카테고리별 AI 정확도 계산
+    const categoryAccuracy = Object.entries(
+      qnaData.reduce((acc, qna) => {
+        if (!acc[qna.category]) acc[qna.category] = [];
+        acc[qna.category].push(qna.confidence || 0.5);
+        return acc;
+      }, {} as Record<string, number[]>)
+    ).map(([category, confidences]) => {
+      const avgAccuracy = Math.round(
+        (confidences.reduce((sum, conf) => sum + conf, 0) / confidences.length) * 100
+      );
+      return {
+        category,
+        aiAccuracy: avgAccuracy,
+        needsHumanIntervention: avgAccuracy < 70,
+        recommendation: avgAccuracy < 70 ? '인간 개입 필수' : 'AI 정확도 양호'
+      };
+    });
+
+    return {
+      categoryAccuracy,
+      learningOpportunities: []
+    };
+  }
+
+  private getRecommendation(category: string, industry: string): string {
+    if (industry === '이커머스' && category === '배송') {
+      return '물류 최적화 필요 - 배송 추적 API 개선 권장';
+    }
+    return `${category} 카테고리 개선 필요`;
+  }
 }
