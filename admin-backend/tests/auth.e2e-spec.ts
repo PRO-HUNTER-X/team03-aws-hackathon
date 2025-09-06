@@ -20,6 +20,26 @@ describe('Auth E2E Tests', () => {
   });
 
   describe('POST /auth/login', () => {
+    it('공통_관리자_계정으로_로그인_성공', () => {
+      return request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          username: 'admin',
+          password: 'admin123'
+        })
+        .expect(201)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('access_token');
+          expect(res.body).toHaveProperty('expires_in', 3600);
+          expect(res.body).toHaveProperty('user');
+          expect(res.body.user).toEqual({
+            username: 'admin',
+            role: 'admin'
+          });
+          expect(typeof res.body.access_token).toBe('string');
+        });
+    });
+
     it('올바른_인증정보로_로그인_성공', () => {
       return request(app.getHttpServer())
         .post('/auth/login')
@@ -61,11 +81,14 @@ describe('Auth E2E Tests', () => {
         });
     });
 
-    it('빈_요청_본문으로_400_에러', () => {
+    it('빈_요청_본문으로_401_에러', () => {
       return request(app.getHttpServer())
         .post('/auth/login')
         .send({})
-        .expect(400);
+        .expect(401)
+        .expect((res) => {
+          expect(res.body.message).toBe('인증에 실패했습니다');
+        });
     });
   });
 

@@ -15,7 +15,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { username, password } = loginDto;
 
-    // 간단한 인증 검증
+    // 공통 관리자 계정 검증 (모든 회사에서 사용 가능)
     if (username !== 'admin' || password !== 'admin123') {
       throw new UnauthorizedException('인증에 실패했습니다');
     }
@@ -23,19 +23,12 @@ export class AuthService {
     const payload = { username, sub: 'admin', role: 'admin' };
     const access_token = this.jwtService.sign(payload);
 
-    // QnA 설정 여부 확인
-    const hasQnAData = await this.setupService.hasQnAData();
-    const nextRoute = hasQnAData ? '/dashboard' : '/qna-setup';
-
     return {
       access_token,
       expires_in: 3600,
-      redirect: {
-        hasQnASetup: hasQnAData,
-        nextRoute: nextRoute,
-        message: hasQnAData 
-          ? '대시보드로 이동합니다' 
-          : 'QnA 설정을 완료해주세요'
+      user: {
+        username,
+        role: 'admin'
       }
     };
   }
