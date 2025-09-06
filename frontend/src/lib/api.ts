@@ -219,6 +219,8 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
 
     logger.info('내 문의 목록 조회 성공', { count: result.data?.length || 0 }, 'api');
     const inquiries = result.data?.inquiries || [];
+    logger.info('원본 API 응답', { inquiries: inquiries.slice(0, 1) }, 'api');
+    
     // API 응답을 프론트엔드 형식에 맞게 변환
     interface ApiInquiry {
       inquiry_id: string;
@@ -232,17 +234,23 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
       human_response?: string;
     }
     
-    return inquiries.map((inquiry: ApiInquiry) => ({
-      id: inquiry.inquiry_id,
-      title: inquiry.title,
-      content: inquiry.content,
-      status: inquiry.status,
-      created_at: inquiry.created_at,
-      updated_at: inquiry.updatedAt || inquiry.created_at,
-      category: inquiry.category,
-      ai_response: inquiry.ai_response,
-      human_response: inquiry.human_response
-    }));
+    const mappedInquiries = inquiries.map((inquiry: ApiInquiry) => {
+      const mapped = {
+        id: inquiry.inquiry_id,
+        title: inquiry.title,
+        content: inquiry.content,
+        status: inquiry.status,
+        created_at: inquiry.created_at,
+        updated_at: inquiry.updatedAt || inquiry.created_at,
+        category: inquiry.category,
+        ai_response: inquiry.ai_response,
+        human_response: inquiry.human_response
+      };
+      logger.info('매핑된 문의', { original: inquiry.inquiry_id, mapped: mapped.id }, 'api');
+      return mapped;
+    });
+    
+    return mappedInquiries;
   } catch (error) {
     logger.error('내 문의 목록 조회 네트워크 에러', error as Error, { url }, 'api');
     throw error;
