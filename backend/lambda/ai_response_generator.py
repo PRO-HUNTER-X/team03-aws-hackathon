@@ -161,13 +161,46 @@ def lambda_handler(event, context):
         if not body.get('title') or not body.get('content'):
             return error_response("Title and content are required")
         
+        # inquiry_id가 있으면 DB에 저장
+        inquiry_id = body.get('inquiry_id')
+        
         # AI 응답 생성
         ai_response = generate_ai_response(body)
+        
+        # inquiry_id가 있으면 DB에 저장
+        if inquiry_id:
+            try:
+                import boto3
+                from datetime import datetime
+                
+                dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+                table = dynamodb.Table(os.environ.get('DYNAMODB_TABLE', 'cs-inquiries'))
+                
+                # AI 응답을 DB에 저장
+                table.update_item(
+                    Key={'inquiry_id': inquiry_id},
+                    UpdateExpression="SET aiResponse = :ai_response, #status = :status, updatedAt = :updated_at, ai_responded_at = :ai_responded_at",
+                    ExpressionAttributeValues={
+                        ':ai_response': ai_response,
+                        ':status': 'ai_responded',
+                        ':updated_at': datetime.utcnow().isoformat(),
+                        ':ai_responded_at': datetime.utcnow().isoformat()
+                    },
+                    ExpressionAttributeNames={'#status': 'status'}
+                )
+                
+                logger.info(f"AI 응답 저장 완료: {inquiry_id}")
+                
+            except Exception as save_error:
+                logger.error(f"AI 응답 저장 실패: {inquiry_id}, 오류: {str(save_error)}")
+                # 저장 실패해도 응답은 반환
         
         result = {
             'aiResponse': ai_response,
             'responseTime': 3,  # 응답 생성 시간 (초)
-            'confidence': 0.85  # 응답 신뢰도
+            'confidence': 0.85,  # 응답 신뢰도
+            'saved': bool(inquiry_id),  # DB 저장 여부
+            'inquiryId': inquiry_id  # 문의 ID
         }
         
         return success_response(result)
