@@ -67,7 +67,13 @@ function getTimeAgo(dateString: string): string {
     const date = new Date(dateString)
     
     // 유효하지 않은 날짜 체크
+<<<<<<< HEAD
     if (isNaN(date.getTime())) return '방금 전'
+=======
+    if (isNaN(date.getTime())) {
+      return '시간 미상'
+    }
+>>>>>>> 28ffbe0d107ad8655d73b503a81a69082cf88c63
     
     const diffMs = now.getTime() - date.getTime()
     const diffMins = Math.floor(diffMs / (1000 * 60))
@@ -79,7 +85,12 @@ function getTimeAgo(dateString: string): string {
     if (diffHours < 24) return `${diffHours}시간 전`
     return `${diffDays}일 전`
   } catch (error) {
+<<<<<<< HEAD
     console.error('시간 계산 오류:', error)
     return '방금 전'
+=======
+    console.error('시간 계산 에러:', error)
+    return '시간 미상'
+>>>>>>> 28ffbe0d107ad8655d73b503a81a69082cf88c63
   }
 }
