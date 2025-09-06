@@ -11,10 +11,12 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const urgency = searchParams.get('urgency')
     const type = searchParams.get('type')
+    const sortBy = searchParams.get('sortBy') || 'created_at'
+    const sortOrder = searchParams.get('sortOrder') || 'desc'
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
 
-    console.log('문의 목록 조회 시작:', { status, urgency, type, page, limit })
+    console.log('문의 목록 조회 시작:', { status, urgency, type, sortBy, sortOrder, page, limit })
 
     // DynamoDB에서 문의 목록 조회
     const command = new ScanCommand({
@@ -54,22 +56,54 @@ export async function GET(request: NextRequest) {
     }
 
     // 데이터 변환 (cs-inquiries → admin-inquiries 형태)
-    const transformedItems = items.map(item => ({
-      id: item.inquiry_id,
-      status: item.status === 'pending' ? '대기' : 
-              item.status === 'ai_responded' ? '처리중' : '완료',
-      type: item.category || '일반 문의',
-      title: item.title,
-      content: item.content,
-      urgency: item.urgency === 'high' ? '높음' : 
-               item.urgency === 'medium' ? '보통' : '낮음',
-      customerId: item.customerEmail,
-      customerName: item.customerEmail?.split('@')[0] || '고객',
-      customerEmail: item.customerEmail,
-      created_at: item.created_at,
-      timeAgo: calculateTimeAgo(item.created_at),
-      replyCount: 0
-    }))
+    const transformedItems = items.map(item => {
+      try {
+        return {
+          id: item.inquiry_id || 'unknown',
+          status: item.status === 'pending' ? '대기' : 
+                  item.status === 'ai_responded' ? '처리중' : '완료',
+          type: item.category || '일반 문의',
+          title: item.title || '제목 없음',
+          content: item.content || '내용 없음',
+          urgency: item.urgency === 'high' ? '높음' : 
+                   item.urgency === 'medium' ? '보통' : '낮음',
+          customerId: item.customerEmail || 'unknown',
+          customerName: item.customerEmail?.split('@')[0] || '고객',
+          customerEmail: item.customerEmail || 'unknown@example.com',
+          created_at: item.created_at || new Date().toISOString(),
+          timeAgo: calculateTimeAgo(item.created_at),
+          replyCount: 0
+        }
+      } catch (error) {
+        console.error('데이터 변환 에러:', error, item)
+        return null
+      }
+    }).filter(item => item !== null)
+
+    // 정렬
+    transformedItems.sort((a, b) => {
+      let aValue: any = a.created_at
+      let bValue: any = b.created_at
+      
+      if (sortBy === 'title') {
+        aValue = a.title
+        bValue = b.title
+      } else if (sortBy === 'status') {
+        aValue = a.status
+        bValue = b.status
+      } else if (sortBy === 'urgency') {
+        const urgencyOrder = { '높음': 3, '보통': 2, '낮음': 1 }
+        const aOrder = urgencyOrder[a.urgency as keyof typeof urgencyOrder] || 0
+        const bOrder = urgencyOrder[b.urgency as keyof typeof urgencyOrder] || 0
+        return sortOrder === 'desc' ? bOrder - aOrder : aOrder - bOrder
+      }
+      
+      if (sortOrder === 'desc') {
+        return bValue > aValue ? 1 : -1
+      } else {
+        return aValue > bValue ? 1 : -1
+      }
+    })
 
     // 페이징
     const startIndex = (page - 1) * limit
@@ -98,17 +132,30 @@ export async function GET(request: NextRequest) {
 }
 
 function calculateTimeAgo(dateString: string): string {
-  const now = new Date()
-  const past = new Date(dateString)
-  const diffMs = now.getTime() - past.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffHours / 24)
-  
-  if (diffDays > 0) {
-    return `${diffDays}일 전`
-  } else if (diffHours > 0) {
-    return `${diffHours}시간 전`
-  } else {
-    return '방금 전'
+  try {
+    if (!dateString) return '시간 미상'
+    
+    const now = new Date()
+    const past = new Date(dateString)
+    
+    // 유효하지 않은 날짜 체크
+    if (isNaN(past.getTime())) {
+      return '시간 미상'
+    }
+    
+    const diffMs = now.getTime() - past.getTime()
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffHours / 24)
+    
+    if (diffDays > 0) {
+      return `${diffDays}일 전`
+    } else if (diffHours > 0) {
+      return `${diffHours}시간 전`
+    } else {
+      return '방금 전'
+    }
+  } catch (error) {
+    console.error('시간 계산 에러:', error)
+    return '시간 미상'
   }
 }
