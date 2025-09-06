@@ -62,7 +62,7 @@ export interface InitialRouteResponse {
 
 export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/admin/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export class AuthService {
   }
 
   static async verify(token: string): Promise<VerifyResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+    const response = await fetch(`${API_BASE_URL}/admin/auth/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ export class AuthService {
   }
 
   static async getInitialRoute(companyId: string): Promise<InitialRouteResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/initial-route?companyId=${companyId}`, {
+    const response = await fetch(`${API_BASE_URL}/admin/auth/initial-route?companyId=${companyId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
