@@ -23,10 +23,12 @@ export async function GET() {
           item.status === 'pending' || item.status === '대기'
         ).length,
         processing: items.filter(item => 
+          item.status === 'in_progress' || item.status === 'ai_response' || 
           item.status === 'ai_answered' || item.status === '처리중'
         ).length,
         completed: items.filter(item => 
-          item.status === 'human_answered' || item.status === 'closed' || item.status === '완료'
+          item.status === 'completed' || item.status === 'human_answered' || 
+          item.status === 'closed' || item.status === '완료'
         ).length,
       },
       urgency: {

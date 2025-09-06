@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
       .map((item: any) => ({
         id: item.inquiry_id || item.id,
         status: item.status === 'pending' ? '대기' : 
-                item.status === 'ai_answered' ? '처리중' : 
-                item.status === 'human_answered' ? '완료' : '대기',
+                item.status === 'in_progress' || item.status === 'ai_response' ? '처리중' : 
+                item.status === 'completed' ? '완료' : '대기',
         type: item.category || '기타',
         title: item.title || '제목 없음',
         content: item.content || item.question || '내용 없음',
