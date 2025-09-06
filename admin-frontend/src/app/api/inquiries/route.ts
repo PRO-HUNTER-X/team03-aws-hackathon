@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { dynamodb, TABLE_NAME } from '@/lib/dynamodb'
-import { mockInquiries } from '@/lib/mock-data'
 
 // API Route를 동적으로 설정
 export const dynamic = 'force-dynamic'
@@ -90,44 +89,11 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('DynamoDB 조회 실패, Mock 데이터 사용:', error)
-    
-    // 에러 시 Mock 데이터로 폴백
-    const { searchParams } = new URL(request.url)
-    const fallbackStatus = searchParams.get('status')
-    const fallbackUrgency = searchParams.get('urgency')
-    const fallbackType = searchParams.get('type')
-    const fallbackPage = parseInt(searchParams.get('page') || '1')
-    const fallbackLimit = parseInt(searchParams.get('limit') || '10')
-    
-    let items = [...mockInquiries]
-    
-    if (fallbackStatus && fallbackStatus !== '전체') {
-      items = items.filter(item => item.status === fallbackStatus)
-    }
-    if (fallbackUrgency) {
-      items = items.filter(item => item.urgency === fallbackUrgency)
-    }
-    if (fallbackType) {
-      items = items.filter(item => item.type === fallbackType)
-    }
-
-    const startIndex = (fallbackPage - 1) * fallbackLimit
-    const endIndex = startIndex + fallbackLimit
-    const paginatedItems = items.slice(startIndex, endIndex)
-
-    return NextResponse.json({
-      success: true,
-      data: paginatedItems,
-      pagination: {
-        page: fallbackPage,
-        limit: fallbackLimit,
-        total: items.length,
-        totalPages: Math.ceil(items.length / fallbackLimit),
-        hasNext: endIndex < items.length,
-        hasPrev: fallbackPage > 1
-      }
-    })
+    console.error('문의 목록 조회 실패:', error)
+    return NextResponse.json(
+      { success: false, error: '문의 목록을 불러올 수 없습니다.' },
+      { status: 500 }
+    )
   }
 }
 
