@@ -220,7 +220,19 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
     logger.info('내 문의 목록 조회 성공', { count: result.data?.length || 0 }, 'api');
     const inquiries = result.data?.inquiries || [];
     // API 응답을 프론트엔드 형식에 맞게 변환
-    return inquiries.map((inquiry: any) => ({
+    interface ApiInquiry {
+      inquiry_id: string;
+      title: string;
+      content: string;
+      status: string;
+      created_at: string;
+      updatedAt?: string;
+      category: string;
+      ai_response?: string;
+      human_response?: string;
+    }
+    
+    return inquiries.map((inquiry: ApiInquiry) => ({
       id: inquiry.inquiry_id,
       title: inquiry.title,
       content: inquiry.content,
