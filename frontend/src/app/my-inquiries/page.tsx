@@ -179,8 +179,10 @@ export default function MyInquiriesPage() {
                               {inquiry.title}
                             </Link>
                           </h3>
-                          <Badge className={`${getStatusColor(inquiry.status)} border-0`}>
-                            {getStatusLabel(inquiry.status)}
+                          <Badge className={`${getStatusColor(inquiry.status)} border-0 cursor-pointer hover:opacity-80 transition-opacity`}>
+                            <Link href={`/status?id=${inquiry.id}`} className="block">
+                              {getStatusLabel(inquiry.status)}
+                            </Link>
                           </Badge>
                         </div>
                         

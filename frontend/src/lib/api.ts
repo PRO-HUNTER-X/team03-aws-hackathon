@@ -227,7 +227,11 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
 
     logger.info('내 문의 목록 조회 성공', { count: result.data?.length || 0 }, 'api');
     const inquiries = result.data?.inquiries || [];
-    logger.info('원본 API 응답', { inquiries: inquiries.slice(0, 1) }, 'api');
+    logger.info('원본 API 응답', { 
+      inquiries: inquiries.slice(0, 1),
+      fullResult: result,
+      inquiriesLength: inquiries.length 
+    }, 'api');
     
     // API 응답을 프론트엔드 형식에 맞게 변환
     interface ApiInquiry {
@@ -258,7 +262,13 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
         human_response: inquiry.humanResponse || inquiry.human_response,
         ai_responded_at: inquiry.ai_responded_at
       };
-      logger.info('매핑된 문의', { original: inquiry.inquiry_id, mapped: mapped.id }, 'api');
+      logger.info('매핑된 문의', { 
+        original: inquiry.inquiry_id, 
+        mapped: mapped.id,
+        originalStatus: inquiry.status,
+        mappedStatus: mapped.status,
+        hasAiResponse: !!mapped.ai_response
+      }, 'api');
       return mapped;
     });
     
@@ -272,7 +282,13 @@ export async function getMyInquiries(email?: string): Promise<Inquiry[]> {
 export async function getInquiryById(id: string): Promise<Inquiry | null> {
   try {
     const detail = await getInquiry(id);
-    return {
+    logger.info('문의 상세 조회 원본 데이터', { 
+      detail,
+      hasAiResponse: !!(detail.aiResponse || detail.ai_response),
+      status: detail.status
+    }, 'api');
+    
+    const mapped = {
       id: detail.inquiry_id,
       title: detail.title,
       content: detail.content,
@@ -284,6 +300,15 @@ export async function getInquiryById(id: string): Promise<Inquiry | null> {
       human_response: detail.humanResponse || detail.human_response,
       ai_responded_at: detail.ai_responded_at
     };
+    
+    logger.info('문의 상세 조회 매핑 결과', { 
+      mappedId: mapped.id,
+      mappedStatus: mapped.status,
+      hasAiResponse: !!mapped.ai_response,
+      aiResponseLength: mapped.ai_response?.length || 0
+    }, 'api');
+    
+    return mapped;
   } catch (error) {
     logger.error('문의 상세 조회 실패', error as Error, { id }, 'api');
     return null;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,11 +19,12 @@ const statusSchema = z.object({
 
 type StatusFormData = z.infer<typeof statusSchema>;
 
-export default function StatusPage() {
+function StatusContent() {
   const [inquiry, setInquiry] = useState<Inquiry | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const form = useForm<StatusFormData>({
     resolver: zodResolver(statusSchema),
@@ -32,11 +33,19 @@ export default function StatusPage() {
     },
   });
 
-  const onSubmit = async (data: StatusFormData) => {
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id) {
+      form.setValue('inquiryId', id);
+      handleInquiryLookup(id);
+    }
+  }, [searchParams, form]);
+
+  const handleInquiryLookup = async (inquiryId: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      const result = await getInquiryById(data.inquiryId);
+      const result = await getInquiryById(inquiryId);
       setInquiry(result);
     } catch (error) {
       console.error("문의 조회 실패:", error);
@@ -45,6 +54,10 @@ export default function StatusPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const onSubmit = async (data: StatusFormData) => {
+    await handleInquiryLookup(data.inquiryId);
   };
 
   const formatDate = (dateString: string) => {
@@ -238,5 +251,20 @@ export default function StatusPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function StatusPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">페이지를 불러오는 중...</p>
+        </div>
+      </div>
+    }>
+      <StatusContent />
+    </Suspense>
   );
 }

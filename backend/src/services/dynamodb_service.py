@@ -37,6 +37,16 @@ class DynamoDBService:
     def update_inquiry_ai_response(self, inquiry_id: str, ai_response: str) -> bool:
         """문의에 AI 응답 저장"""
         try:
+            logger.info(f"AI 응답 저장 시작: {inquiry_id}, 응답 길이: {len(ai_response) if ai_response else 0}")
+            
+            # 먼저 아이템이 존재하는지 확인
+            existing_item = self.get_inquiry(inquiry_id)
+            if not existing_item:
+                logger.error(f"문의를 찾을 수 없음: {inquiry_id}")
+                return False
+            
+            logger.info(f"기존 문의 상태: {existing_item.get('status', 'unknown')}")
+            
             self.inquiries_table.update_item(
                 Key={'inquiry_id': inquiry_id},
                 UpdateExpression="SET aiResponse = :ai_response, #status = :status, updatedAt = :updated_at, ai_responded_at = :ai_responded_at",
@@ -48,10 +58,19 @@ class DynamoDBService:
                 },
                 ExpressionAttributeNames={'#status': 'status'}
             )
-            logger.info(f"AI response saved for inquiry: {inquiry_id}")
+            
+            logger.info(f"AI 응답 저장 완료: {inquiry_id}")
+            
+            # 저장 후 확인
+            updated_item = self.get_inquiry(inquiry_id)
+            if updated_item:
+                logger.info(f"저장 후 상태 확인: {updated_item.get('status')}, AI 응답 존재: {bool(updated_item.get('aiResponse'))}")
+            
             return True
         except Exception as e:
-            logger.error(f"Error saving AI response: {str(e)}")
+            logger.error(f"AI 응답 저장 중 오류: {inquiry_id}, 오류: {str(e)}")
+            import traceback
+            logger.error(f"상세 오류: {traceback.format_exc()}")
             return False
 
     def update_inquiry_status(self, inquiry_id: str, status: str, human_response: Optional[str] = None) -> bool:
