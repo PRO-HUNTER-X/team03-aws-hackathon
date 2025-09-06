@@ -5,6 +5,39 @@ chat-history
 infra/cdk.out/
 infra/node_modules/
 infra/venv/
+infra/stacks/__pycache__/
+
+# Admin Frontend
+admin-frontend/node_modules/
+admin-frontend/.next/
+admin-frontend/out/
+admin-frontend/.env*.local
+admin-frontend/*.tsbuildinfo
+
+# Admin Backend
+admin-backend/node_modules/
+admin-backend/dist/
+admin-backend/.env
+admin-backend/*.log
+admin-backend/coverage/
+
+# Backend (Python)
+backend/venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/*.pyc
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*.local
+frontend/*.tsbuildinfo
+
+# Infrastructure
+infra/venv/
+infra/__pycache__/
 
 # Python
 __pycache__/
@@ -28,22 +61,32 @@ wheels/
 .installed.cfg
 *.egg
 
-# Next.js
-.next/
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
 out/
 
-# Environment
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS
-.DS_Store
-Thumbs.db

@@ -1,0 +1,50 @@
+import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+
+@ApiTags('Authentication')
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('login')
+  @ApiOperation({ summary: '관리자 로그인' })
+  @ApiResponse({ status: 200, description: '로그인 성공' })
+  @ApiResponse({ status: 401, description: '인증 실패' })
+  async login(@Body() loginDto: LoginDto) {
+    return await this.authService.login(loginDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('verify')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '토큰 검증' })
+  @ApiResponse({ status: 200, description: '토큰 검증 성공' })
+  @ApiResponse({ status: 401, description: '토큰 검증 실패' })
+  verifyToken(@Request() req) {
+    return {
+      valid: true,
+      user: {
+        username: req.user.username
+      }
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '프로필 조회' })
+  @ApiResponse({ status: 200, description: '프로필 조회 성공' })
+  @ApiResponse({ status: 401, description: '인증 실패' })
+  getProfile(@Request() req) {
+    return {
+      success: true,
+      data: {
+        username: req.user.username,
+        userId: req.user.userId
+      }
+    };
+  }
+}
