@@ -28,27 +28,59 @@ export async function GET() {
     
     console.log('조회된 문의 데이터:', inquiries.length)
 
+    // 데이터 패턴 분석
+    const totalInquiries = inquiries.length
+    const todayInquiries = inquiries.filter(item => {
+      const today = new Date().toISOString().split('T')[0]
+      return item.created_at?.startsWith(today)
+    })
+    
+    const typeStats = inquiries.reduce((acc: any, item) => {
+      acc[item.type] = (acc[item.type] || 0) + 1
+      return acc
+    }, {})
+    
+    const urgencyStats = inquiries.reduce((acc: any, item) => {
+      acc[item.urgency] = (acc[item.urgency] || 0) + 1
+      return acc
+    }, {})
+
     // Bedrock Claude로 분석 요청
     const analysisPrompt = `
-다음 고객 문의 데이터를 분석해서 비즈니스 인사이트를 제공해주세요:
+당신은 CS 운영 전문가입니다. 다음 고객 문의 데이터를 분석해서 실무진이 바로 실행할 수 있는 구체적인 조언을 해주세요.
 
-문의 데이터:
-${JSON.stringify(inquiries.slice(0, 10), null, 2)}
+## 문의 현황 데이터
+- 전체 문의: ${totalInquiries}건
+- 오늘 문의: ${todayInquiries.length}건
+- 문의 유형별: ${JSON.stringify(typeStats)}
+- 긴급도별: ${JSON.stringify(urgencyStats)}
 
-다음 형태로 분석 결과를 JSON으로 응답해주세요:
+## 최근 문의 샘플 (패턴 분석용)
+${JSON.stringify(inquiries.slice(0, 8).map(item => ({
+  type: item.type,
+  title: item.title,
+  urgency: item.urgency,
+  status: item.status
+})), null, 2)}
+
+다음 JSON 형태로 **구체적이고 실행 가능한** 분석을 해주세요:
 {
-  "todayAlert": "오늘의 주요 이슈 (간단한 한국어)",
-  "quickWins": "30분 내 해결 가능한 개선사항",
-  "predictions": "내일/이번 주 예상되는 문제",
+  "todayAlert": "오늘 가장 주의해야 할 문제 (구체적 수치 포함)",
+  "quickWins": "30분 내 실행 가능한 개선 방법 (구체적 액션)",
+  "predictions": "데이터 패턴 기반 예측 (언제, 무엇이 일어날지)",
   "actionItems": [
-    "지금 바로 할 수 있는 일 1",
-    "지금 바로 할 수 있는 일 2",
-    "지금 바로 할 수 있는 일 3"
+    "지금 당장 할 일 (구체적 액션 + 예상 효과)",
+    "오늘 중 해결할 일 (구체적 방법)",
+    "이번 주 내 개선할 점 (구체적 계획)"
   ],
-  "costSaving": "예상 절약 금액 (구체적 숫자)"
+  "costSaving": "예상 절약 효과 (구체적 금액 + 근거)"
 }
 
-비즈니스 관점에서 실용적이고 구체적인 조언을 해주세요.`
+**중요**: 
+- 모든 조언은 실제 실행 가능해야 함
+- 구체적인 숫자와 기간을 포함할 것
+- CS 운영진이 바로 이해할 수 있는 쉬운 언어 사용
+- 데이터에 기반한 현실적인 제안만 할 것`
 
     const bedrockCommand = new InvokeModelCommand({
       modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
