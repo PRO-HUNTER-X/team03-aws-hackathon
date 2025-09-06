@@ -155,6 +155,22 @@ class ApiStack(Stack):
         regenerate = inquiry_by_id.add_resource("regenerate")
         regenerate.add_method("POST", apigateway.LambdaIntegration(regenerate_ai_response))  # Regenerate AI response
         
+        # 수동 AI 응답 업데이트 endpoint (테스트용)
+        update_ai = inquiry_by_id.add_resource("update-ai")
+        update_ai_handler = _lambda.Function(
+            self, "UpdateAIResponse",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="src.handlers.update_ai_response.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            role=lambda_role,
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name
+            }
+        )
+        update_ai.add_method("POST", apigateway.LambdaIntegration(update_ai_handler))
+        
         # Escalation endpoint
         escalate = inquiry_by_id.add_resource("escalate")
         escalate.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))  # Escalate inquiry
