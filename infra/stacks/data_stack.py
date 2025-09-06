@@ -17,13 +17,13 @@ class DataStack(Stack):
             admin_inquiries_table_name = f"admin-inquiries-dev-{developer}"
             admin_users_table_name = f"admin-users-dev-{developer}"
             qna_table_name = f"qna-data-dev-{developer}"
-            company_table_name = f"companies-dev-{developer}"
+            company_table_name = f"cs-companies-dev-{developer}"
         else:
             inquiry_table_name = "cs-inquiries"  # 기존 prod 환경
             admin_inquiries_table_name = "admin-inquiries"
             admin_users_table_name = "admin-users"
             qna_table_name = "qna-data"
-            company_table_name = "companies"
+            company_table_name = "cs-companies"
         
         # DynamoDB Table for CS inquiries
         self.inquiry_table = dynamodb.Table(
