@@ -36,24 +36,28 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
   const [stats, setStats] = useState<Stats | null>(null)
   const [recentInquiries, setRecentInquiries] = useState<Inquiry[]>([])
   const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlerts | null>(null)
+  const [insights, setInsights] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   const fetchDashboardData = async () => {
     try {
-      const [statsRes, inquiriesRes, alertsRes] = await Promise.all([
+      const [statsRes, inquiriesRes, alertsRes, insightsRes] = await Promise.all([
         fetch('/api/dashboard/stats'),
         fetch('/api/dashboard/recent-inquiries?limit=5'),
-        fetch('/api/dashboard/urgent-alerts')
+        fetch('/api/dashboard/urgent-alerts'),
+        fetch('/api/dashboard/insights')
       ])
 
       const statsData = await statsRes.json()
       const inquiriesData = await inquiriesRes.json()
       const alertsData = await alertsRes.json()
+      const insightsData = await insightsRes.json()
 
       setStats(statsData.data)
       setRecentInquiries(inquiriesData.data)
       setUrgentAlerts(alertsData.data)
+      if (insightsData.success) setInsights(insightsData.data)
     } catch (error) {
       console.error('대시보드 데이터 로딩 실패:', error)
     } finally {
@@ -138,6 +142,51 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
                 <h3 className="text-lg font-medium text-gray-900">완료</h3>
                 <p className="text-3xl font-bold text-gray-600 mt-2">{stats.status.completed}</p>
               </button>
+            </div>
+          )}
+
+          {/* AI 비즈니스 인사이트 */}
+          {insights && (
+            <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-blue-200">
+                <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                  🤖 AI 비즈니스 인사이트
+                  <span className="ml-2 text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">실시간</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white p-4 rounded-lg border border-blue-200">
+                    <h4 className="font-medium text-red-600 mb-2">🚨 오늘의 주요 이슈</h4>
+                    <p className="text-sm text-gray-700">{insights.todayAlert}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-green-200">
+                    <h4 className="font-medium text-green-600 mb-2">💡 빠른 개선안</h4>
+                    <p className="text-sm text-gray-700">{insights.quickWins}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                    <h4 className="font-medium text-yellow-600 mb-2">📅 예측 알림</h4>
+                    <p className="text-sm text-gray-700">{insights.predictions}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-purple-200">
+                    <h4 className="font-medium text-purple-600 mb-2">💰 절약 효과</h4>
+                    <p className="text-sm text-gray-700">{insights.costSaving}</p>
+                  </div>
+                </div>
+                {insights.actionItems && (
+                  <div className="mt-6 bg-white p-4 rounded-lg border border-gray-200">
+                    <h4 className="font-medium text-gray-900 mb-3">⚡ 지금 바로 할 수 있는 일</h4>
+                    <ul className="space-y-2">
+                      {insights.actionItems.map((item: string, index: number) => (
+                        <li key={index} className="flex items-center text-sm text-gray-700">
+                          <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
