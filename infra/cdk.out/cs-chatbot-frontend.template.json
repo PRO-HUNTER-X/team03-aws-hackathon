@@ -207,6 +207,20 @@
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
     "DistributionConfig": {
+     "CustomErrorResponses": [
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
@@ -280,10 +294,28 @@
     "SourceBucketNames": [
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      }
     ],
     "SourceObjectKeys": [
-     "9d5b3797c3d9b6f3f5c1e57223127dbdd331f1d7143dc31b41ea800a574aad60.zip"
+     "d71a08bc362adc8aab349cf4922a11986b2b0f3d4f0f2a5cde68581c0bf1eaca.zip",
+     "b8a3664308a3ee70fed3b46de23ffa780afca1424aae4c5b09494c1af258958c.zip",
+     "97cb1d0b3361bd872855e800faa1868b94a0acd5198060124d90d133f80dee1b.zip"
+    ],
+    "SourceMarkers": [
+     {},
+     {},
+     {}
+    ],
+    "SourceMarkersConfig": [
+     {},
+     {},
+     {}
     ],
     "DestinationBucketName": {
      "Ref": "WebsiteBucket75C24D94"
@@ -478,7 +510,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VPy26DMBD8ltzNtgntByREPVUqSqRekWMM3WDsyLsuQpb/vQIikp7m4d3x7A522zd43ciBMlV3mcELxDNL1Qk5UBUph3gIqtMsisbe2QKlM6jGh33XizhI0kko40LdeGcZ4hGJPV4Co7PT0rNOgvIq1vpm3Nhry7CEHFdDSCLNBPsJkjCyv9QSYtHYTzlq/609TbFntK3R7OxHsGr+aCVFs5pJoOwhnpzRkz3j45iFpSSKQOz6kyYXvFomV/7vqfTuF2vtp5vF3PDMskXb3ntWZupYyYGUQdgPVBica4vn8K/At8BJlCP/OPuSwzaH982VEDMfLGOv4bTgH2p4UUy0AQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VPTW+DMAz9Lb0Hby2Tdm6pdpo01Eq7ojQE5hKSKnaGUJT/PgEV7U7vI/bL8w522zd43ciBMlV3mcELxDNL1Qk5UBUph3gIqtMsisbe2QKlM6jGh33XizhI0kko40LdeGcZ4hGJPV4Co7PT0rNOgvIq1vpm3Nhry7CEHFdDSCLNBPsJkjCyv9QSYtHYTzlq/609TbFntK3R7OxHsGr+aCVFs5pJoOwhnpzRkz3j45iFpSSKQOz6kyYXvFomV/7vqfTuF2vtp5vF3PDMskXb3ntWZupYyYGUQdgPVBica4vn8K/At8BJlCP/OPuSwzaH982VEDMfLGOv4bTgH+qxAWK0AQAA"
    },
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-frontend/CDKMetadata/Default"

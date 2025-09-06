@@ -73,10 +73,240 @@
     "aws:cdk:path": "cs-chatbot-data/CSInquiryTable/Resource"
    }
   },
+  "AdminInquiriesTableEFBC8177": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "status",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "urgency",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "status-created-index",
+      "KeySchema": [
+       {
+        "AttributeName": "status",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "createdAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "urgency-created-index",
+      "KeySchema": [
+       {
+        "AttributeName": "urgency",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "createdAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "admin-inquiries"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-data/AdminInquiriesTable/Resource"
+   }
+  },
+  "AdminUsersTable35B520A8": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "username",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "username",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "admin-users"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-data/AdminUsersTable/Resource"
+   }
+  },
+  "QnADataTableC1EB1F69": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "category",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "category-created-index",
+      "KeySchema": [
+       {
+        "AttributeName": "category",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "createdAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "qna-data"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-data/QnADataTable/Resource"
+   }
+  },
+  "CompanyTable95A3E353": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "companyId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "industry",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "businessType",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "companySize",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "industry-index",
+      "KeySchema": [
+       {
+        "AttributeName": "industry",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "createdAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "businessType-index",
+      "KeySchema": [
+       {
+        "AttributeName": "businessType",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "companySize",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "companyId",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "companies"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-data/CompanyTable/Resource"
+   }
+  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGSQqAIBQA0LO4119ZnaALRLWP7xDZoOBAhHT3oFbvceBVAyXBKzCpdnYYAXmMKHeKV5jVbfF0SkCeUByadov98tBBB5e81A/t77g6W9RQ1dCSLRjDfLLRnBqG3xd8uK14ZQAAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXIyQmAMBBA0Vq8J+MKFmABinqXySLGJREzQUTsXdDTf/wMsrSAJMLTc6kWvhoBd0coF4anH9RlcXNKwN2jWDWrRvvhYa32LhzyW3WgPdDDmosmZ+Mc0hzKaPbG8CNYMpuG9u8LtGkcOm8AAAA="
    },
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-data/CDKMetadata/Default"
@@ -84,6 +314,42 @@
   }
  },
  "Outputs": {
+  "InquiryTableName": {
+   "Description": "CS Inquiry DynamoDB Table Name",
+   "Value": {
+    "Ref": "CSInquiryTableFB9F4D47"
+   }
+  },
+  "AdminInquiriesTableName": {
+   "Description": "Admin Inquiries DynamoDB Table Name",
+   "Value": {
+    "Ref": "AdminInquiriesTableEFBC8177"
+   }
+  },
+  "AdminUsersTableName": {
+   "Description": "Admin Users DynamoDB Table Name",
+   "Value": {
+    "Ref": "AdminUsersTable35B520A8"
+   }
+  },
+  "QnATableName": {
+   "Description": "QnA Data DynamoDB Table Name",
+   "Value": {
+    "Ref": "QnADataTableC1EB1F69"
+   }
+  },
+  "CompanyTableName": {
+   "Description": "Company DynamoDB Table Name",
+   "Value": {
+    "Ref": "CompanyTable95A3E353"
+   }
+  },
+  "TableName": {
+   "Description": "DynamoDB Table Name",
+   "Value": {
+    "Ref": "CSInquiryTableFB9F4D47"
+   }
+  },
   "ExportsOutputFnGetAttCSInquiryTableFB9F4D47Arn1628D4EA": {
    "Value": {
     "Fn::GetAtt": [

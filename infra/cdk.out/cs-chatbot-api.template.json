@@ -73,7 +73,11 @@
        ]
       },
       {
-       "Action": "bedrock:InvokeModel",
+       "Action": [
+        "bedrock:GetModel",
+        "bedrock:InvokeModel",
+        "bedrock:ListModels"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -132,7 +136,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b.zip"
+     "S3Key": "4763beb4db1044d11d5961ac92705a7743e508ad4825fed012741256fe8a44c2.zip"
     },
     "Environment": {
      "Variables": {
@@ -157,7 +161,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/HealthCheck/Resource",
-    "aws:asset:path": "asset.722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b",
+    "aws:asset:path": "asset.4763beb4db1044d11d5961ac92705a7743e508ad4825fed012741256fe8a44c2",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -169,13 +173,19 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b.zip"
+     "S3Key": "4763beb4db1044d11d5961ac92705a7743e508ad4825fed012741256fe8a44c2.zip"
     },
     "Environment": {
      "Variables": {
       "DYNAMODB_TABLE": {
        "Fn::ImportValue": "cs-chatbot-data:ExportsOutputRefCSInquiryTableFB9F4D4704589F40"
-      }
+      },
+      "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
+      "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
+      "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+      "BEDROCK_MAX_TOKENS": "4096",
+      "BEDROCK_TEMPERATURE": "0.7",
+      "BEDROCK_SELECTION_STRATEGY": "adaptive"
      }
     },
     "Handler": "handlers/inquiry_handler.lambda_handler",
@@ -195,7 +205,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/InquiryHandler/Resource",
-    "aws:asset:path": "asset.722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b",
+    "aws:asset:path": "asset.4763beb4db1044d11d5961ac92705a7743e508ad4825fed012741256fe8a44c2",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -207,13 +217,19 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b.zip"
+     "S3Key": "4763beb4db1044d11d5961ac92705a7743e508ad4825fed012741256fe8a44c2.zip"
     },
     "Environment": {
      "Variables": {
       "DYNAMODB_TABLE": {
        "Fn::ImportValue": "cs-chatbot-data:ExportsOutputRefCSInquiryTableFB9F4D4704589F40"
-      }
+      },
+      "BEDROCK_DEFAULT_MODEL": "claude-4-1-opus",
+      "BEDROCK_FALLBACK_MODEL": "claude-4-opus",
+      "BEDROCK_FAST_MODEL": "claude-4-sonnet",
+      "BEDROCK_MAX_TOKENS": "4096",
+      "BEDROCK_TEMPERATURE": "0.7",
+      "BEDROCK_SELECTION_STRATEGY": "adaptive"
      }
     },
     "Handler": "handlers/ai_response_generator.lambda_handler",
@@ -233,7 +249,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/AIResponseGenerator/Resource",
-    "aws:asset:path": "asset.722249706fa05581081c115524201b3143b1bc605fd2206df198ce92cfd07b4b",
+    "aws:asset:path": "asset.4763beb4db1044d11d5961ac92705a7743e508ad4825fed012741256fe8a44c2",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -247,7 +263,7 @@
     "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Resource"
    }
   },
-  "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b": {
+  "CSChatbotAPIDeployment42D3E63C07ce1a94e12a9ab12f7769fa3b9773db": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -259,6 +275,9 @@
     "CSChatbotAPIapiairesponseOPTIONS5762B9E0",
     "CSChatbotAPIapiairesponsePOSTEC434421",
     "CSChatbotAPIapiairesponseFEDB9FFB",
+    "CSChatbotAPIapiinquiriesidescalateOPTIONS72CD2B81",
+    "CSChatbotAPIapiinquiriesidescalatePOST651CE598",
+    "CSChatbotAPIapiinquiriesidescalate0D5235E7",
     "CSChatbotAPIapiinquiriesidGET9B2425EC",
     "CSChatbotAPIapiinquiriesidOPTIONS633E2076",
     "CSChatbotAPIapiinquiriesid659BD9C2",
@@ -280,7 +299,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "CSChatbotAPIDeployment42D3E63Ca5dd11e66c520a2dd0064d9eb938fb3b"
+     "Ref": "CSChatbotAPIDeployment42D3E63C07ce1a94e12a9ab12f7769fa3b9773db"
     },
     "RestApiId": {
      "Ref": "CSChatbotAPIF9C23C8C"
@@ -301,9 +320,10 @@
      "IntegrationResponses": [
       {
        "ResponseParameters": {
-        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers'",
         "method.response.header.Access-Control-Allow-Origin": "'*'",
-        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+        "method.response.header.Access-Control-Max-Age": "'86400'"
        },
        "StatusCode": "204"
       }
@@ -318,7 +338,8 @@
       "ResponseParameters": {
        "method.response.header.Access-Control-Allow-Headers": true,
        "method.response.header.Access-Control-Allow-Origin": true,
-       "method.response.header.Access-Control-Allow-Methods": true
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Max-Age": true
       },
       "StatusCode": "204"
      }
@@ -471,9 +492,10 @@
      "IntegrationResponses": [
       {
        "ResponseParameters": {
-        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers'",
         "method.response.header.Access-Control-Allow-Origin": "'*'",
-        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+        "method.response.header.Access-Control-Max-Age": "'86400'"
        },
        "StatusCode": "204"
       }
@@ -488,7 +510,8 @@
       "ResponseParameters": {
        "method.response.header.Access-Control-Allow-Headers": true,
        "method.response.header.Access-Control-Allow-Origin": true,
-       "method.response.header.Access-Control-Allow-Methods": true
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Max-Age": true
       },
       "StatusCode": "204"
      }
@@ -529,9 +552,10 @@
      "IntegrationResponses": [
       {
        "ResponseParameters": {
-        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers'",
         "method.response.header.Access-Control-Allow-Origin": "'*'",
-        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+        "method.response.header.Access-Control-Max-Age": "'86400'"
        },
        "StatusCode": "204"
       }
@@ -546,7 +570,8 @@
       "ResponseParameters": {
        "method.response.header.Access-Control-Allow-Headers": true,
        "method.response.header.Access-Control-Allow-Origin": true,
-       "method.response.header.Access-Control-Allow-Methods": true
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Max-Age": true
       },
       "StatusCode": "204"
      }
@@ -793,9 +818,10 @@
      "IntegrationResponses": [
       {
        "ResponseParameters": {
-        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers'",
         "method.response.header.Access-Control-Allow-Origin": "'*'",
-        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+        "method.response.header.Access-Control-Max-Age": "'86400'"
        },
        "StatusCode": "204"
       }
@@ -810,7 +836,8 @@
       "ResponseParameters": {
        "method.response.header.Access-Control-Allow-Headers": true,
        "method.response.header.Access-Control-Allow-Origin": true,
-       "method.response.header.Access-Control-Allow-Methods": true
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Max-Age": true
       },
       "StatusCode": "204"
      }
@@ -929,6 +956,169 @@
     "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/GET/Resource"
    }
   },
+  "CSChatbotAPIapiinquiriesidescalate0D5235E7": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "CSChatbotAPIapiinquiriesid659BD9C2"
+    },
+    "PathPart": "escalate",
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/Resource"
+   }
+  },
+  "CSChatbotAPIapiinquiriesidescalateOPTIONS72CD2B81": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+        "method.response.header.Access-Control-Max-Age": "'86400'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Max-Age": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "CSChatbotAPIapiinquiriesidescalate0D5235E7"
+    },
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/OPTIONS/Resource"
+   }
+  },
+  "CSChatbotAPIapiinquiriesidescalatePOSTApiPermissioncschatbotapiCSChatbotAPI86443238POSTapiinquiriesidescalate63D4F8C4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InquiryHandlerE9AA7F76",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CSChatbotAPIF9C23C8C"
+       },
+       "/",
+       {
+        "Ref": "CSChatbotAPIDeploymentStageprodBC09F56E"
+       },
+       "/POST/api/inquiries/*/escalate"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/ApiPermission.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries.{id}.escalate"
+   }
+  },
+  "CSChatbotAPIapiinquiriesidescalatePOSTApiPermissionTestcschatbotapiCSChatbotAPI86443238POSTapiinquiriesidescalateEDC8D014": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "InquiryHandlerE9AA7F76",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CSChatbotAPIF9C23C8C"
+       },
+       "/test-invoke-stage/POST/api/inquiries/*/escalate"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/ApiPermission.Test.cschatbotapiCSChatbotAPI86443238.POST..api.inquiries.{id}.escalate"
+   }
+  },
+  "CSChatbotAPIapiinquiriesidescalatePOST651CE598": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "InquiryHandlerE9AA7F76",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "CSChatbotAPIapiinquiriesidescalate0D5235E7"
+    },
+    "RestApiId": {
+     "Ref": "CSChatbotAPIF9C23C8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cs-chatbot-api/CSChatbotAPI/Default/api/inquiries/{id}/escalate/POST/Resource"
+   }
+  },
   "CSChatbotAPIapiairesponseFEDB9FFB": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
@@ -954,9 +1144,10 @@
      "IntegrationResponses": [
       {
        "ResponseParameters": {
-        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers'",
         "method.response.header.Access-Control-Allow-Origin": "'*'",
-        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+        "method.response.header.Access-Control-Max-Age": "'86400'"
        },
        "StatusCode": "204"
       }
@@ -971,7 +1162,8 @@
       "ResponseParameters": {
        "method.response.header.Access-Control-Allow-Headers": true,
        "method.response.header.Access-Control-Allow-Origin": true,
-       "method.response.header.Access-Control-Allow-Methods": true
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Max-Age": true
       },
       "StatusCode": "204"
      }
@@ -1093,7 +1285,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02OUW6DQAxEz5L/xW1CeoCkVf+qInKAyFlc4gK7CHuFEOLu0S5Uzdc8z1hjH+CwP8LrDkfJbNVkLd9gvijaxuAo15mxg7n0LZn3H5e08C3bKY4rLabF7lYhzJ/BWWXvYvbMBQ0di7B3i5H8iiKkAqcoRnI4B9uQnlHIYM81Ko04wVyS6KnndHfDD+pbP3XkNLpP00WxTh+uUJL4MFhKnV+kd1/FcKO/dGtOvCz/dnosFrGr48530D7oYopJ79695LDP4W33K8zZEJxyR1Cu+gC0Yu/ITQEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02OwW6DQAxEvyX3xW1CpJ6TVr1VReQDImdxiQvsIuwVQoh/j3ahak7zPGONfYDD/givOxwls1WTtXyD+aJoG4OjXGfGDubSt2Tef1zSwrdspziutJgWu1uFMH8GZ5W9i9kzFzR0LMLeLUbyK4qQCpyiGMnhHGxDekYhgz3XqDTiBHNJoqee090NP6hv/dSR0+g+TRfFOn24Qkniw2ApdX6R3n0Vw43+0q058bL82+mxWMSujjvfQfugiykmvXv3ksM+h7fdrzBnQ3DKHUG56gM0q7/mTQEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "cs-chatbot-api/CDKMetadata/Default"

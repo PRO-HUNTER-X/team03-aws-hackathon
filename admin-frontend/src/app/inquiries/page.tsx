@@ -42,11 +42,24 @@ function InquiriesPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
+  const mapKoreanStatusToEnglish = (koreanStatus: string): string => {
+    switch (koreanStatus) {
+      case '대기': return 'pending'
+      case '처리중': return 'in_progress'
+      case '완료': return 'completed'
+      case 'AI응답': return 'ai_response'
+      default: return koreanStatus
+    }
+  }
+
   const fetchInquiries = async (page = 1) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
-      if (filters.status !== '전체') params.set('status', filters.status)
+      if (filters.status !== '전체') {
+        const englishStatus = mapKoreanStatusToEnglish(filters.status)
+        params.set('status', englishStatus)
+      }
       if (filters.urgency) params.set('urgency', filters.urgency)
       if (filters.type) params.set('type', filters.type)
       if (filters.search) params.set('search', filters.search)
@@ -179,6 +192,7 @@ function InquiriesPageContent() {
                 >
                   <option value="전체">전체</option>
                   <option value="대기">대기</option>
+                  <option value="AI응답">AI응답</option>
                   <option value="처리중">처리중</option>
                   <option value="완료">완료</option>
                 </select>
