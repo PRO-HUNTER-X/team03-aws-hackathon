@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { dynamodb, TABLE_NAME } from '@/lib/dynamodb'
-import { mockInquiries } from '@/lib/mock-data'
 
 export async function GET() {
   try {
@@ -16,8 +15,8 @@ export async function GET() {
     
     console.log('조회된 데이터 개수:', items.length)
 
-    // DynamoDB에 데이터가 없으면 Mock 데이터 사용
-    const dataToUse = items.length > 0 ? items : mockInquiries
+    // 실제 DynamoDB 데이터만 사용
+    const dataToUse = items
     
     const stats = {
       total: dataToUse.length,
@@ -45,33 +44,10 @@ export async function GET() {
       data: stats
     })
   } catch (error) {
-    console.error('DynamoDB 에러, Mock 데이터 사용:', error)
-    
-    // 에러 시 Mock 데이터로 폴백
-    const stats = {
-      total: mockInquiries.length,
-      status: {
-        pending: mockInquiries.filter(item => item.status === '대기').length,
-        processing: mockInquiries.filter(item => item.status === '처리중').length,
-        completed: mockInquiries.filter(item => item.status === '완료').length,
-      },
-      urgency: {
-        high: mockInquiries.filter(item => item.urgency === '높음').length,
-        normal: mockInquiries.filter(item => item.urgency === '보통').length,
-        low: mockInquiries.filter(item => item.urgency === '낮음').length,
-      },
-      types: mockInquiries.reduce((acc: Record<string, number>, item: any) => {
-        const type = String(item.type || '')
-        if (type) {
-          acc[type] = (acc[type] || 0) + 1
-        }
-        return acc
-      }, {})
-    }
-    
-    return NextResponse.json({
-      success: true,
-      data: stats
-    })
+    console.error('대시보드 통계 조회 실패:', error)
+    return NextResponse.json(
+      { success: false, error: '통계를 불러올 수 없습니다.' },
+      { status: 500 }
+    )
   }
 }
