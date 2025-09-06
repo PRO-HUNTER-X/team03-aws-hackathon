@@ -22,17 +22,20 @@ class AIService:
         try:
             logger.info(f"AI 응답 생성 시작: {inquiry_data.get('title', 'Unknown')}")
             
-            # Claude 4.1 Opus 모델 사용 (최고 성능)
-            model_id = "anthropic.claude-opus-4-1-20250805-v1:0"
+            complexity = analyze_request_complexity(
+                inquiry_data.get('content', ''), 
+                inquiry_data.get('category', 'general')
+            )
+            priority = get_request_priority(inquiry_data.get('urgency', 'normal'))
             
-            logger.info(f"사용할 모델: {model_id}")
+            selected_model = self.config.get_model_for_request(complexity, priority)
             
-            return self._call_converse_api_simple(inquiry_data, company_context, model_id)
+            logger.info(f"Selected model: {selected_model} (complexity: {complexity}, priority: {priority})")
+            
+            return self._invoke_converse_api(inquiry_data, company_context, selected_model)
             
         except Exception as e:
-            logger.error(f"AI 응답 생성 중 오류: {str(e)}")
-            import traceback
-            logger.error(f"상세 오류: {traceback.format_exc()}")
+            logger.error(f"Error generating AI response: {str(e)}")
             return self._get_smart_fallback_response(inquiry_data)
     
     def _call_converse_api_simple(self, inquiry_data: Dict[str, Any], company_context: str, model_id: str) -> str:
