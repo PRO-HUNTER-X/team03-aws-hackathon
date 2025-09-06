@@ -74,7 +74,7 @@ export default function Home() {
                 <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
                   <MessageCircle className="w-8 h-8 text-slate-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-4">사람과 연결</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-4">상담사 연결</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 leading-relaxed text-lg">

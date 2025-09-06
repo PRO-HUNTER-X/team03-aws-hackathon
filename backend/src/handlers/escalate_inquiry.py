@@ -41,15 +41,12 @@ def lambda_handler(event: Dict[str, Any], context) -> Dict[str, Any]:
         if not inquiry:
             return error_response("Inquiry not found", 404)
         
-        # 상태를 escalated로 업데이트
-        updated_inquiry = update_inquiry_status(inquiry_id, 'escalated', None)
-        
-        # 에스컬레이션 이메일 발송
+        # 에스컬레이션 이메일 발송 (상태는 변경하지 않음)
         email_sent = send_escalation_email(inquiry, reason)
         
         result = {
             'inquiryId': inquiry_id,
-            'status': 'escalated',
+            'status': inquiry.get('status', 'pending'),  # 기존 상태 유지
             'reason': reason,
             'emailSent': email_sent,
             'estimatedResponseTime': 120  # 2시간으로 업데이트

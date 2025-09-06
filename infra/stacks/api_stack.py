@@ -172,8 +172,22 @@ class ApiStack(Stack):
         update_ai.add_method("POST", apigateway.LambdaIntegration(update_ai_handler))
         
         # Escalation endpoint
+        escalate_handler = _lambda.Function(
+            self, "EscalateInquiry",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="src.handlers.escalate_inquiry.lambda_handler",
+            code=_lambda.Code.from_asset("../backend"),
+            environment={
+                "DYNAMODB_TABLE": dynamodb_table.table_name,
+            },
+            timeout=Duration.seconds(30)
+        )
+        
+        # DynamoDB 권한 부여
+        dynamodb_table.grant_read_write_data(escalate_handler)
+        
         escalate = inquiry_by_id.add_resource("escalate")
-        escalate.add_method("POST", apigateway.LambdaIntegration(inquiry_handler))  # Escalate inquiry
+        escalate.add_method("POST", apigateway.LambdaIntegration(escalate_handler))  # Escalate inquiry
         
         # AI response endpoint
         ai_response = api_v1.add_resource("ai-response")
