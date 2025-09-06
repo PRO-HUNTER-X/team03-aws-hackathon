@@ -62,9 +62,9 @@ class ApiStack(Stack):
             role=lambda_role,
             environment={
                 "DYNAMODB_TABLE": dynamodb_table.table_name,
-                "BEDROCK_DEFAULT_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0",
-                "BEDROCK_FALLBACK_MODEL": "us.anthropic.claude-opus-4-20250514-v1:0",
-                "BEDROCK_FAST_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0",
+                "BEDROCK_DEFAULT_MODEL": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+                "BEDROCK_FALLBACK_MODEL": "anthropic.claude-3-sonnet-20240229-v1:0",
+                "BEDROCK_FAST_MODEL": "anthropic.claude-3-5-sonnet-20241022-v2:0",
                 "BEDROCK_MAX_TOKENS": "4096",
                 "BEDROCK_TEMPERATURE": "0.7",
                 "BEDROCK_SELECTION_STRATEGY": "adaptive"
@@ -81,9 +81,9 @@ class ApiStack(Stack):
             role=lambda_role,
             environment={
                 "DYNAMODB_TABLE": dynamodb_table.table_name,
-                "BEDROCK_DEFAULT_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0",
-                "BEDROCK_FALLBACK_MODEL": "us.anthropic.claude-opus-4-20250514-v1:0",
-                "BEDROCK_FAST_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0",
+                "BEDROCK_DEFAULT_MODEL": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+                "BEDROCK_FALLBACK_MODEL": "anthropic.claude-3-sonnet-20240229-v1:0",
+                "BEDROCK_FAST_MODEL": "anthropic.claude-3-5-sonnet-20241022-v2:0",
                 "BEDROCK_MAX_TOKENS": "4096",
                 "BEDROCK_TEMPERATURE": "0.7",
                 "BEDROCK_SELECTION_STRATEGY": "adaptive"
