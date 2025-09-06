@@ -64,8 +64,10 @@ export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await fetch(`${API_BASE_URL}/admin/auth/login`, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(credentials),
     })
@@ -80,8 +82,10 @@ export class AuthService {
   static async verify(token: string): Promise<VerifyResponse> {
     const response = await fetch(`${API_BASE_URL}/admin/auth/verify`, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     })
@@ -96,8 +100,10 @@ export class AuthService {
   static async getInitialRoute(companyId: string): Promise<InitialRouteResponse> {
     const response = await fetch(`${API_BASE_URL}/admin/auth/initial-route?companyId=${companyId}`, {
       method: 'GET',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     })
 
