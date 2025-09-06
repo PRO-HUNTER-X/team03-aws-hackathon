@@ -27,6 +27,7 @@ export interface AIResponseData {
 }
 
 export interface AIRequestData {
+  inquiry_id?: string;  // 선택적 필드로 추가
   title: string;
   content: string;
   category: string;

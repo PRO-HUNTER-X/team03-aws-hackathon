@@ -41,12 +41,11 @@ function InquiryDetailContent() {
       setIsRegenerating(true);
       const result = await regenerateAIResponse(inquiry.id);
       
-      // 문의 상태 업데이트
-      setInquiry(prev => prev ? {
-        ...prev,
-        ai_response: result.aiResponse,
-        status: result.status as any
-      } : null);
+      // AI 답변 재생성 후 문의를 다시 조회하여 최신 상태 반영
+      const updatedInquiry = await getInquiryById(inquiry.id);
+      if (updatedInquiry) {
+        setInquiry(updatedInquiry);
+      }
       
     } catch (error) {
       console.error("AI 답변 재생성 실패:", error);
