@@ -11,4 +11,4 @@ const client = new DynamoDBClient({
 })
 
 export const dynamodb = DynamoDBDocumentClient.from(client)
-export const TABLE_NAME = process.env.DYNAMODB_ADMIN_INQUIRIES_TABLE || 'admin-inquiries'
+export const TABLE_NAME = process.env.DYNAMODB_ADMIN_INQUIRIES_TABLE || 'cs-inquiries'
