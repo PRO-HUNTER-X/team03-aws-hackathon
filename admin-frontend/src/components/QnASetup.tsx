@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { AuthService, Company } from '@/lib/auth'
+import CompanyInsights from './CompanyInsights'
 
 interface QnAItem {
   question: string
@@ -21,6 +23,7 @@ export default function QnASetup({ onSetupComplete }: QnASetupProps) {
     }
   ])
   const [loading, setLoading] = useState(false)
+  const [companyInfo, setCompanyInfo] = useState<Company | null>(null)
 
   const categories = [
     '배송 문의',
@@ -35,6 +38,21 @@ export default function QnASetup({ onSetupComplete }: QnASetupProps) {
   const addQnAItem = () => {
     setQnaList([...qnaList, { question: '', answer: '', category: '배송 문의' }])
   }
+
+  useEffect(() => {
+    const loadCompanyInfo = async () => {
+      const companyId = AuthService.getCompanyId()
+      if (companyId) {
+        try {
+          const routeInfo = await AuthService.getInitialRoute(companyId)
+          setCompanyInfo(routeInfo.data.companyInfo)
+        } catch (error) {
+          console.error('회사 정보 로드 실패:', error)
+        }
+      }
+    }
+    loadCompanyInfo()
+  }, [])
 
   const removeQnAItem = (index: number) => {
     if (qnaList.length > 1) {
@@ -97,6 +115,14 @@ export default function QnASetup({ onSetupComplete }: QnASetupProps) {
             <p>• 나중에 대시보드에서 언제든 수정할 수 있습니다</p>
           </div>
         </div>
+
+        {/* 회사 맞춤 인사이트 */}
+        {companyInfo && (
+          <CompanyInsights 
+            company={companyInfo} 
+            qnaCount={qnaList.filter(item => item.question.trim() && item.answer.trim()).length}
+          />
+        )}
 
         <div className="space-y-6">
           {qnaList.map((item, index) => (
