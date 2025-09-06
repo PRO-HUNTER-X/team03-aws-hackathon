@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -45,6 +45,17 @@ export class AuthController {
         username: req.user.username,
         userId: req.user.userId
       }
+    };
+  }
+
+  @Get('initial-route')
+  @ApiOperation({ summary: '로그인 후 초기 라우팅 정보 조회' })
+  @ApiResponse({ status: 200, description: '초기 라우팅 정보 조회 성공' })
+  async getInitialRoute(@Query('companyId') companyId: string) {
+    const routeInfo = await this.authService.getInitialRoute(companyId);
+    return {
+      success: true,
+      data: routeInfo
     };
   }
 }
