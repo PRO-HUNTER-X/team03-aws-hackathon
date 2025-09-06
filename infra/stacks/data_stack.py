@@ -17,11 +17,13 @@ class DataStack(Stack):
             admin_inquiries_table_name = f"admin-inquiries-dev-{developer}"
             admin_users_table_name = f"admin-users-dev-{developer}"
             qna_table_name = f"qna-data-dev-{developer}"
+            company_table_name = f"companies-dev-{developer}"
         else:
             inquiry_table_name = "cs-inquiries"  # 기존 prod 환경
             admin_inquiries_table_name = "admin-inquiries"
             admin_users_table_name = "admin-users"
             qna_table_name = "qna-data"
+            company_table_name = "companies"
         
         # DynamoDB Table for CS inquiries
         self.inquiry_table = dynamodb.Table(
@@ -140,6 +142,45 @@ class DataStack(Stack):
             )
         )
         
+        # DynamoDB Table for Companies
+        self.company_table = dynamodb.Table(
+            self, "CompanyTable",
+            table_name=company_table_name,
+            partition_key=dynamodb.Attribute(
+                name="companyId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=RemovalPolicy.DESTROY,
+            point_in_time_recovery=True
+        )
+        
+        # GSI for industry queries
+        self.company_table.add_global_secondary_index(
+            index_name="industry-index",
+            partition_key=dynamodb.Attribute(
+                name="industry",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="createdAt",
+                type=dynamodb.AttributeType.STRING
+            )
+        )
+        
+        # GSI for business type queries
+        self.company_table.add_global_secondary_index(
+            index_name="businessType-index",
+            partition_key=dynamodb.Attribute(
+                name="businessType",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="companySize",
+                type=dynamodb.AttributeType.STRING
+            )
+        )
+        
         # Outputs
         CfnOutput(self, "InquiryTableName",
                  value=self.inquiry_table.table_name,
@@ -156,6 +197,10 @@ class DataStack(Stack):
         CfnOutput(self, "QnATableName",
                  value=self.qna_table.table_name,
                  description="QnA Data DynamoDB Table Name")
+        
+        CfnOutput(self, "CompanyTableName",
+                 value=self.company_table.table_name,
+                 description="Company DynamoDB Table Name")
         
         # 기존 호환성을 위한 출력
         CfnOutput(self, "TableName",
