@@ -3,9 +3,16 @@ import { DynamoDBService } from '../common/dynamodb.service';
 
 export interface QnAData {
   id: string;
+  companyId?: string;
+  industry?: string;
   question: string;
   answer: string;
   category: string;
+  tags?: string[];
+  isActive?: boolean;
+  confidence?: number;
+  usageCount?: number;
+  lastUsed?: string;
   createdAt: string;
 }
 
@@ -48,5 +55,23 @@ export class SetupService {
 
   async isSetupComplete(): Promise<boolean> {
     return await this.hasQnAData();
+  }
+
+  async getQnADataByCompany(companyId: string): Promise<QnAData[]> {
+    const items = await this.dynamoDBService.scan(
+      this.qnaTable,
+      'companyId = :companyId',
+      { ':companyId': companyId }
+    );
+    return items as QnAData[];
+  }
+
+  async getQnADataByIndustry(industry: string): Promise<QnAData[]> {
+    const items = await this.dynamoDBService.scan(
+      this.qnaTable,
+      'industry = :industry',
+      { ':industry': industry }
+    );
+    return items as QnAData[];
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SetupService, QnAData } from './setup.service';
 
@@ -43,6 +43,30 @@ export class SetupController {
   @ApiResponse({ status: 200, description: 'QnA 데이터 조회 성공' })
   async getQnAData(): Promise<{ success: boolean; data: QnAData[]; count: number }> {
     const qnaData = await this.setupService.getQnAData();
+    return {
+      success: true,
+      data: qnaData,
+      count: qnaData.length
+    };
+  }
+
+  @Get('qna/company/:companyId')
+  @ApiOperation({ summary: '회사별 QnA 데이터 조회' })
+  @ApiResponse({ status: 200, description: '회사별 QnA 데이터 조회 성공' })
+  async getQnADataByCompany(@Param('companyId') companyId: string) {
+    const qnaData = await this.setupService.getQnADataByCompany(companyId);
+    return {
+      success: true,
+      data: qnaData,
+      count: qnaData.length
+    };
+  }
+
+  @Get('qna/industry/:industry')
+  @ApiOperation({ summary: '업종별 QnA 데이터 조회' })
+  @ApiResponse({ status: 200, description: '업종별 QnA 데이터 조회 성공' })
+  async getQnADataByIndustry(@Param('industry') industry: string) {
+    const qnaData = await this.setupService.getQnADataByIndustry(industry);
     return {
       success: true,
       data: qnaData,
