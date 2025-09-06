@@ -290,9 +290,9 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
                   </h3>
                 </div>
                 <div className="p-6">
-                  {urgentAlerts.inquiries.length > 0 ? (
+                  {(urgentAlerts?.inquiries || []).length > 0 ? (
                     <div className="space-y-4">
-                      {urgentAlerts.inquiries.map((inquiry) => (
+                      {(urgentAlerts?.inquiries || []).map((inquiry) => (
                         <div 
                           key={inquiry.id} 
                           onClick={() => router.push(`/inquiries/${inquiry.id}`)}
@@ -343,13 +343,13 @@ export default function Dashboard({ token, onLogout }: DashboardProps) {
               <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-medium text-gray-900">
-                    최근 문의 ({recentInquiries.length}건)
+                    최근 문의 ({(recentInquiries || []).length}건)
                   </h3>
                 </div>
                 <div className="p-6">
-                  {recentInquiries.length > 0 ? (
+                  {(recentInquiries || []).length > 0 ? (
                     <div className="space-y-4">
-                      {recentInquiries.map((inquiry) => (
+                      {(recentInquiries || []).map((inquiry) => (
                         <div 
                           key={inquiry.id} 
                           onClick={() => router.push(`/inquiries/${inquiry.id}`)}
