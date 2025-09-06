@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Plus, Filter } from "lucide-react";
-import { getMyInquiries, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/api";
+import { getMyInquiries, getInquiryById, type Inquiry, getStatusLabel, getStatusColor } from "@/lib/api";
 
 export default function MyInquiriesPage() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -31,17 +31,28 @@ export default function MyInquiriesPage() {
     try {
       setIsLoading(true);
       const urlParams = new URLSearchParams(window.location.search);
-      const email = urlParams.get('email') || localStorage.getItem('customerEmail');
+      const inquiryId = urlParams.get('id');
       
-      if (!email) {
-        console.error('이메일이 없습니다. 로그인이 필요합니다.');
-        return;
+      if (inquiryId) {
+        // 개별 문의 상세 보기
+        const inquiry = await getInquiryById(inquiryId);
+        if (inquiry) {
+          setInquiries([inquiry]);
+        }
+      } else {
+        // 문의 목록 보기
+        const email = urlParams.get('email') || localStorage.getItem('customerEmail');
+        
+        if (!email) {
+          console.error('이메일이 없습니다. 로그인이 필요합니다.');
+          return;
+        }
+        
+        const data = await getMyInquiries(email);
+        setInquiries(data);
       }
-      
-      const data = await getMyInquiries(email);
-      setInquiries(data);
     } catch (error) {
-      console.error("문의 목록 로드 실패:", error);
+      console.error("문의 로드 실패:", error);
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +151,7 @@ export default function MyInquiriesPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-                            <Link href={`/my-inquiries/${inquiry.id}`}>
+                            <Link href={`/my-inquiries?id=${inquiry.id}`}>
                               {inquiry.title}
                             </Link>
                           </h3>
@@ -159,7 +170,7 @@ export default function MyInquiriesPage() {
                       </div>
                       
                       <div className="ml-4">
-                        <Link href={`/my-inquiries/${inquiry.id}`}>
+                        <Link href={`/my-inquiries?id=${inquiry.id}`}>
                           <Button variant="outline" size="sm" className="rounded-xl">
                             상세보기
                           </Button>
