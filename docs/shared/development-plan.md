@@ -173,12 +173,12 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 
 ### Phase 2 (4-10시간): AI 인프라 & 배포
 #### Task D3: AWS Bedrock 설정 및 모델 관리 (2시간) - **신규 추가**
-- [ ] **Bedrock 모델 액세스 권한 설정**
-  - Claude 4.1 Opus 모델 활성화 (기본 모델)
-  - Claude 4 Opus 모델 활성화 (백업 모델)
-  - Claude 4 Sonnet 모델 활성화 (빠른 응답용)
-  - IAM 역할에 Bedrock 권한 추가
-- [ ] **설정 파일 기반 모델 스위칭 구현**
+- [x] **Bedrock 모델 액세스 권한 설정** ✅
+  - [x] Claude 4.1 Opus 모델 활성화 (기본 모델)
+  - [x] Claude 4 Opus 모델 활성화 (백업 모델)
+  - [x] Claude 4 Sonnet 모델 활성화 (빠른 응답용)
+  - [x] IAM 역할에 Bedrock 권한 추가
+- [x] **설정 파일 기반 모델 스위칭 구현** ✅
   ```python
   # config/ai_models.py
   AI_MODEL_CONFIG = {
@@ -190,19 +190,19 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
       "model_selection_strategy": "adaptive"  # 요청 복잡도에 따라 자동 선택
   }
   ```
-- [ ] **Lambda 환경변수로 모델 설정 주입**
-  - CDK에서 환경변수 설정: `BEDROCK_DEFAULT_MODEL`, `BEDROCK_FALLBACK_MODEL`, `BEDROCK_FAST_MODEL`
-  - **적응형 모델 선택 로직**:
+- [x] **Lambda 환경변수로 모델 설정 주입** ✅
+  - [x] CDK에서 환경변수 설정: `BEDROCK_DEFAULT_MODEL`, `BEDROCK_FALLBACK_MODEL`, `BEDROCK_FAST_MODEL`
+  - [x] **적응형 모델 선택 로직**:
     - 간단한 문의 → Claude 4 Sonnet (빠른 응답)
     - 복잡한 문의 → Claude 4.1 Opus (최고 품질)
     - 오류 발생 시 → Claude 4 Opus (백업)
-  - 런타임 모델 변경 가능하도록 구성
+  - [x] 런타임 모델 변경 가능하도록 구성
 
 #### Task D4: CI/CD 파이프라인 구축 (2시간)
-- [ ] GitHub Actions 워크플로우 작성
-- [ ] 환경별 배포 스크립트 (dev/prod)
-- [ ] 자동 배포 설정
-- [ ] 롤백 전략 수립
+- [x] GitHub Actions 워크플로우 작성 ✅
+- [x] 환경별 배포 스크립트 (dev/prod) ✅
+- [x] 자동 배포 설정 ✅
+- [x] 롤백 전략 수립 ✅
 
 #### Task D5: 이메일 인프라 & 비동기 처리 (2시간) - **아키텍처 개선**
 - [ ] **SQS 큐 생성** (이메일 처리용)
@@ -228,13 +228,13 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
 - [ ] CloudWatch 기본 모니터링 설정
 
 **완료 기준:**
-- 모든 AWS 리소스 CDK로 배포 완료
-- **AWS Bedrock Claude 모델 액세스 권한 설정 완료**
-- **환경변수 기반 AI 모델 스위칭 시스템 구축**
-- **SQS 기반 비동기 이메일 처리 시스템 구축**
-- **SES 샌드박스 모드 이메일 발송 테스트 완료**
-- CI/CD 파이프라인으로 자동 배포 성공
-- 모니터링 대시보드에서 메트릭 확인 가능
+- [x] 모든 AWS 리소스 CDK로 배포 완료 ✅
+- [x] **AWS Bedrock Claude 모델 액세스 권한 설정 완료** ✅
+- [x] **환경변수 기반 AI 모델 스위칭 시스템 구축** ✅
+- [ ] **SQS 기반 비동기 이메일 처리 시스템 구축**
+- [ ] **SES 샌드박스 모드 이메일 발송 테스트 완료**
+- [x] CI/CD 파이프라인으로 자동 배포 성공 ✅
+- [ ] 모니터링 대시보드에서 메트릭 확인 가능
 
 ---
 
@@ -357,9 +357,11 @@ handlers/escalate_inquiry.py   # POST /api/inquiries/{id}/escalate - 고객용
   - [x] DynamoDB 스택
   - [x] CloudFront + S3 프론트엔드 스택
 - [x] 배포 스크립트 완성 ✅
-- [ ] **AWS Bedrock 모델 설정 완성** (Claude 4.1 Opus/4 Opus/4 Sonnet 스위칭 가능)
-- [ ] **설정 파일 기반 AI 모델 관리 시스템 구축**
-- [ ] CI/CD 파이프라인 완성 (GitHub Actions)
+- [x] **AWS Bedrock 모델 설정 완성** (Claude 4.1 Opus/4 Opus/4 Sonnet 스위칭 가능) ✅
+- [x] **설정 파일 기반 AI 모델 관리 시스템 구축** ✅
+- [x] CI/CD 파이프라인 완성 (GitHub Actions) ✅
+- [ ] **SQS 기반 비동기 이메일 처리 시스템 구축**
+- [ ] **SES 샌드박스 모드 이메일 발송 시스템 완성**
 - [ ] 모니터링 설정 완성 (CloudWatch)
 - [ ] 샘플 데이터 투입 완성
 
