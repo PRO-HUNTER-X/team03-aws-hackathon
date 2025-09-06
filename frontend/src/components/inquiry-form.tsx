@@ -77,6 +77,7 @@ export function InquiryForm() {
 
       // 2. AI 응답 생성
       const aiResponseData = await generateAIResponse({
+        inquiry_id: inquiryResponse.inquiryId,  // inquiry_id 추가
         title: data.title,
         content: data.content,
         category: data.category,
