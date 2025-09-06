@@ -152,12 +152,12 @@ export function AIResponse({ response, isLoading = false, onEscalate, onRating }
           </div>
         )}
 
-        {/* "사람과 연결" 에스컬레이션 버튼 */}
+        {/* 상담사 연결 에스컬레이션 버튼 */}
         {showRating && !isTyping && (
           <div className="border-t pt-4">
             <Button variant="outline" onClick={onEscalate} size="default" className="w-full">
               <User className="w-4 h-4" />
-              사람과 연결하기
+              상담사 연결
             </Button>
             <p className="text-xs text-muted-foreground mt-2 text-center">
               담당자가 직접 답변을 드립니다. (평균 응답시간: 2-4시간)
