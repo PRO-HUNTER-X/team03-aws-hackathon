@@ -1,5 +1,27 @@
 # Python 백엔드 코딩 규칙
 
+## 개발 서버 실행 규칙
+
+### 서버 실행 방식
+- **항상 백그라운드 실행**: `npm run start:dev > server.log 2>&1 &`
+- **로그 확인**: `tail -f server.log` 또는 `tail -20 server.log`
+- **서버 재시작**: `pkill -f "nest" && npm run start:dev > server.log 2>&1 &`
+
+### API 테스트 워크플로우
+1. 서버 백그라운드 실행
+2. `sleep 3` 으로 서버 시작 대기
+3. `curl` 명령으로 API 테스트
+4. `jq .` 로 JSON 응답 포맷팅
+
+### 예시
+```bash
+# 서버 시작
+npm run start:dev > server.log 2>&1 &
+
+# API 테스트
+sleep 3 && curl -s "http://localhost:3000/auth/initial-route?companyId=hunters-company" | jq .
+```
+
 ## CORE DEVELOPMENT PRINCIPLES
 
 ### Test-Driven Development (TDD) - MANDATORY
