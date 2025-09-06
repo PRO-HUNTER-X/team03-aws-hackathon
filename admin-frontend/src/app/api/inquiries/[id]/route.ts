@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 import { dynamodb, TABLE_NAME } from '@/lib/dynamodb'
-import { mockInquiries } from '@/lib/mock-data'
 
 // API Route를 동적으로 설정
 export const dynamic = 'force-dynamic'
@@ -30,38 +29,13 @@ export async function GET(
         }
       })
     } else {
-      // DynamoDB에 없으면 Mock 데이터에서 찾기
-      const mockItem = mockInquiries.find(item => item.id === id)
-      if (mockItem) {
-        return NextResponse.json({
-          success: true,
-          data: {
-            ...mockItem,
-            replies: []
-          }
-        })
-      } else {
-        return NextResponse.json(
-          { success: false, error: '문의를 찾을 수 없습니다.' },
-          { status: 404 }
-        )
-      }
+      return NextResponse.json(
+        { success: false, error: '문의를 찾을 수 없습니다.' },
+        { status: 404 }
+      )
     }
   } catch (error) {
     console.error('문의 상세 조회 실패:', error)
-    
-    // 에러 시 Mock 데이터로 폴백
-    const mockItem = mockInquiries.find(item => item.id === params.id)
-    if (mockItem) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          ...mockItem,
-          replies: []
-        }
-      })
-    }
-    
     return NextResponse.json(
       { success: false, error: '문의를 불러올 수 없습니다.' },
       { status: 500 }
