@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NODE_ENV === 'development' 
-  ? 'http://localhost:3002/api' 
-  : '/api'
+  ? 'http://localhost:3000' 
+  : 'https://3tbdb8uvll.execute-api.us-east-1.amazonaws.com/prod'
 
 export interface LoginRequest {
   username: string
