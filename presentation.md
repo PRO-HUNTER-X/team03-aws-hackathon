@@ -51,13 +51,13 @@ AI가 24시간 고객 응대
 <div class="card-blue">
 
 ### 🔧 Backend 개발자
-Python/AWS Lambda 전문
+- Python/AWS Lambda 전문
 
 </div>
 <div class="card-green">
 
 ### 🎨 Frontend 개발자
-React/Next.js 전문
+- React/Next.js 전문
 
 </div>
 </div>
@@ -66,13 +66,13 @@ React/Next.js 전문
 <div class="card-yellow">
 
 ### 🚀 Full-stack 개발자
-통합 개발 담당
+- 통합 개발 담당
 
 </div>
 <div class="card-red">
 
 ### ☁️ Infrastructure 개발자
-AWS CDK & CI/CD 전문
+- AWS CDK & CI/CD 전문
 
 </div>
 </div>
@@ -85,7 +85,7 @@ AWS CDK & CI/CD 전문
 <div class="card-red">
 
 ### 🎯 타겟 시장
-**10인 미만 소규모 사업장** (국민연금 기준 전체의 85%, 약 340만개)
+- **10인 미만 소규모 사업장** (국민연금 기준 전체의 85%, 약 340만개)
 
 </div>
 
@@ -137,43 +137,25 @@ AWS CDK & CI/CD 전문
 <div class="card-yellow">
 
 ### 📊 통합 관리
-관리자 대시보드 모니터링
+- 관리자 대시보드 모니터링
 
 </div>
 </div>
 
 ---
 
-# 시스템 아키텍처
-## AWS 네이티브 서버리스 구조
+# 아키텍처 - AWS 네이티브 서버리스 구조
 
 <div class="card center">
 
-```
-고객 → CloudFront → S3
-       ↓
-API Gateway → Lambda (Python) → Bedrock (Claude 3.5)
-       ↓
-DynamoDB (NoSQL)
-```
+![width:550px](architecture.png)
 
 </div>
 
-<div class="grid-2">
-<div class="card-blue">
-
-### 🛠️ 핵심 기술 스택
-- **Frontend**: Next.js
-- **Backend**: Python + AWS Lambda
-- **AI Engine**: AWS Bedrock (Claude 4.1)
-- **Database**: DynamoDB
-
-</div>
 <div class="card-green">
 
 ### 🚀 배포 전략
 - **Infrastructure as Code**: AWS CDK
-- **CI/CD**: GitHub Actions + OIDC
 - **원클릭 배포**: `./deploy.sh`
 
 </div>
@@ -221,14 +203,15 @@ AI 답변 불만족 시
 <div class="card-green">
 
 ### 1️⃣ 협업 규칙 생성
-- 4명 개발자 공통/직군별 `.amazonq/rules`, `docs` 작성 → **팀 전체 코딩 스타일 통일**
+- 4명 개발자 공통/직군별 `.amazonq/rules`, `docs` 작성
+  -  **팀 전체 코딩 스타일 통일**
 
 </div>
 
 <div class="card-blue">
 
 ### 2️⃣ 프롬프트 엔지니어링
-- CS 도메인 특화 AI 응답 로직을 **TDD, DDD 기반 구현**
+- CS 도메인 특화 AI 응답 로직 **TDD, DDD 기반 구현**
 
 </div>
 
@@ -308,12 +291,7 @@ AI 답변 불만족 시
 <div class="card-green">
 
 ### 📊 성능 지표
-| 지표 | 기존 | 도입 후 | 개선율 |
-|------|------|---------|--------|
-| 응답 시간 | 24시간 | 2분 | 95% ↓ |
-| 운영 비용 | 500만원/월 | 50만원/월 | 90% ↓ |
-| 가용성 | 9-18시 | 24시간 | 100% ↑ |
-| 고객 만족도 | 70% | 95% | 25%p ↑ |
+- 추가 예정
 
 </div>
 <div class="card-blue">
@@ -375,21 +353,21 @@ AI 답변 불만족 시
 <div class="card-blue">
 
 ### 🎯 타겟 임팩트
-340만 소규모 사업장의
+- 340만 소규모 사업장의
 CS 혁신
 
 </div>
 <div class="card-green">
 
 ### 💰 경제적 효과
-연 3,000만원+
+- 연 3,000만원+
 비용 절감 효과
 
 </div>
 <div class="card-yellow">
 
 ### 🚀 기술 혁신
-AI 기반 24시간
+- AI 기반 24시간
 고객 서비스 실현
 
 </div>
@@ -405,4 +383,4 @@ AI 기반 24시간
 
 <!-- _class: lead -->
 # 감사합니다
-03_프로 헌터스
+### 03_프로 헌터스
