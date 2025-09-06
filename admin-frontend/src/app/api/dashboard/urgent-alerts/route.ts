@@ -54,7 +54,11 @@ export async function GET() {
   } catch (error) {
     console.error('긴급 알림 조회 실패:', error)
     return NextResponse.json(
-      { success: false, error: '긴급 알림을 불러올 수 없습니다.', details: error.message },
+      { 
+        success: false, 
+        error: '긴급 알림을 불러올 수 없습니다.', 
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     )
   }
